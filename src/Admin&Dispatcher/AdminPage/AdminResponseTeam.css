@@ -1,0 +1,87 @@
+.response-team-title {
+  margin-bottom: 18px;
+  color: #1746a2;
+}
+
+.response-team-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.response-team-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.response-team-search {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+.response-team-search-btn {
+  background: #1746a2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.create-team-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.response-team-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+
+.response-team-table th,
+.response-team-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+.availability-badge {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.availability {
+  background: #bbf7d0;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.unavailable {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.response-team-pagination {
+  display: flex;
+  justify-content: space-between;
+  color: #888;
+  font-size: 0.95rem;
+  margin-top: 8px;
+}

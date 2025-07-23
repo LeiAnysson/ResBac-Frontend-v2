@@ -1,0 +1,265 @@
+/* AdminDashboard.css */
+
+.admin-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f5f6fa;
+}
+
+.dashboard-main-content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.dashboard-content-area {
+  flex: 1;
+  padding: 2rem 1.5rem;
+  margin-left: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-width: 0;
+}
+
+.dashboard-header {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  margin-bottom: 1rem;
+}
+
+.dashboard-title {
+  color: #23408e;
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-welcome {
+  color: #888;
+  font-size: 1rem;
+}
+
+.dashboard-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  background: #f8f9fb;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.stat-label {
+  color: #888;
+  font-size: 0.95rem;
+}
+
+.stat-value {
+  font-size: 1.7rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.stat-danger { color: #e74c3c; }
+.stat-warning { color: #f39c12; }
+.stat-success { color: #27ae60; }
+
+.dashboard-overview-section {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.reports-overview {
+  background: #fff;
+  border-radius: 12px;
+  flex: 2;
+  padding: 1.5rem;
+  min-width: 320px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reports-summary {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #23408e;
+}
+
+.summary-label {
+  color: #888;
+  font-size: 0.95rem;
+}
+
+.reports-chart-placeholder {
+  height: 80px;
+  background: #f0f2f7;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-bar {
+  width: 90%;
+  height: 24px;
+  background: linear-gradient(90deg, #e74c3c 20%, #3498db 60%, #27ae60 100%);
+  border-radius: 12px;
+}
+
+.recent-activity {
+  background: #fff;
+  border-radius: 12px;
+  flex: 1;
+  min-width: 220px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.activity-list li {
+  display: flex;
+  justify-content: space-between;
+  color: #444;
+  font-size: 0.98rem;
+  margin-bottom: 0.7rem;
+}
+
+.activity-time {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-left: 1rem;
+}
+
+.dashboard-lower-section {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.incident-heatmap, .latest-emergency-report {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  flex: 1;
+  min-width: 320px;
+}
+
+.heatmap-placeholder {
+  height: 220px;
+  background: #f0f2f7;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 1.1rem;
+}
+
+.emergency-report-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.emergency-report-list li {
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.report-status {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-right: 0.7rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 8px;
+}
+
+.report-status.assigned {
+  background: #ffe5e0;
+  color: #e74c3c;
+}
+
+.report-status.enroute {
+  background: #e0f7fa;
+  color: #3498db;
+}
+
+.report-title {
+  font-weight: 600;
+  color: #23408e;
+  margin-right: 0.7rem;
+}
+
+.report-time {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.report-details {
+  color: #444;
+  font-size: 0.97rem;
+  margin-top: 0.3rem;
+}
+
+.responder-name {
+  color: #23408e;
+  font-weight: 500;
+}
+
+@media (max-width: 1100px) {
+  .dashboard-overview-section, .dashboard-lower-section {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .dashboard-main-content {
+    flex-direction: column;
+  }
+  .dashboard-content-area {
+    padding: 1rem 0.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-header, .reports-overview, .recent-activity, .incident-heatmap, .latest-emergency-report {
+    padding: 1rem 0.5rem;
+  }
+  .dashboard-title {
+    font-size: 1.3rem;
+  }
+  .stat-card {
+    min-width: 120px;
+    padding: 0.7rem 0.8rem;
+  }
+} 

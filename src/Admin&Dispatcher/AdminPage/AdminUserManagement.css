@@ -1,0 +1,169 @@
+.admin-page-container {
+    display: flex;
+    min-height: 100vh;
+    background: #f5f6fa;
+  }
+  
+  .admin-main-content {
+    flex: 1;
+    margin-left: 260px; /* width of NavBar */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  @media (max-width: 900px) {
+    .admin-main-content {
+      margin-left: 70px; /* collapsed NavBar */
+    }
+  }
+  @media (max-width: 600px) {
+    .admin-main-content {
+      margin-left: 0;
+    }
+  }
+  
+  .user-management-content {
+    padding: 2rem 2.5rem;
+    flex: 1;
+  }
+  
+  .user-management-title {
+    color: #23408e;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
+  
+  .user-management-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(35, 64, 142, 0.07);
+    padding: 1.5rem;
+    margin-top: 1rem;
+  }
+  
+  .user-management-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    flex-wrap: wrap;
+  }
+  
+  .user-search-input {
+    flex: 2;
+    min-width: 180px;
+    padding: 0.6rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  
+  .user-search-btn {
+    background: #23408e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .user-search-btn:hover {
+    background: #1a2e5b;
+  }
+  
+  .user-filter-select {
+    min-width: 120px;
+    padding: 0.6rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  
+  .user-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+  
+  .user-table th,
+  .user-table td {
+    padding: 0.8rem 0.7rem;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 1rem;
+  }
+  
+  .user-table th {
+    color: #888;
+    font-weight: 600;
+    background: #f7f8fa;
+  }
+  
+  .user-status-active {
+    background: #a6f5b6;
+    color: #1a7f37;
+    padding: 0.3rem 1rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  
+  .user-action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #23408e;
+    transition: color 0.2s;
+  }
+  
+  .user-action-btn:hover {
+    color: #1a2e5b;
+  }
+  
+  .user-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #888;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  @media (max-width: 900px) {
+    .user-management-content {
+      padding: 1rem 0.5rem;
+    }
+    .user-management-card {
+      padding: 1rem;
+    }
+    .user-table th,
+    .user-table td {
+      padding: 0.5rem 0.3rem;
+      font-size: 0.95rem;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .user-management-title {
+      font-size: 1.1rem;
+    }
+    .user-management-card {
+      padding: 0.5rem;
+    }
+    .user-table th,
+    .user-table td {
+      padding: 0.3rem 0.2rem;
+      font-size: 0.9rem;
+    }
+    .user-management-content {
+      padding: 0.5rem 0.2rem;
+    }
+  }

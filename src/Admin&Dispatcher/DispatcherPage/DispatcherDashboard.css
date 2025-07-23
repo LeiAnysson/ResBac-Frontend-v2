@@ -1,0 +1,105 @@
+.dispatcher-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f5f6fa;
+}
+
+.dispatcher-main-content {
+  display: flex;
+  flex: 1;
+}
+
+.dispatcher-content-area {
+  flex: 1;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.dispatcher-header {
+  margin-bottom: 1rem;
+}
+
+.dispatcher-title {
+  color: #23408e;
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.dispatcher-grid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.dispatcher-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-width: 340px;
+}
+
+.dispatcher-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  margin-bottom: 1.5rem;
+}
+
+.incoming-reports, .active-reports, .incident-heatmap, .available-responders {
+  margin-bottom: 2rem;
+}
+
+.report-item, .responder-item {
+  background: #f8f9fb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.report-badge.new { background: #e74c3c; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 0.9em; margin-right: 0.7em; }
+.report-badge.assigned { background: #f39c12; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 0.9em; margin-right: 0.7em; }
+.report-badge.enroute { background: #3498db; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 0.9em; margin-right: 0.7em; }
+.report-badge.onsite { background: #27ae60; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 0.9em; margin-right: 0.7em; }
+
+.report-title { font-weight: 600; color: #23408e; margin-right: 0.7em; }
+.report-time { color: #aaa; font-size: 0.9em; }
+.report-desc { color: #444; font-size: 0.97em; margin-top: 0.3em; }
+.responder-name { color: #23408e; font-weight: 500; }
+.responder-details { color: #444; font-size: 0.97em; margin-bottom: 0.3em; }
+.status.onroute { color: #27ae60; font-weight: 600; }
+
+.assign-btn {
+  align-self: flex-end;
+  background: #23408e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4em 1.2em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.assign-btn:hover {
+  background: #1a2d5a;
+}
+
+.heatmap-placeholder {
+  height: 180px;
+  background: #f0f2f7;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 1.1rem;
+}
+

@@ -1,0 +1,136 @@
+/* NavBar.css */
+
+.navbar {
+ position: fixed;
+  width: 260px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+ 
+  align-items: center;
+  min-height: 100vh;
+  box-shadow: 2px 0 16px rgba(35, 64, 142, 0.07);
+  padding: 2.5rem 0 1.5rem 0;
+  transition: box-shadow 0.3s;
+}
+
+.navbar-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.navbar-profile-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #eaf0fb;
+  box-shadow: 0 2px 8px rgba(35, 64, 142, 0.08);
+  margin-bottom: 0.7rem;
+  transition: border 0.3s;
+}
+
+.navbar-profile-name {
+  font-weight: 600;
+  color: #222;
+  font-size: 1.08rem;
+  margin-bottom: 0.1rem;
+}
+
+.navbar-profile-role {
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+.navbar-divider {
+  width: 80%;
+  border: none;
+  border-top: 1px solid #eaeaea;
+  margin: 1.2rem 0 1.5rem 0;
+}
+
+.navbar-menu {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  flex: 1;
+}
+
+.navbar-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  text-decoration: none !important;
+  padding: 0.8rem 2.2rem;
+  border-radius: 8px;
+  color: #757575;
+  font-weight: 500;
+  font-size: 1.08rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  will-change: background, color, transform;
+}
+
+.navbar-menu-item.active,
+.navbar-menu-item:hover {
+  background: #eaf0fb;
+  color: #23408e;
+  transform: translateX(6px) scale(.97);
+  box-shadow: 0 2px 8px rgba(35, 64, 142, 0.06);
+}
+
+.navbar-menu-icon {
+  font-size: 1.5rem;
+  min-width: 24px;
+  text-align: center;
+  transition: color 0.2s;
+}
+
+.navbar-logout {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #e74c3c;
+  font-weight: 600;
+  font-size: 1.08rem;
+  cursor: pointer;
+  padding: 0.7rem 2.2rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.navbar-logout:hover {
+  background: #ffe5e0;
+  color: #b71c1c;
+  transform: translateX(6px) scale(1.03);
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    width: 70px;
+    padding: 1rem 0.3rem;
+  }
+  .navbar-profile,
+  .navbar-profile-name,
+  .navbar-profile-role,
+  .navbar-divider,
+  .navbar-menu-item span,
+  .navbar-logout span {
+    display: none;
+  }
+  .navbar-menu-item,
+  .navbar-logout {
+    justify-content: center;
+    padding: 0.7rem 0.2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    display: none;
+  }
+}
