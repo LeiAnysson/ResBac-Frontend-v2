@@ -1,5 +1,9 @@
 /* AdminDashboard.css */
 
+html, body {
+  overflow-x: hidden;
+}
+
 .admin-dashboard-container {
   display: flex;
   flex-direction: column;
@@ -14,43 +18,46 @@
 }
 
 .dashboard-content-area {
-  flex: 1;
-  padding: 2rem 1.5rem;
-  margin-left: 260px;
+  width: calc(100% - 230px);
+  padding: 0.5rem 2rem 2rem;
+  margin-left: 230px;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   min-width: 0;
 }
 
 .dashboard-header {
   background: #fff;
   border-radius: 12px;
-  padding: 1.5rem 2rem;
+  padding: 10px 20px 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-  margin-bottom: 1rem;
+}
+
+.dashboard-greeting {
+  margin-top: 0px;
+  padding-top: 0;
 }
 
 .dashboard-title {
   color: #23408e;
-  font-size: 2rem;
-  margin-bottom: 0.25rem;
+  font-size: 20px;
+  margin-bottom: 0px;
 }
 
 .dashboard-welcome {
   color: #888;
-  font-size: 1rem;
+  font-size: 15px;
 }
 
 .dashboard-stats {
   display: flex;
   gap: 1.5rem;
-  margin-top: 1.5rem;
   flex-wrap: wrap;
 }
 
 .stat-card {
-  background: #f8f9fb;
+  background: #f4f5f9;
   border-radius: 8px;
   padding: 1rem 1.5rem;
   min-width: 160px;
@@ -62,11 +69,11 @@
 
 .stat-label {
   color: #888;
-  font-size: 0.95rem;
+  font-size: 13px;
 }
 
 .stat-value {
-  font-size: 1.7rem;
+  font-size: 15px;
   font-weight: bold;
   margin-top: 0.5rem;
 }

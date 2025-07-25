@@ -10,9 +10,11 @@ const AdminDashboard = () => {
       <div className="dashboard-main-content">
         <NavBar />
         <main className="dashboard-content-area">
+          <div className="dashboard-greeting">
+              <h2 className="dashboard-title">Dashboard Overview</h2>
+              <span className="dashboard-welcome">Welcome Back, Admin!</span>
+          </div>
           <section className="dashboard-header">
-            <h2 className="dashboard-title">Dashboard Overview</h2>
-            <span className="dashboard-welcome">Welcome Back, Admin!</span>
             <div className="dashboard-stats">
               <div className="stat-card">
                 <span className="stat-label">Total Users</span>
@@ -32,6 +34,7 @@ const AdminDashboard = () => {
               </div>
             </div>
           </section>
+
           <section className="dashboard-overview-section">
             <div className="reports-overview">
               <div className="reports-summary">
@@ -54,7 +57,7 @@ const AdminDashboard = () => {
               </div>
             </div>
             <div className="recent-activity">
-              <h3>Recently Activity</h3>
+              <h3>Recent Activity</h3>
               <ul className="activity-list">
                 <li>ADM001 deleted an account <span className="activity-time">3 mins ago</span></li>
                 <li>ADM001 created an account <span className="activity-time">3 mins ago</span></li>

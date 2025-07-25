@@ -67,15 +67,11 @@
 }
 
 .availability {
-  background: #bbf7d0;
   color: #15803d;
-  border: 1px solid #86efac;
 }
 
 .unavailable {
-  background: #fee2e2;
   color: #b91c1c;
-  border: 1px solid #fecaca;
 }
 
 .response-team-pagination {

@@ -1,107 +1,106 @@
-// capstone/src/Admin&Dispatcher/AdminPage/AdminResponseTeam.js
-import React from "react";
 import NavBar from "../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminResponseTeam.css";
+import React, { useEffect, useState } from "react";
 
-const teams = [
-  {
-    name: "Team Alpha",
-    members: [
-      "Lei Anysson Marquez",
-      "Grace Bayonito",
-      "Kurt Papruz",
-      "Jayson Visnar",
-      "Victor Magtanggol"
-    ],
-    availability: "Available"
-  },
-  {
-    name: "Team Bravo",
-    members: [
-      "Lei Anysson Marquez",
-      "Grace Bayonito",
-      "Kurt Papruz",
-      "Jayson Visnar",
-      "Victor Magtanggol"
-    ],
-    availability: "Unavailable"
-  },
-  {
-    name: "Team Charlie",
-    members: [
-      "Lei Anysson Marquez",
-      "Grace Bayonito",
-      "Kurt Papruz",
-      "Jayson Visnar",
-      "Victor Magtanggol"
-    ],
-    availability: "Unavailable"
-  },
-  {
-    name: "Medical Team",
-    members: [
-      "Lei Anysson Marquez",
-      "Grace Bayonito",
-      "Kurt Papruz",
-      "Jayson Visnar",
-      "Victor Magtanggol"
-    ],
-    availability: "Available"
-  }
-];
+const TeamPage = () => {
+    const [teams, setTeams] = useState([]);
+    const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
 
-export default function AdminResponseTeam() {
-  return (
-    <div className="admin-dashboard-container">
-      <TopBar />
-      <div className="dashboard-main-content">
-        <NavBar />
-        <main className="dashboard-content-area">
-          <h2 className="response-team-title">Response Team</h2>
-          <div className="response-team-card">
-            <div className="response-team-controls">
-              <input className="response-team-search" placeholder="Search..." />
-              <button className="response-team-search-btn">
-                <span role="img" aria-label="search">🔍</span>
-              </button>
-              <button className="create-team-btn">Create Team</button>
-            </div>
-            <table className="response-team-table">
-              <thead>
-                <tr>
-                  <th>Team Name</th>
-                  <th>Name</th>
-                  <th>Availability</th>
-                </tr>
-              </thead>
-              <tbody>
-                {teams.map((team, idx) => (
-                  <tr key={idx}>
-                    <td>{team.name}</td>
-                    <td>
-                      {team.members.map((member, i) => (
-                        <div key={i}>{member}</div>
-                      ))}
-                    </td>
-                    <td>
-                      <span className={`availability-badge ${team.availability.toLowerCase()}`}>
-                        {team.availability}
-                      </span>
-                    </td>
+    const fetchTeams = async (page = 1) => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/admin/teams?page=${page}`);
+        const data = await response.json();
+        setTeams(data.data);
+        setPagination({
+          current_page: data.current_page,
+          last_page: data.last_page,
+        });
+      } catch (err) {
+        console.error("Failed to fetch teams", err);
+      }
+    };
+
+    useEffect(() => {
+      fetchTeams();
+    }, []);
+
+    const handlePageChange = (newPage) => {
+      if (newPage >= 1 && newPage <= pagination.last_page) {
+        fetchTeams(newPage);
+      }
+    };
+
+    const formatAvailability = (status) => {
+      return status.toLowerCase() === "active" ? "Available" : "Unavailable";
+    };
+
+    const getAvailabilityClass = (status) => {
+      return status.toLowerCase() === "active" ? "availability" : "unavailable";
+    };
+
+    return (
+      <div className="admin-dashboard-container">
+        <TopBar />
+        <div className="dashboard-main-content">
+          <NavBar />
+          <main className="dashboard-content-area">
+            <h2 className="response-team-title">Response Team</h2>
+            <div className="response-team-card">
+              <div className="response-team-controls">
+                <input className="response-team-search" placeholder="Search..." />
+                <button className="response-team-search-btn">
+                  <span role="img" aria-label="search">🔍</span>
+                </button>
+                <button className="create-team-btn">Create Team</button>
+              </div>
+              <table className="response-team-table">
+                <thead>
+                  <tr>
+                    <th>Team Name</th>
+                    <th>Name</th>
+                    <th>Availability</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="response-team-pagination">
-              <span>1 of 1 items</span>
-              <span>
-                &lt; <b>Page 1</b> of 1 &gt;
-              </span>
+                </thead>
+                <tbody>
+                  {teams.map((team, idx) => (
+                    <tr key={idx}>
+                      <td>{team.team_name}</td>
+                      <td>
+                        {team.members && team.members.length > 0 ? (
+                          team.members.map((member, i) => (
+                            <div key={i} style={{ marginBottom: "4px" }}>
+                              {(member.first_name || member.last_name) ? `${member.first_name} ${member.last_name}` : "Unnamed"}
+                            </div>
+                          ))) : (
+                            <div>No members</div>
+                        )}
+                      </td>
+                      <td>
+                        <span className={`availability-badge ${getAvailabilityClass(team.status)}`}>
+                          {formatAvailability(team.status)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="response-team-pagination">
+                <button onClick={() => handlePageChange(pagination.current_page - 1)} disabled={pagination.current_page === 1}>
+                  &lt; Prev
+                </button>
+                <span>
+                  Page <b>{pagination.current_page}</b> of {pagination.last_page}
+                </span>
+                <button onClick={() => handlePageChange(pagination.current_page + 1)} disabled={pagination.current_page === pagination.last_page}>
+                  Next &gt;
+                </button>
+              </div>
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+};
+
+export default TeamPage;
