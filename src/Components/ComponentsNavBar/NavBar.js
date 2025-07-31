@@ -1,4 +1,3 @@
-import React from 'react';
 import './NavBar.css';
 import {
   MdHome, MdPeople, MdAssessment, MdNotificationsActive,
@@ -6,10 +5,15 @@ import {
 } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 
 const NavBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
   const handleLogout = async () => {
     const token = localStorage.getItem('token');
@@ -27,8 +31,32 @@ const NavBar = () => {
 
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    navigate('/login');
+    navigate('/login');  
   };
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (!token) return;
+
+    fetch('http://127.0.0.1:8000/api/me', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch user');
+        return res.json();
+      })
+      .then(data => {
+        setUser(data);
+      })
+      .catch(err => {
+        console.error('Error fetching user:', err);
+      });
+  }, []);
 
   return (
     <nav className="navbar">
@@ -39,9 +67,14 @@ const NavBar = () => {
             src="https://i.ibb.co/6bQQP4r/avatar-placeholder.png"
             alt="Profile"
           />
-          <div className="navbar-profile-name">Lei Anysson Marquez</div>
-          <div className="navbar-profile-role">Administrator</div>
-        </div>
+          <div className="navbar-profile-name">{user ? `${user.name ?? user.first_name}` : 'Loading...'}</div>
+          <div className="navbar-profile-role">
+            {user?.role?.name
+            ? user.role.name === 'Admin'
+              ? 'Administrator'
+              : user.role.name.charAt(0).toUpperCase() + user.role.name.slice(1)
+            : `Role ID: ${user?.role_id}`}</div>
+          </div>
 
         <hr className="navbar-divider"/>
         <div className="navbar-menu">

@@ -1,6 +1,8 @@
 .response-team-title {
-  margin-bottom: 18px;
-  color: #1746a2;
+  color: #23408e;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 0px;
 }
 
 .response-team-card {
@@ -22,7 +24,7 @@
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #ddd;
-  font-size: 1rem;
+  font-size: 15px;
 }
 
 .response-team-search-btn {
@@ -57,12 +59,13 @@
   text-align: left;
   border-bottom: 1px solid #eee;
   vertical-align: top;
+  font-size: 14px;
 }
 
 .availability-badge {
   padding: 4px 12px;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -78,6 +81,6 @@
   display: flex;
   justify-content: space-between;
   color: #888;
-  font-size: 0.95rem;
+  font-size: 14px;
   margin-top: 8px;
 }

@@ -1,6 +1,7 @@
 .settings-title {
   color: #1746a2;
-  margin-bottom: 18px;
+  margin-bottom: 0px;
+  font-size: 20px;
 }
 
 .settings-grid {
@@ -12,18 +13,19 @@
 .settings-card {
   background: #fff;
   border-radius: 12px;
-  padding: 18px 24px;
+  padding: 18px 18px 18px 18px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-bottom: 18px;
+  margin-bottom: 0px;
 }
 
-.settings-card h3 {
+.settings-card h4 {
   margin-top: 0;
+  margin-bottom: 8px;
 }
 
 .settings-description {
   color: #888;
-  font-size: 0.95rem;
+  font-size: 13px;
   margin-bottom: 8px;
 }
 
@@ -40,6 +42,16 @@
   border-bottom: 1px solid #eee;
 }
 
+.settings-card label {
+  font-size: 13px;
+}
+
+.settings-card select,
+.settings-card input[type="time"] {
+  font-size: 13px;
+  padding: 4px 6px;
+}
+
 .export-btn, .edit-btn, .save-btn, .import-btn {
   background: #2563eb;
   color: #fff;
@@ -49,4 +61,22 @@
   font-weight: 500;
   cursor: pointer;
   margin-top: 8px;
+}
+
+.activity-logs {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.activity-logs th,
+.activity-logs td {
+  text-align: center;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.lookup-table th,
+.lookup-tables td {
+  padding: 8px;
+  font-size: 13px;
 }

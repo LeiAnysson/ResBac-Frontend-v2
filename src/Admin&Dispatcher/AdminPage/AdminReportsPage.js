@@ -1,36 +1,38 @@
-// capstone/src/Admin&Dispatcher/AdminPage/AdminReportsPage.js
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminReportsPage.css";
+import React, { useState, useEffect } from 'react';
 
-const reports = [
-  {
-    id: "RPT001",
-    type: "Fire",
-    location: "Duhat, Bocaue",
-    timestamp: "02-31-2025 3:00PM",
-    status: "Requesting for backup",
-  },
-  {
-    id: "RPT002",
-    type: "Medical",
-    location: "Balagtas, Bulacan",
-    timestamp: "02-31-2025 3:00PM",
-    status: "Resolved",
-  },
-  {
-    id: "RPT003",
-    type: "Medical",
-    location: "Valenzuela City",
-    timestamp: "02-31-2025 3:00PM",
-    status: "Resolved",
-  },
-];
-
-export default function AdminReportsPage() {
+const AdminReportsPage = () => {
   const navigate = useNavigate();
+  const [reports, setReports] = useState([]);
+  const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
+
+  const fetchReports = async (page = 1) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/admin/incidents?page=${page}`);
+      const data = await response.json();
+
+      setReports(data.data);
+      setPagination({
+        current_page: data.current_page,
+        last_page: data.last_page
+      });
+    } catch (error) {
+      console.error("Failed to fetch reports:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.last_page) {
+      fetchReports(newPage);
+    }
+  };
 
   return (
     <div className="admin-dashboard-container">
@@ -61,18 +63,23 @@ export default function AdminReportsPage() {
                 {reports.map((report) => (
                   <tr key={report.id}>
                     <td>{report.id}</td>
+
                     <td>
-                      <span className={`type-badge type-${report.type.toLowerCase()}`}>
-                        {report.type}
+                      <span className={`type-badge type-${report.incident_type.name.toLowerCase()}`}>
+                        {report.incident_type.name}
                       </span>
                     </td>
-                    <td>{report.location}</td>
-                    <td>{report.timestamp}</td>
+
+                    <td>{report.landmark || '—'}</td>
+
+                    <td>{new Date(report.reported_at).toLocaleString()}</td>
+
                     <td>
                       <span className={`status-badge status-${report.status.replace(/\s+/g, '-').toLowerCase()}`}>
                         {report.status}
                       </span>
                     </td>
+
                     <td>
                       <button
                         className="view-btn"
@@ -86,14 +93,21 @@ export default function AdminReportsPage() {
               </tbody>
             </table>
             <div className="emergency-reports-pagination">
-              <span>1 of 1 items</span>
-              <span>
-                &lt; <b>Page 1</b> of 1 &gt;
-              </span>
+                <button onClick={() => handlePageChange(pagination.current_page - 1)} disabled={pagination.current_page === 1}>
+                  &lt; Prev
+                </button>
+                <span>
+                  Page <b>{pagination.current_page}</b> of {pagination.last_page}
+                </span>
+                <button onClick={() => handlePageChange(pagination.current_page + 1)} disabled={pagination.current_page === pagination.last_page}>
+                  Next &gt;
+                </button>
             </div>
           </div>
         </main>
       </div>
     </div>
   );
-}
+};
+
+export default AdminReportsPage;
