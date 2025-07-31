@@ -9,42 +9,42 @@ const LoginPage = () => {
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
+      e.preventDefault();
+      setError('');
 
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        if (response.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
 
-        if (data.user.role_id === 1) {
-          navigate('/admin');
-        } else if (data.user.role_id === 2) {
-          navigate('/dispatcher');
+          if (data.user.role_id === 1) {
+            navigate('/admin');
+          } else if (data.user.role_id === 2) {
+            navigate('/dispatcher');
+          } else {
+            navigate('/resident'); 
+          }
         } else {
-          navigate('/resident'); 
+          setError(data.message || 'Invalid login');
         }
-      } else {
-        setError(data.message || 'Invalid login');
+      } catch (error) {
+        console.error('Login error:', error);
+        setError('Something went wrong');
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Something went wrong');
-    }
-  };
+    };
 
 
   return (

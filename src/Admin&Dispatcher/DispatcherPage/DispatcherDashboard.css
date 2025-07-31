@@ -1,3 +1,7 @@
+html, body {
+  overflow-x: hidden;
+}
+
 .dispatcher-dashboard-container {
   display: flex;
   flex-direction: column;
@@ -8,29 +12,40 @@
 .dispatcher-main-content {
   display: flex;
   flex: 1;
+  min-height: 0;
+  margin-top: 64px;
 }
 
 .dispatcher-content-area {
-  flex: 1;
-  padding: 2rem 1.5rem;
+  width: calc(100% - 230px);
+  padding: 0.5rem 2rem 2rem;
+  margin-left: 230px;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
+  min-width: 0;
 }
 
 .dispatcher-header {
-  margin-bottom: 1rem;
+  margin-top: 0px;
+  padding-top: 0;
 }
 
 .dispatcher-title {
   color: #23408e;
-  font-size: 2rem;
-  margin-bottom: 0.25rem;
+  font-size: 20px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.dashboard-welcome {
+  color: #888;
+  font-size: 15px;
 }
 
 .dispatcher-grid {
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
@@ -38,43 +53,45 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   min-width: 340px;
 }
 
 .dispatcher-card {
   background: #fff;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 0 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
 }
 
 .incoming-reports, .active-reports, .incident-heatmap, .available-responders {
-  margin-bottom: 2rem;
+  margin-bottom: 0;
+  margin-top: 0;
+  font-size: 15px;
 }
 
 .report-item, .responder-item {
   background: #f8f9fb;
   border-radius: 8px;
   padding: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.report-badge.new { background: #e74c3c; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 0.9em; margin-right: 0.7em; }
-.report-badge.assigned { background: #f39c12; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 0.9em; margin-right: 0.7em; }
-.report-badge.enroute { background: #3498db; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 0.9em; margin-right: 0.7em; }
-.report-badge.onsite { background: #27ae60; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 0.9em; margin-right: 0.7em; }
+.report-badge.new { background: #e74c3c; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 13px; margin-right: 0.7em; }
+.report-badge.assigned { background: #f39c12; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 13px; margin-right: 0.7em; }
+.report-badge.enroute { background: #3498db; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 13px; margin-right: 0.7em; }
+.report-badge.onsite { background: #27ae60; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 13px; margin-right: 0.7em; }
 
-.report-title { font-weight: 600; color: #23408e; margin-right: 0.7em; }
-.report-time { color: #aaa; font-size: 0.9em; }
-.report-desc { color: #444; font-size: 0.97em; margin-top: 0.3em; }
+.report-title { font-weight: 600; color: #23408e; font-size: 15px; margin-right: 0.7em; }
+.report-time { color: #aaa; font-size: 13px; }
+.report-desc { color: #444; font-size: 13px; margin-top: 0.3em; }
 .responder-name { color: #23408e; font-weight: 500; }
-.responder-details { color: #444; font-size: 0.97em; margin-bottom: 0.3em; }
+.responder-details { color: #444; font-size: 13px; margin-bottom: 0.3em; }
 .status.onroute { color: #27ae60; font-weight: 600; }
 
 .assign-btn {
@@ -100,6 +117,6 @@
   align-items: center;
   justify-content: center;
   color: #888;
-  font-size: 1.1rem;
+  font-size: 15px;
 }
 

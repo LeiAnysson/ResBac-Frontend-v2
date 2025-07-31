@@ -29,6 +29,8 @@ const announcements = [
 ];
 
 export default function AdminAnnouncement() {
+  const user = JSON.parse(localStorage.getItem('user'));
+  
   return (
     <div className="admin-dashboard-container">
       <TopBar />
@@ -36,7 +38,9 @@ export default function AdminAnnouncement() {
         <NavBar />
         <main className="dashboard-content-area">
           <h2 className="announcement-title">Announcements & Updates</h2>
-          <button className="create-announcement-btn">+ Create Announcement</button>
+          {user?.role?.name === 'Admin' && (
+            <button className="create-announcement-btn">Create Announcement</button>
+          )}
           <div className="announcement-list">
             {announcements.map((a, idx) => (
               <div className="announcement-card" key={idx}>

@@ -78,48 +78,76 @@ const NavBar = () => {
 
         <hr className="navbar-divider"/>
         <div className="navbar-menu">
-          <Link
-            to="/admin"
-            className={`navbar-menu-item${location.pathname === "/admin" ? " active" : ""}`}
-          >
-            <MdHome className="navbar-menu-icon" />
-            <span>Dashboard</span>
-          </Link>
-          <Link
-            to="/admin/user-management"
-            className={`navbar-menu-item${location.pathname === "/admin/user-management" ? " active" : ""}`}
-          >
-            <MdPeople className="navbar-menu-icon" />
-            <span>User Management</span>
-          </Link>
-          <Link
-            to="/admin/emergency-reports"
-            className={`navbar-menu-item${location.pathname === "/admin/emergency-reports" ? " active" : ""}`}
-          >
-            <MdAssessment className="navbar-menu-icon" />
-            <span>Emergency Reports</span>
-          </Link>
-          <Link
-            to="/admin/response-team"
-            className={`navbar-menu-item${location.pathname === "/admin/response-team" ? " active" : ""}`}
-          >
-            <MdNotificationsActive className="navbar-menu-icon" />
-            <span>Response Team</span>
-          </Link>
-          <Link
-            to="/admin/announcement"
-            className={`navbar-menu-item${location.pathname === "/admin/announcement" ? " active" : ""}`}
-          >
-            <MdCampaign className="navbar-menu-icon" />
-            <span>Announcement</span>
-          </Link>
+          {/* Dashboard */}
+          {user?.role?.name === 'Admin' ? (
+            <Link
+              to="/admin"
+              className={`navbar-menu-item${location.pathname === "/admin" ? " active" : ""}`}
+            >
+              <MdHome className="navbar-menu-icon" />
+              <span>Dashboard</span>
+            </Link>
+          ) : user?.role?.name === 'MDRRMO' ? (
+            <Link
+              to="/dispatcher"
+              className={`navbar-menu-item${location.pathname === "/dispatcher" ? " active" : ""}`}
+            >
+              <MdHome className="navbar-menu-icon" />
+              <span>Dashboard</span>
+            </Link>
+          ) : null}
+
+          {/* Admin-only */}
+          {user?.role?.name === 'Admin' && (
+            <Link
+              to="/admin/user-management"
+              className={`navbar-menu-item${location.pathname === "/admin/user-management" ? " active" : ""}`}
+            >
+              <MdPeople className="navbar-menu-icon" />
+              <span>User Management</span>
+            </Link>
+          )}
+
+          {/* Admin + MDRRMO shared */}
+          {(user?.role?.name === 'Admin' || user?.role?.name === 'MDRRMO') && (
+            <>
+              <Link
+                to="/admin/emergency-reports"
+                className={`navbar-menu-item${location.pathname === "/admin/emergency-reports" ? " active" : ""}`}
+              >
+                <MdAssessment className="navbar-menu-icon" />
+                <span>Emergency Reports</span>
+              </Link>
+
+              <Link
+                to="/admin/response-team"
+                className={`navbar-menu-item${location.pathname === "/admin/response-team" ? " active" : ""}`}
+              >
+                <MdNotificationsActive className="navbar-menu-icon" />
+                <span>Response Team</span>
+              </Link>
+
+              <Link
+                to="/admin/announcement"
+                className={`navbar-menu-item${location.pathname === "/admin/announcement" ? " active" : ""}`}
+              >
+                <MdCampaign className="navbar-menu-icon" />
+                <span>Announcement</span>
+              </Link>
+            </>
+          )}
+
+        {/* Admin-only: */}
+        {user?.role?.name === 'Admin' && (
           <Link
             to="/admin/settings"
             className={`navbar-menu-item${location.pathname === "/admin/settings" ? " active" : ""}`}
+            style={{ marginTop: 'auto' }}
           >
             <MdSettings className="navbar-menu-icon" />
             <span>Settings</span>
           </Link>
+        )}
         
         <div className="navbar-logout" onClick={handleLogout} style={{ cursor: 'pointer' }}>
           <MdLogout className="navbar-menu-icon" />

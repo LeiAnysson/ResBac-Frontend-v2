@@ -1,7 +1,7 @@
 import React from 'react';
 import TopBar from '../../Components/ComponentsTopBar/TopBar';
 import NavBar from '../../Components/ComponentsNavBar/NavBar';
-import './DispatcherDashboard.css'; // Create this CSS file for custom styles
+import './DispatcherDashboard.css'; 
 
 const DispatcherDashboard = () => {
   return (
@@ -12,13 +12,13 @@ const DispatcherDashboard = () => {
         <main className="dispatcher-content-area">
           <section className="dispatcher-header">
             <h2 className="dispatcher-title">Dispatch Control</h2>
-            <span className="dispatcher-welcome">Welcome Back!</span>
+            <span className="dispatcher-welcome">Welcome Back, Dispatcher!</span>
           </section>
           <div className="dispatcher-grid">
             <div className="dispatcher-column">
               <div className="dispatcher-card incoming-reports">
                 <h3>Incoming Reports</h3>
-                {/* Example incoming reports */}
+
                 <div className="report-item new">
                   <div>
                     <span className="report-badge new">New</span>
