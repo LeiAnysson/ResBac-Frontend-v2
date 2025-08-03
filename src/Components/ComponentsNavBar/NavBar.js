@@ -99,18 +99,14 @@ const NavBar = () => {
 
           {/* Admin-only */}
           {user?.role?.name === 'Admin' && (
-            <Link
-              to="/admin/user-management"
-              className={`navbar-menu-item${location.pathname === "/admin/user-management" ? " active" : ""}`}
-            >
-              <MdPeople className="navbar-menu-icon" />
-              <span>User Management</span>
-            </Link>
-          )}
-
-          {/* Admin + MDRRMO shared */}
-          {(user?.role?.name === 'Admin' || user?.role?.name === 'MDRRMO') && (
             <>
+              <Link
+                to="/admin/user-management"
+                className={`navbar-menu-item${location.pathname === "/admin/user-management" ? " active" : ""}`}
+              >
+                <MdPeople className="navbar-menu-icon" />
+                <span>User Management</span>
+              </Link>
               <Link
                 to="/admin/emergency-reports"
                 className={`navbar-menu-item${location.pathname === "/admin/emergency-reports" ? " active" : ""}`}
@@ -118,7 +114,6 @@ const NavBar = () => {
                 <MdAssessment className="navbar-menu-icon" />
                 <span>Emergency Reports</span>
               </Link>
-
               <Link
                 to="/admin/response-team"
                 className={`navbar-menu-item${location.pathname === "/admin/response-team" ? " active" : ""}`}
@@ -126,35 +121,29 @@ const NavBar = () => {
                 <MdNotificationsActive className="navbar-menu-icon" />
                 <span>Response Team</span>
               </Link>
-
               <Link
                 to="/admin/announcement"
                 className={`navbar-menu-item${location.pathname === "/admin/announcement" ? " active" : ""}`}
               >
                 <MdCampaign className="navbar-menu-icon" />
-                <span>Announcement</span>
+                <span>Announcements</span>
+              </Link>
+              <Link
+                to="/admin/settings"
+                className={`navbar-menu-item${location.pathname === "/admin/settings" ? " active" : ""}`}
+              >
+                <MdSettings className="navbar-menu-icon" />
+                <span>Settings</span>
               </Link>
             </>
           )}
+        </div>
 
-        {/* Admin-only: */}
-        {user?.role?.name === 'Admin' && (
-          <Link
-            to="/admin/settings"
-            className={`navbar-menu-item${location.pathname === "/admin/settings" ? " active" : ""}`}
-            style={{ marginTop: 'auto' }}
-          >
-            <MdSettings className="navbar-menu-icon" />
-            <span>Settings</span>
-          </Link>
-        )}
-        
-        <div className="navbar-logout" onClick={handleLogout} style={{ cursor: 'pointer' }}>
-          <MdLogout className="navbar-menu-icon" />
+        <div className="navbar-logout" onClick={handleLogout}>
+          <MdLogout />
           <span>Logout</span>
         </div>
       </div>
-      </div>  
     </nav>
   );
 };
