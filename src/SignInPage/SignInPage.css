@@ -69,6 +69,7 @@
   flex-direction: column;
   align-items: center;
   backdrop-filter: blur(12px);
+  overflow-y: auto;
 }
 
 .login-title {

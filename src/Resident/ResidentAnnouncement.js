@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ResidentAnnouncement.css';
-import homeIcon from '../assets/home.png';
-import historyIcon from '../assets/history.png';
-import announcementIcon from '../assets/announcement.png';
-import reportIcon from '../assets/report.png';
-import notificationIcon from '../assets/notification.png';
+//import homeIcon from '../assets/home.png';
+//import historyIcon from '../assets/history.png';
+//import announcementIcon from '../assets/announcement.png';
+//import reportIcon from '../assets/report.png';
+//import notificationIcon from '../assets/notification.png';
 import Header from '../Components/ComponentsHeaderWebApp/header.jsx'; 
 import BottomNav from '../Components/ComponentsBottomNavWebApp/BottomNav.jsx';
 

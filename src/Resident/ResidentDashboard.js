@@ -2,16 +2,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ResidentDashboard.css';
-import homeIcon from '../assets/home.png';
-import historyIcon from '../assets/history.png';
-import announcementIcon from '../assets/announcement.png';
-import reportIcon from '../assets/report.png';
-import notificationIcon from '../assets/notification.png';
+//import homeIcon from '../assets/home.png';
+//import historyIcon from '../assets/history.png';
+//import announcementIcon from '../assets/announcement.png';
+//import reportIcon from '../assets/report.png';
+//import notificationIcon from '../assets/notification.png';
 import Header from '../Components/ComponentsHeaderWebApp/header.jsx';
 import BottomNav from '../Components/ComponentsBottomNavWebApp/BottomNav.jsx';
 
 const ResidentDashboard = () => {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const [data] = useState({
     user: {
       name: '',

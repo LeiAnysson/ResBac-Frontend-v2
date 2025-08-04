@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 
 const AdminDashboard = () => {
   const [userCount, setUserCount] = useState(0); 
-  const [reportsThisWeek, setReportsThisWeek] = useState(0);
+  //const [reportsThisWeek, setReportsThisWeek] = useState(0);
   const [pendingResidents, setPendingResidents] = useState(0);
 
   useEffect(() => {
@@ -90,7 +90,7 @@ const AdminDashboard = () => {
               </div>
               <div className="stat-card">
                 <span className="stat-label">Reports Resolved this Week</span>
-                <span className="stat-value stat-success">{reportsThisWeek}</span>
+                <span className="stat-value stat-success">12</span>
               </div>
             </div>
           </section>

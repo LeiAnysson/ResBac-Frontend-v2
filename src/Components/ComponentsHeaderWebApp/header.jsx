@@ -1,8 +1,8 @@
-import React, {useState}  from 'react'
+//import React, {useState}  from 'react'
 import { useNavigate } from 'react-router-dom';
-import shared from '../Shared/SharedComponents.css'
+//import shared from '../Shared/SharedComponents.css'
 
-function header(){
+function Header(){
     const navigate = useNavigate();
 
     return(
@@ -19,4 +19,4 @@ function header(){
     )
 }
 
-export default header;
+export default Header;
