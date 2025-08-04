@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './Components/LandingPage';
 import LoginPage from './LoginPage/LoginPage';
 import SignInPage from './SignInPage/SignInPage';
+import RegistrationPending from  './RegistrationLoading/RegistrationPending';
 import AdminDashboard from './Admin&Dispatcher/AdminPage/AdminDashboard';
 import DispatcherDashboard from './Admin&Dispatcher/DispatcherPage/DispatcherDashboard';
 import AdminUserManagement from './Admin&Dispatcher/AdminPage/AdminUserManagement';
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signin" element={<SignInPage />} />
+        <Route path="/register" element={<RegistrationPending />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/user-management" element={<AdminUserManagement />} />
         <Route path="/admin/emergency-reports" element={<AdminReportsPage />} />

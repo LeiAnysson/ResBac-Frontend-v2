@@ -1,9 +1,67 @@
-import React from 'react';
 import NavBar from '../../Components/ComponentsNavBar/NavBar';
 import TopBar from '../../Components/ComponentsTopBar/TopBar';
 import './AdminDashboard.css';
+import React, { useState, useEffect } from 'react';
 
 const AdminDashboard = () => {
+  const [userCount, setUserCount] = useState(0); 
+  const [reportsThisWeek, setReportsThisWeek] = useState(0);
+  const [pendingResidents, setPendingResidents] = useState(0);
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/api/admin/users/total-users')
+      .then(res => res.json())
+      .then(data => {
+        setUserCount(data.total_users); 
+      })
+      .catch(error => {
+        console.error('Error fetching user count:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+
+    fetch("http://127.0.0.1:8000/api/admin/residents/pending-residents", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch pending residents");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setPendingResidents(data.pending_residents);
+      })
+      .catch((error) => {
+        console.error("Error fetching pending residents:", error);
+      });
+  }, []);
+
+
+
+  // useEffect(() => {
+  //   fetch('http://127.0.0.1:8000/api/admin/incidents/weekly-reports')
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       setReportsThisWeek(data.weekly_reports);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error fetching weekly resolved reports:', error);
+  //     });
+  // }, []);
+
 
   
   return (
@@ -19,20 +77,20 @@ const AdminDashboard = () => {
           <section className="dashboard-header">
             <div className="dashboard-stats">
               <div className="stat-card">
-                <span className="stat-label">Total Users</span>
-                <span className="stat-value">829</span>
+                <span className="stat-label">Total Registered Users</span>
+                <span className="stat-value">{userCount}</span>
               </div>
               <div className="stat-card">
-                <span className="stat-label">Active Reports</span>
+                <span className="stat-label">Ongoing Emergency Reports</span>
                 <span className="stat-value stat-danger">21</span>
               </div>
               <div className="stat-card">
-                <span className="stat-label">Pending Approvals</span>
-                <span className="stat-value stat-warning">12</span>
+                <span className="stat-label">Residents Awaiting Approval</span>
+                <span className="stat-value stat-warning">{pendingResidents}</span>
               </div>
               <div className="stat-card">
-                <span className="stat-label">Reports Resolved (24h)</span>
-                <span className="stat-value stat-success">829</span>
+                <span className="stat-label">Reports Resolved this Week</span>
+                <span className="stat-value stat-success">{reportsThisWeek}</span>
               </div>
             </div>
           </section>

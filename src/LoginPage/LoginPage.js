@@ -82,7 +82,7 @@ const LoginPage = () => {
           </form>
           <div className="login-signup-row">
             <span>Don't have an account yet?</span>
-            <a href="/signin" className="login-signin-link">Register</a>
+            <a href="/signin" className="login-register-link">Register</a>
           </div>
         </div>
       </div>

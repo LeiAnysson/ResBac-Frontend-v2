@@ -5,7 +5,6 @@ const RegistrationPending = ({ onBack }) => (
   <div className="pending-root">
     <div className="pending-container">
       <div className="pending-icon">
-        {/* You can use an SVG or an animated icon here */}
         <svg width="64" height="64" viewBox="0 0 64 64">
           <circle cx="32" cy="32" r="28" stroke="#4ade80" strokeWidth="4" fill="none" strokeDasharray="44" strokeDashoffset="10">
             <animateTransform attributeName="transform" type="rotate" from="0 32 32" to="360 32 32" dur="1.2s" repeatCount="indefinite"/>
