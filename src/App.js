@@ -12,7 +12,13 @@ import AdminReportsPageView from './Admin&Dispatcher/AdminPage/AdminReportsPageV
 import AdminResponseTeam from './Admin&Dispatcher/AdminPage/AdminResponseTeam';
 import AdminAnnouncement from './Admin&Dispatcher/AdminPage/AdminAnnouncement';
 import AdminSettings from './Admin&Dispatcher/AdminPage/AdminSettings';
-
+import ResidentDashboard from './Resident/ResidentDashboard';
+import ResidentAnnouncement from './Resident/ResidentAnnouncement';
+import ResidentReport from './Resident/ResidentReport';
+import ResidentNotification from './Resident/ResidentNotification';
+import ResidentHistory from './Resident/ResidentHistory';
+import ResidentProfile from './Resident/ResidentProfile';
+import ResidentEditProfile from './Resident/ResidentEditProfile';
 
 function App() {
   return (
@@ -30,6 +36,13 @@ function App() {
         <Route path="/admin/announcement" element={<AdminAnnouncement />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
         <Route path="/dispatcher" element={<DispatcherDashboard />} />
+        <Route path="/resident" element={<ResidentDashboard />} />
+        <Route path="/resident/announcement" element={<ResidentAnnouncement />} />
+        <Route path="/resident/report" element={<ResidentReport />} />
+        <Route path="/resident/notification" element={<ResidentNotification />} />
+        <Route path="/resident/history" element={<ResidentHistory />} />
+        <Route path="/resident/profile" element={<ResidentProfile />} />
+        <Route path="/resident/edit-profile" element={<ResidentEditProfile />} />
       </Routes>
     </Router>
   );

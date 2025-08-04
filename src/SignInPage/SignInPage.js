@@ -1,156 +1,126 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './SignInPage.css';
 
 const SignInPage = () => {
-  const [formData, setFormData] = useState({
-    idType: '',
-    idImage: null,
-    lastName: '',
-    firstName: '',
-    contact: '',
-    dob: '',
-    houseNo: '',
-    street: '',
-    barangay: '',
-    city: '',
-    province: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
 
-  const handleChange = e => {
-    const { name, value, files } = e.target;
-    if (name === 'idImage') {
-      setFormData(prev => ({ ...prev, [name]: files[0] }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    // Basic validation
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!email.includes('@')) {
+      setError('Please enter a valid email address');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Add authentication logic here if needed
+      // For now, just simulate a delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      navigate('/admin'); // Redirect to admin dashboard after sign in
+    } catch (error) {
+      console.error('Sign in error:', error);
+      setError('Something went wrong. Please try again.');
+      setIsLoading(false);
     }
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-
-    const fullAddress = `${formData.houseNo}, ${formData.street}, ${formData.barangay}`;
-
-    const dataToSubmit = {
-      ...formData,
-      address: fullAddress,
-    };
-
-    console.log(dataToSubmit);
+  const handleInputChange = (field, value) => {
+    setError(''); // Clear error when user starts typing
+    if (field === 'email') {
+      setEmail(value);
+    } else if (field === 'password') {
+      setPassword(value);
+    }
   };
 
   return (
-    <div className="login-root">
-      {/* Left Section */}
-      <div className="login-left">
-        <img src="/bocaue-logo.png" alt="Bocaue Rescue Logo" className="login-logo" />
-        <div className="login-org-name">BOCAUE RESCUE EMS</div>
-        <div className="login-org-desc">
-          MUNICIPAL EMERGENCY ASSISTANCE AND<br />INCIDENT RESPONSE
-        </div>
-      </div>
-
-      {/* Right Section */}
-      <div className="login-right" style={{ background: "url('/municipal-hall.jpg') center center / cover no-repeat" }}>
-        <div className="login-form-container">
-          <h2 className="login-title">Sign Up</h2>
-          
-          <form className="login-form" onSubmit={handleSubmit}>
-          {/* ID Type and Upload */}
-          <div className="form-row">
-            <div className="form-field">
-              <label htmlFor="idType" className="form-label">Select ID Type</label>
-              <select id="idType" name="idType" value={formData.idType} onChange={handleChange} className="login-input">
-                <option value="">--</option>
-                <option value="PhilHealth">PhilHealth</option>
-                <option value="SSS">SSS</option>
-                <option value="Driver's License">Driver's License</option>
-                <option value="Passport">Passport</option>
-              </select>
+    <div 
+      className="signin-root" 
+      style={{ 
+        background: isMobile 
+          ? "linear-gradient(135deg, rgba(4, 47, 127, 0.9) 0%, rgba(35, 64, 142, 0.8) 100%)"
+          : "url('/municipal-hall.jpg') center center / cover no-repeat"
+      }}
+    >
+      <div className="signin-bg" />
+      <div className="signin-form-container">
+        <h2 className="signin-title">Sign In</h2>
+        <form className="signin-form" onSubmit={handleSignIn}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={e => handleInputChange('email', e.target.value)}
+            className="signin-input"
+            autoComplete="email"
+            autoFocus={!isMobile}
+            disabled={isLoading}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => handleInputChange('password', e.target.value)}
+            className="signin-input"
+            autoComplete="current-password"
+            disabled={isLoading}
+            required
+          />
+          {error && (
+            <div style={{ 
+              color: '#e74c3c', 
+              marginBottom: '1em', 
+              fontSize: '0.9rem',
+              textAlign: 'center',
+              padding: '0.5rem',
+              backgroundColor: 'rgba(231, 76, 60, 0.1)',
+              borderRadius: '8px',
+              border: '1px solid rgba(231, 76, 60, 0.2)'
+            }}>
+              {error}
             </div>
-            <div className="form-field">
-              <label htmlFor="idImage" className="form-label">Upload ID</label>
-              <input type="file" id="idImage" name="idImage" onChange={handleChange} className="login-input" accept="image/*" />
-            </div>
-          </div>
-
-          {/* Last and First Name */}
-          <div className="form-row">
-            <div className="form-field">
-              <label htmlFor="lastName" className="form-label">Last Name</label>
-              <input type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} className="login-input" />
-            </div>
-            <div className="form-field">
-              <label htmlFor="firstName" className="form-label">First Name</label>
-              <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} className="login-input" />
-            </div>
-          </div>
-
-          {/* Contact and DOB */}
-          <div className="form-row">
-            <div className="form-field">
-              <label htmlFor="contact" className="form-label">Contact</label>
-              <input type="text" id="contact" name="contact" value={formData.contact} onChange={handleChange} className="login-input" />
-            </div>
-            <div className="form-field">
-              <label htmlFor="dob" className="form-label">Date of Birth</label>
-              <input type="date" id="dob" name="dob" value={formData.dob} onChange={handleChange} className="login-input" />
-            </div>
-          </div>
-
-          {/* Address Label */}
-          <p className="form-label">Address</p>
-
-          {/* House No, Street, Barangay */}
-          <div className="form-row three-cols">
-            <div className="form-field">
-              <label htmlFor="houseNo" className="form-label">House No.</label>
-              <input type="text" id="houseNo" name="houseNo" value={formData.houseNo} onChange={handleChange} className="login-input" />
-            </div>
-            <div className="form-field">
-              <label htmlFor="street" className="form-label">Street</label>
-              <input type="text" id="street" name="street" value={formData.street} onChange={handleChange} className="login-input" />
-            </div>
-            <div className="form-field">
-              <label htmlFor="barangay" className="form-label">Barangay</label>
-              <input type="text" id="barangay" name="barangay" value={formData.barangay} onChange={handleChange} className="login-input" />
-            </div>
-          </div>
-
-          {/* City and Province */}
-          <div className="form-row">
-            <div className="form-field">
-              <label htmlFor="city" className="form-label">City</label>
-              <input type="text" id="city" name="city" value={formData.city} onChange={handleChange} className="login-input" />
-            </div>
-            <div className="form-field">
-              <label htmlFor="province" className="form-label">Province</label>
-              <input type="text" id="province" name="province" value={formData.province} onChange={handleChange} className="login-input" />
-            </div>
-          </div>
-
-          {/* Email */}
-          <div className="form-field">
-            <label htmlFor="email" className="form-label">Email</label>
-            <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className="login-input full-width" />
-          </div>
-
-          {/* Password */}
-          <div className="form-field">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} className="login-input" />
-          </div>
-
-          {/* Confirm Password */}
-          <div className="form-field">
-            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="login-input" />
-          </div>
-
-          <button type="submit" className="register-btn">Register</button>
+          )}
+          <button 
+            className="signin-btn" 
+            type="submit"
+            disabled={isLoading}
+            style={{
+              opacity: isLoading ? 0.7 : 1,
+              cursor: isLoading ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isLoading ? 'Signing in...' : 'Sign In'}
+          </button>
         </form>
 
 
@@ -160,7 +130,6 @@ const SignInPage = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

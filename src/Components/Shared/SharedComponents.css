@@ -1,0 +1,118 @@
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1041BC;
+  padding-top: 40px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.app-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #222;
+}
+
+.account-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border: 2px solid #eee;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #1041BC;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  height: 60px;
+  border-top: 1px solid #eee;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-left: 16px;
+  padding-right: 16px;
+  z-index: 10;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.nav-icon:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.nav-icon:hover .nav-img {
+  opacity: 1;
+}
+
+.nav-icon-text {
+  font-size: 1.5rem;
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
+}
+
+.nav-icon:hover .nav-icon-text {
+  filter: grayscale(0%);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    padding-top: 20px;
+  }
+
+  
+}
