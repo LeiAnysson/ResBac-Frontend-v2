@@ -36,7 +36,6 @@ const ResidentEditProfile = () => {
         </button>
       </div>
       
-      <div className="scroll-container">
         {/* Title row with back button and Edit Profile text */}
         <div className="title-row">
           <button className="back-button" onClick={() => navigate(-1)}>
@@ -128,7 +127,7 @@ const ResidentEditProfile = () => {
             <span className="save-btn-text">Save</span>
           </button>
         </div>
-      </div>
+      
       
       {/* Bottom Navigation */}
       <div className="bottom-nav">

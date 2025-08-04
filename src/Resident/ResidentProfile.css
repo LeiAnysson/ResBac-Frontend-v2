@@ -83,7 +83,6 @@
 
 /* Scroll Container */
 .scroll-container {
-  padding-bottom: 120px;
   overflow-y: auto;
 }
 
@@ -92,7 +91,6 @@
   background-color: #fff;
   margin-left: 16px;
   margin-right: 16px;
-  margin-top: 8px;
   border-radius: 10px;
   padding: 20px;
   display: flex;

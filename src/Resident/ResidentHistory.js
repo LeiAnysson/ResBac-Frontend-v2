@@ -46,7 +46,6 @@ const ResidentHistory = () => {
       </div>
       
       {/* Reports Container */}
-      <div className="scroll-container">
         <div className="container">
           {reports.length === 0 ? (
             <p className="empty-text">No reports available.</p>
@@ -67,7 +66,6 @@ const ResidentHistory = () => {
             </div>
           )}
         </div>
-      </div>
       
       {/* Bottom Navigation */}
       <div className="bottom-nav">

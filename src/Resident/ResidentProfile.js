@@ -59,7 +59,6 @@ const ResidentProfile = () => {
         <h1 className="profile-title">Profile</h1>
       </div>
       
-      <div className="scroll-container">
         {/* First Container: Avatar, Name, Edit Profile */}
         <div className="top-container">
           <div className="profile-avatar">
@@ -153,7 +152,6 @@ const ResidentProfile = () => {
             </button>
           </div>
         )}
-      </div>
       
       {/* Bottom Navigation */}
       <div className="bottom-nav">
