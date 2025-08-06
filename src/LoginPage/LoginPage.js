@@ -30,6 +30,11 @@ const LoginPage = () => {
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
 
+          if (data.user.role_id === 4 && data.user.residency_status === 'pending') {
+            alert('Your residency is still pending approval.');
+            return; 
+          }
+
           if (data.user.role_id === 1) {
             navigate('/admin');
           } else if (data.user.role_id === 2) {

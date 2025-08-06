@@ -18,9 +18,9 @@ const LandingPage = () => {
           <span className="brand-name">ResBac</span>
         </div>
         <nav className="nav-links">
-          <button onClick>HOME</button>
-          <button onClick>ABOUT</button>
-          <button onClick>CONTACT</button>
+          <a href="#home">HOME</a>
+          <a href="#about">ABOUT</a>
+          <a href="#contact">CONTACT</a>
         </nav>
         <button onClick={handleSignIn} className="sign-in-btn">SIGN IN</button>
       </header>
