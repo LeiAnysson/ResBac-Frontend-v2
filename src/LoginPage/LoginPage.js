@@ -34,8 +34,10 @@ const LoginPage = () => {
             navigate('/admin');
           } else if (data.user.role_id === 2) {
             navigate('/dispatcher');
-          } else {
+          } else if (data.user.role_id === 4) {
             navigate('/resident'); 
+          } else {
+            navigate('/responder');
           }
         } else {
           setError(data.message || 'Invalid login');
@@ -82,7 +84,7 @@ const LoginPage = () => {
           </form>
           <div className="login-signup-row">
             <span>Don't have an account yet?</span>
-            <a href="/signin" className="login-signin-link">Register</a>
+            <a href="/signup" className="login-signin-link">Register</a>
           </div>
         </div>
       </div>
