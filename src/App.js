@@ -19,6 +19,11 @@ import ResidentNotification from './Resident/ResidentNotification';
 import ResidentHistory from './Resident/ResidentHistory';
 import ResidentProfile from './Resident/ResidentProfile';
 import ResidentEditProfile from './Resident/ResidentEditProfile';
+import ResidentWitReport from './Resident/ResidentWitReport';
+import ResidentCall from './Resident/ResidentCall';
+import ResidentWaiting from './Resident/ResidentWaiting';
+import ResidentArrived from './Resident/ResidentArrived';
+import ResidentComplete from './Resident/ResidentComplete';
 
 function App() {
   return (
@@ -39,6 +44,11 @@ function App() {
         <Route path="/resident" element={<ResidentDashboard />} />
         <Route path="/resident/announcement" element={<ResidentAnnouncement />} />
         <Route path="/resident/report" element={<ResidentReport />} />
+        <Route path="/resident/witness-report" element={<ResidentWitReport />} />
+        <Route path="/resident/call" element={<ResidentCall />} />
+        <Route path="/resident/waiting" element={<ResidentWaiting />} />
+        <Route path="/resident/arrived" element={<ResidentArrived />} />
+        <Route path="/resident/complete" element={<ResidentComplete />} />
         <Route path="/resident/notification" element={<ResidentNotification />} />
         <Route path="/resident/history" element={<ResidentHistory />} />
         <Route path="/resident/profile" element={<ResidentProfile />} />

@@ -11,7 +11,7 @@ import Header from '../Components/ComponentsHeaderWebApp/header.jsx';
 import BottomNav from '../Components/ComponentsBottomNavWebApp/BottomNav.jsx';
 
 const ResidentDashboard = () => {
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
   const [data] = useState({
     user: {
       name: '',
@@ -23,18 +23,28 @@ const ResidentDashboard = () => {
     recentReports: [],
   });
 
+  // Handle SOS button click
+  const handleSOSClick = () => {
+    // Navigate to call screen with emergency incident type
+    navigate('/resident/call', {
+      state: {
+        incidentType: 'Emergency',
+        fromSOS: true
+      }
+    });
+  };
+
   return (
     <div className="dashboard-container">
       {/* Header */}
       <Header />
       
-      <div className="scroll-view">
         {/* User Info Section */}
         <div className="user-info-section">
         <div className='left-side'>
-          <p className="welcome">Welcome back!</p>
-          <p className="name">{data.user.name || 'User Name'}</p>
-          <p className="address">{data.user.address || 'User Address'}</p>
+          <p className="welcome">Welcome!</p>
+          <p className="name">{data.user.name || ''}</p>
+          <p className="address">{data.user.address || ''}</p>
         </div>
         <div className='right-side'>
           <button className="tips-button">
@@ -51,7 +61,7 @@ const ResidentDashboard = () => {
         <div className="sos-section">
           <p className="sos-title">Are you in an Emergency?</p>
           <p className="sos-subtitle">Press the button to report an emergency.</p>
-          <button className="sos-button">
+          <button className="sos-button" onClick={handleSOSClick}>
             <div className="sos-outer-circle">
               <div className="sos-inner-circle">
                 <span className="sos-text">SOS</span>
@@ -103,7 +113,7 @@ const ResidentDashboard = () => {
             <p className="empty-text">No recent reports</p>
           </div>
         )}
-      </div>
+    
       
       {/* BOTTOM NAVIGATION WITH ASSETS ICONS */}
       <BottomNav/>

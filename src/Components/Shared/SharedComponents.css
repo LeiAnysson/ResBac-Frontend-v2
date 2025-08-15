@@ -5,7 +5,7 @@
   justify-content: space-between;
   background-color: #1041BC;
   padding-top: 40px;
-  padding-left: 16px;
+  padding-left: 16px; 
   padding-right: 16px;
   padding-bottom: 16px;
   border-bottom: 1px solid #eee;
@@ -106,6 +106,35 @@
 
 .nav-icon:hover .nav-icon-text {
   filter: grayscale(0%);
+}
+
+/* Title Row */
+.title-container{
+  display:flex;
+  justify-content: flex-start;
+  align-items: center;
+  place-items: center;
+  margin-top: 90px;
+  margin-left: 1rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.back-button-icon {
+  height: 30px;
+  width: 30px;
+}
+
+.title-container > h1{
+  font-size: 22px;
 }
 
 /* Responsive Design */

@@ -1,0 +1,287 @@
+/* Resident Witness Report Styles - Converted from React Native */
+.witness-report-container {
+  flex: 1;
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1041BC;
+  padding-top: 40px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.account-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border: 2px solid #eee;
+  object-fit: cover;
+}
+
+
+
+/* Title Row */
+.title-row {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 18px;
+  margin-left: 12px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.back-button-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #222;
+  margin: 0;
+}
+
+/* Form Sections */
+.form-section {
+  margin-bottom: 14px;
+  align-items: center;
+  place-content: center;
+  align-content: center;
+}
+
+.label {
+  font-weight: bold;
+  font-size: 16px;
+  margin-left: 18px;
+  margin-bottom: 6px;
+  color: #222;
+  display: block;
+}
+
+.input-box {
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.input-text {
+  font-size: 16px;
+  color: #222;
+}
+
+.input-field {
+  font-size: 16px;
+  color: #222;
+  border: none;
+  outline: none;
+  width: 100%;
+  background: transparent;
+}
+
+.input-field::placeholder {
+  color: #999;
+}
+
+/* Map Box */
+.map-box {
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-bottom: 18px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #b3c6e0;
+  height: 220px;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-placeholder {
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Action Button */
+.submit-button {
+  background-color: #e53935;
+  border-radius: 10px;
+  border: none;
+  display: block;
+  margin: 20px auto;
+  height: 50px;
+  
+}
+
+.submit-button-text {
+  color: #fff;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #1041BC;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  height: 60px;
+  border-top: 1px solid #eee;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-left: 16px;
+  padding-right: 16px;
+  z-index: 10;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-icon:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    padding-top: 20px;
+  }
+
+  .content-scroll {
+    padding-top: 70px;
+  }
+
+  .title-row {
+    margin-top: 5px;
+    margin-bottom: 15px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .label {
+    font-size: 15px;
+  }
+
+  .input-box {
+    padding: 10px 14px;
+  }
+
+  .input-text,
+  .input-field {
+    font-size: 15px;
+  }
+
+  .action-button {
+    padding: 14px;
+  }
+
+  .action-button-text {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 16px;
+  }
+
+  .label {
+    font-size: 14px;
+  }
+
+  .input-box {
+    padding: 8px 12px;
+  }
+
+  .input-text,
+  .input-field {
+    font-size: 14px;
+  }
+
+  .action-button {
+    padding: 12px;
+  }
+
+  .action-button-text {
+    font-size: 15px;
+  }
+
+  .map-box {
+    height: 180px;
+  }
+} 

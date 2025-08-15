@@ -8,28 +8,34 @@ import './ResidentAnnouncement.css';
 //import notificationIcon from '../assets/notification.png';
 import Header from '../Components/ComponentsHeaderWebApp/header.jsx'; 
 import BottomNav from '../Components/ComponentsBottomNavWebApp/BottomNav.jsx';
+import BackButton from '../assets/backbutton.png';
 
 const ResidentAnnouncement = () => {
   const navigate = useNavigate();
 
   // Backend-ready: announcements should be fetched from backend or passed as props
   const announcements = [];
+  //onClick={() => navigate(-1)}
 
   return (
-    <div className="announcement-container">
-        {/* Header */}
-      <Header />
+    <>
+      {/* Header */}
       
-      <div className="title-row">
-        <button className="back-button" onClick={() => navigate(-1)}>
-          <span className="back-button-icon">←</span>
-        </button>
-        <h1 className="title">Announcement</h1>
+
+    <div className="announcement-container">
+    <Header />
+      <div className='title-container'>
+            <button className="back-button" onClick={() => navigate(-1)}>
+            <img className='back-button-icon' src={BackButton}/>
+          </button>
+          <h1>Announcement</h1>
       </div>
+      
 
       {/* Announcements Container */}
         {announcements.length === 0 ? (
           <>
+          <div className='card-container'>
             <div className="announcement-card">
               <p className="empty-text">No announcements available.</p>
             </div>
@@ -39,6 +45,8 @@ const ResidentAnnouncement = () => {
             <div className="announcement-card">
               <p className="empty-text">No announcements available.</p>
             </div>
+          </div>
+            
           </>
         ) : (
           announcements.map((item) => (
@@ -55,6 +63,7 @@ const ResidentAnnouncement = () => {
       {/* BOTTOM NAVIGATION */}
         <BottomNav/>
     </div>
+    </>
   );
 };
 
