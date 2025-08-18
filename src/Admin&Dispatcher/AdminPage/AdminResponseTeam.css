@@ -84,3 +84,19 @@
   font-size: 14px;
   margin-top: 8px;
 }
+
+.view-btn, .delete-btn {
+  background: #e0e7ff;
+  color: #2563eb;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.view-btn:hover, .delete-btn:hover {
+  background: #2563eb;
+  color: #fff;
+}

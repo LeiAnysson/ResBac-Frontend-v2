@@ -3,25 +3,30 @@ import NavBar from "../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminReportsPage.css";
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from '../../utils/apiFetch';
 
 const AdminReportsPage = () => {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
 
-  const fetchReports = async (page = 1) => {
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/api/admin/incidents?page=${page}`);
-      const data = await response.json();
-
-      setReports(data.data);
-      setPagination({
-        current_page: data.current_page,
-        last_page: data.last_page
+  const fetchReports = async (page = 1, filters = {}) => {
+      const params = new URLSearchParams({
+        page,
+        ...(filters.role && { role: filters.role }),
+        ...(filters.residency_status && { residency_status: filters.residency_status }),
       });
-    } catch (error) {
-      console.error("Failed to fetch reports:", error);
-    }
+
+      try {
+        const data = await apiFetch(`http://127.0.0.1:8000/api/admin/incidents?page=${page}`);
+        setReports(data.data);
+        setPagination({
+          current_page: data.current_page,
+          last_page: data.last_page
+        });
+      } catch (error) {
+        console.error("Failed to fetch reports:", error);
+      }
   };
 
   useEffect(() => {
