@@ -1,26 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
+import { encryptPasswordData } from '../utils/crypto';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();
+    const navigate = useNavigate();  
 
     const handleLogin = async (e) => {
       e.preventDefault();
       setError('');
 
+      const { encryptedPassword, secretKeyName } = encryptPasswordData(password);
+
+      const blendedLogin = `${email}|${secretKeyName}${encryptedPassword}`;
+
       try {
         const response = await fetch('http://127.0.0.1:8000/api/login', {
           method: 'POST',
-          headers: {
+          headers: { 
             'Content-Type': 'application/json',
+            'Accept': 'application/json'
           },
           body: JSON.stringify({
-            email,
-            password,
+            auth: blendedLogin 
           }),
         });
 
@@ -52,7 +57,6 @@ const LoginPage = () => {
         setError('Something went wrong');
       }
     };
-
 
   return (
     <div className="login-root">

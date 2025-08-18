@@ -2,6 +2,7 @@ import NavBar from "../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminUserManagement.css";
 import React, { useState, useEffect } from "react";
+import { apiFetch } from '../../utils/apiFetch';
 
 const UserPage = () => {
     const [users, setUsers] = useState([]);
@@ -16,15 +17,14 @@ const UserPage = () => {
       });
 
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/admin/users?${params}`);
-        const data = await response.json();
+        const data = await apiFetch(`http://127.0.0.1:8000/api/admin/users?${params}`); 
         setUsers(data.data);
         setPagination({
           current_page: data.current_page,
           last_page: data.last_page,
         });
       } catch (err) {
-        console.error("Failed to fetch users", err);
+        console.error('Failed to fetch users:', err.message);
       }
     };
 

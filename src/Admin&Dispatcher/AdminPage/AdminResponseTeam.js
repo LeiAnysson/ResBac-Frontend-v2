@@ -2,22 +2,33 @@ import NavBar from "../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminResponseTeam.css";
 import React, { useEffect, useState } from "react";
+import { apiFetch } from '../../utils/apiFetch';
+import AdminTeamPageView from "./AdminTeamPageView";
+import { useNavigate } from "react-router-dom";
 
 const TeamPage = () => {
     const [teams, setTeams] = useState([]);
     const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [selectedTeam, setSelectedTeam] = useState(null);
+    const [editForm, setEditForm] = useState({
+      team_name: "",
+      status: "",
+      schedules: [],
+    });
+    const navigate = useNavigate();
 
-    const fetchTeams = async (page = 1) => {
+    const fetchTeams = async (page = 1, filters = {}) => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/admin/teams?page=${page}`);
-        const data = await response.json();
+        const data = await apiFetch(`http://127.0.0.1:8000/api/admin/teams?page=${page}`);
         setTeams(data.data);
         setPagination({
           current_page: data.current_page,
           last_page: data.last_page,
         });
       } catch (err) {
-        console.error("Failed to fetch teams", err);
+        console.error("Failed to fetch teams:", err);
       }
     };
 
@@ -39,6 +50,52 @@ const TeamPage = () => {
       return status.toLowerCase() === "active" ? "availability" : "unavailable";
     };
 
+    const handleView = (team) => {
+      setSelectedTeam(team);
+      setIsViewModalOpen(true);
+    };
+
+    const closeViewModal = () => {
+      setIsViewModalOpen(false);
+      setSelectedTeam(null);
+      setIsEditing(false);
+    };
+
+    const handleDelete = async (id) => {
+      if (!window.confirm("Are you sure you want to delete this team?")) return;
+
+      try {
+        await apiFetch(`http://127.0.0.1:8000/api/admin/teams/${id}`, {
+          method: "DELETE",
+        });
+
+        fetchTeams(pagination.current_page);
+      } catch (err) {
+        console.error("Failed to delete team:", err);
+      }
+    };
+
+    const handleSaveEdit = async () => {
+      try {
+        // PUT request to update team
+        await apiFetch(`http://127.0.0.1:8000/api/admin/teams/${selectedTeam.id}`, {
+          method: "PUT",
+          body: JSON.stringify(editForm),
+        });
+
+        // refresh team list after save
+        fetchTeams(pagination.current_page);
+
+        // close modal + reset
+        setIsEditing(false);
+        setIsViewModalOpen(false);
+        setSelectedTeam(null);
+
+      } catch (err) {
+        console.error("Failed to save edits:", err);
+      }
+    };
+
     return (
       <div className="admin-dashboard-container">
         <TopBar />
@@ -58,33 +115,33 @@ const TeamPage = () => {
                 <thead>
                   <tr>
                     <th>Team Name</th>
-                    <th>Name</th>
                     <th>Availability</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {teams.map((team, idx) => (
-                    <tr key={idx}>
+                  {teams.map((team) => (
+                    <tr key={team.id}>
                       <td>{team.team_name}</td>
-                      <td>
-                        {team.members && team.members.length > 0 ? (
-                          team.members.map((member, i) => (
-                            <div key={i} style={{ marginBottom: "4px" }}>
-                              {(member.first_name || member.last_name) ? `${member.first_name} ${member.last_name}` : "Unnamed"}
-                            </div>
-                          ))) : (
-                            <div>No members</div>
-                        )}
+                      <td className={getAvailabilityClass(team.status)}>
+                        {formatAvailability(team.status)}
                       </td>
                       <td>
-                        <span className={`availability-badge ${getAvailabilityClass(team.status)}`}>
-                          {formatAvailability(team.status)}
-                        </span>
+                        <button className="view-btn" onClick={() => navigate(`/admin/response-teams/${team.id}`)}>View</button>
+                        <button className="delete-btn" onClick={() => handleDelete(team.id)}>Delete</button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+
+              {isViewModalOpen && selectedTeam && (
+                <AdminTeamPageView
+                  team={selectedTeam}
+                  onClose={() => setIsViewModalOpen(false)}
+                />
+              )}
+              
               <div className="response-team-pagination">
                 <button onClick={() => handlePageChange(pagination.current_page - 1)} disabled={pagination.current_page === 1}>
                   &lt; Prev
