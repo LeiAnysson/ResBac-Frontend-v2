@@ -2,11 +2,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ResidentDashboard.css';
-//import homeIcon from '../assets/home.png';
-//import historyIcon from '../assets/history.png';
-//import announcementIcon from '../assets/announcement.png';
-//import reportIcon from '../assets/report.png';
-//import notificationIcon from '../assets/notification.png';
 import Header from '../Components/ComponentsHeaderWebApp/header.jsx';
 import BottomNav from '../Components/ComponentsBottomNavWebApp/BottomNav.jsx';
 
@@ -25,7 +20,6 @@ const ResidentDashboard = () => {
 
   // Handle SOS button click
   const handleSOSClick = () => {
-    // Navigate to call screen with emergency incident type
     navigate('/resident/call', {
       state: {
         incidentType: 'Emergency',
@@ -39,10 +33,11 @@ const ResidentDashboard = () => {
       {/* Header */}
       <Header />
       
+      <div className="scroll-view">
         {/* User Info Section */}
         <div className="user-info-section">
         <div className='left-side'>
-          <p className="welcome">Welcome!</p>
+          <p className="welcome">Welcome back!</p>
           <p className="name">{data.user.name || ''}</p>
           <p className="address">{data.user.address || ''}</p>
         </div>
@@ -113,7 +108,7 @@ const ResidentDashboard = () => {
             <p className="empty-text">No recent reports</p>
           </div>
         )}
-    
+      </div>
       
       {/* BOTTOM NAVIGATION WITH ASSETS ICONS */}
       <BottomNav/>

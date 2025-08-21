@@ -1,0 +1,331 @@
+/* Responder Dashboard Styles */
+.responder-dashboard {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Main Content */
+.dashboard-content {
+  padding: 100px 16px 100px 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Welcome Section */
+.welcome-section {
+  margin-bottom: 24px;
+}
+
+.welcome-text {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 16px 0;
+}
+
+/* Assigned Reports Section */
+.assigned-reports-section {
+  margin-bottom: 32px;
+}
+
+.reports-container {
+  background: #fff;
+  border: 1px solid #d6e0ff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  padding: 12px;
+}
+
+.reports-container-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-action-btn {
+  background-color: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-card {
+  background-color: white;
+  border: 2px solid #3498db;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.report-info {
+  flex: 1;
+}
+
+.report-date {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.report-type {
+  font-size: 16px;
+  color: #2c3e50;
+  margin: 0 0 4px 0;
+  font-weight: 500;
+}
+
+.report-type strong {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.report-location {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+.view-button {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.view-button:hover {
+  background-color: #229954;
+}
+
+/* Empty State */
+.empty-card {
+  background-color: white;
+  border: 2px solid #3498db;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.empty-inner {
+  background: #f9fbff;
+  border: 1px solid #d6e0ff;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.empty-text {
+  color: #7f8c8d;
+  font-size: 16px;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Heatmap Section */
+.heatmap-section {
+  margin-bottom: 32px;
+}
+
+.map-container {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 300px;
+  position: relative;
+}
+
+.map-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e8f4fd 0%, #d1ecf1 100%);
+  position: relative;
+}
+
+.map-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.map-overlay {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Map Pins */
+.map-pins {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.map-pin {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.red-pin {
+  background-color: #e74c3c;
+}
+
+.yellow-pin {
+  background-color: #f39c12;
+}
+
+.green-pin {
+  background-color: #27ae60;
+}
+
+.purple-pin {
+  background-color: #9b59b6;
+}
+
+.blue-pin {
+  background-color: #3498db;
+  width: 16px;
+  height: 16px;
+}
+
+.current-location::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #3498db;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Map Roads */
+.map-roads {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.road-line {
+  position: absolute;
+  height: 4px;
+  background-color: #34495e;
+  border-radius: 2px;
+  opacity: 0.7;
+}
+
+/* Map Labels */
+.map-labels {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.map-label {
+  position: absolute;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2c3e50;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* Map Footer */
+.map-footer {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.google-text {
+  font-size: 12px;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .dashboard-content {
+    padding: 90px 12px 90px 12px;
+  }
+  
+  .welcome-text {
+    font-size: 20px;
+  }
+  
+  .section-title {
+    font-size: 16px;
+  }
+  
+  .report-card {
+    padding: 12px;
+  }
+  
+  .empty-card {
+    padding: 20px;
+  }
+  
+  .empty-text {
+    font-size: 14px;
+  }
+  
+  .map-container {
+    height: 250px;
+  }
+}
