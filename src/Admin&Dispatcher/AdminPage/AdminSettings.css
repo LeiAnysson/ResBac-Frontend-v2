@@ -13,54 +13,113 @@
 .settings-card {
   background: #fff;
   border-radius: 12px;
-  padding: 18px 18px 18px 18px;
+  padding: 18px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   margin-bottom: 0px;
+  position: relative;
+}
+
+/* Activity Log takes full width */
+.settings-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.card-icon {
+  font-size: 20px;
+  color: #6b7280;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .settings-card h4 {
-  margin-top: 0;
-  margin-bottom: 8px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
 }
 
 .settings-description {
-  color: #888;
+  color: #6b7280;
   font-size: 13px;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
+  line-height: 1.4;
 }
 
 .settings-card table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .settings-card th,
 .settings-card td {
   padding: 8px 10px;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 13px;
+}
+
+.settings-card th {
+  font-weight: 600;
+  color: #374151;
+  background-color: #f9fafb;
+}
+
+.settings-card td {
+  color: #6b7280;
+}
+
+/* Alternating row colors for tables */
+.settings-card tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.settings-card tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.form-group {
+  margin-bottom: 12px;
 }
 
 .settings-card label {
   font-size: 13px;
+  color: #374151;
+  margin-right: 8px;
+  font-weight: 500;
 }
 
 .settings-card select,
 .settings-card input[type="time"] {
   font-size: 13px;
-  padding: 4px 6px;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #374151;
 }
 
-.export-btn, .edit-btn, .save-btn, .import-btn {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 18px;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 8px;
+.settings-card select:focus,
+.settings-card input[type="time"]:focus {
+  outline: none;
+  border-color: #1a56db;
+  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+}
+
+.edit-btn {
+  margin-left: auto;
+  padding: 6px 12px;
+  font-size: 12px;
 }
 
 .activity-logs {
@@ -70,39 +129,41 @@
 
 .activity-logs th,
 .activity-logs td {
-  text-align: center;
+  text-align: left;
   padding: 8px;
   font-size: 13px;
 }
 
 .lookup-table th,
-.lookup-tables td {
+.lookup-table td {
   padding: 8px;
   font-size: 13px;
 }
 
-.table-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
+/* Import Buttons.css for button styling */
+@import url("../../Components/ComponentsButtons/Buttons.css");
+
+/* Override button positioning for specific cards */
+.settings-card .btn {
+  margin-top: 8px;
 }
 
-.pagination {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pagination button {
-  padding: 4px 10px;
-  border: 1px solid #ccc;
-  background: white;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .settings-card {
+    padding: 16px;
+  }
+  
+  .card-header {
+    flex-wrap: wrap;
+  }
+  
+  .settings-card.full-width {
+    grid-column: 1;
+  }
 }

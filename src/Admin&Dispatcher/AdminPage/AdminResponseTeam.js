@@ -2,33 +2,24 @@ import NavBar from "../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminResponseTeam.css";
 import React, { useEffect, useState } from "react";
-import { apiFetch } from '../../utils/apiFetch';
-import AdminTeamPageView from "./AdminTeamPageView";
 import { useNavigate } from "react-router-dom";
 
 const TeamPage = () => {
     const [teams, setTeams] = useState([]);
     const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
-    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [selectedTeam, setSelectedTeam] = useState(null);
-    const [editForm, setEditForm] = useState({
-      team_name: "",
-      status: "",
-      schedules: [],
-    });
     const navigate = useNavigate();
 
-    const fetchTeams = async (page = 1, filters = {}) => {
+    const fetchTeams = async (page = 1) => {
       try {
-        const data = await apiFetch(`http://127.0.0.1:8000/api/admin/teams?page=${page}`);
+        const response = await fetch(`http://127.0.0.1:8000/api/admin/teams?page=${page}`);
+        const data = await response.json();
         setTeams(data.data);
         setPagination({
           current_page: data.current_page,
           last_page: data.last_page,
         });
       } catch (err) {
-        console.error("Failed to fetch teams:", err);
+        console.error("Failed to fetch teams", err);
       }
     };
 
@@ -50,50 +41,8 @@ const TeamPage = () => {
       return status.toLowerCase() === "active" ? "availability" : "unavailable";
     };
 
-    const handleView = (team) => {
-      setSelectedTeam(team);
-      setIsViewModalOpen(true);
-    };
-
-    const closeViewModal = () => {
-      setIsViewModalOpen(false);
-      setSelectedTeam(null);
-      setIsEditing(false);
-    };
-
-    const handleDelete = async (id) => {
-      if (!window.confirm("Are you sure you want to delete this team?")) return;
-
-      try {
-        await apiFetch(`http://127.0.0.1:8000/api/admin/teams/${id}`, {
-          method: "DELETE",
-        });
-
-        fetchTeams(pagination.current_page);
-      } catch (err) {
-        console.error("Failed to delete team:", err);
-      }
-    };
-
-    const handleSaveEdit = async () => {
-      try {
-        // PUT request to update team
-        await apiFetch(`http://127.0.0.1:8000/api/admin/teams/${selectedTeam.id}`, {
-          method: "PUT",
-          body: JSON.stringify(editForm),
-        });
-
-        // refresh team list after save
-        fetchTeams(pagination.current_page);
-
-        // close modal + reset
-        setIsEditing(false);
-        setIsViewModalOpen(false);
-        setSelectedTeam(null);
-
-      } catch (err) {
-        console.error("Failed to save edits:", err);
-      }
+    const handleCreateTeam = () => {
+      navigate('/admin/create-team');
     };
 
     return (
@@ -105,43 +54,43 @@ const TeamPage = () => {
             <h2 className="response-team-title">Response Team</h2>
             <div className="response-team-card">
               <div className="response-team-controls">
-                <input className="response-team-search" placeholder="Search..." />
-                <button className="response-team-search-btn">
-                  <span role="img" aria-label="search">🔍</span>
+                <input className="search-input search-input-filled" placeholder="Search..." />
+                <button className="search-btn search-btn-primary search-btn-icon">
+                  <span className="search-icon">🔍</span>
                 </button>
-                <button className="create-team-btn">Create Team</button>
+                <button className="create-team-btn" onClick={handleCreateTeam}>Create Team</button>
               </div>
               <table className="response-team-table">
                 <thead>
                   <tr>
                     <th>Team Name</th>
+                    <th>Name</th>
                     <th>Availability</th>
-                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {teams.map((team) => (
-                    <tr key={team.id}>
+                  {teams.map((team, idx) => (
+                    <tr key={idx}>
                       <td>{team.team_name}</td>
-                      <td className={getAvailabilityClass(team.status)}>
-                        {formatAvailability(team.status)}
+                      <td>
+                        {team.members && team.members.length > 0 ? (
+                          team.members.map((member, i) => (
+                            <div key={i} style={{ marginBottom: "4px" }}>
+                              {(member.first_name || member.last_name) ? `${member.first_name} ${member.last_name}` : "Unnamed"}
+                            </div>
+                          ))) : (
+                            <div>No members</div>
+                        )}
                       </td>
                       <td>
-                        <button className="view-btn" onClick={() => navigate(`/admin/response-teams/${team.id}`)}>View</button>
-                        <button className="delete-btn" onClick={() => handleDelete(team.id)}>Delete</button>
+                        <span className={`availability-badge ${getAvailabilityClass(team.status)}`}>
+                          {formatAvailability(team.status)}
+                        </span>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-
-              {isViewModalOpen && selectedTeam && (
-                <AdminTeamPageView
-                  team={selectedTeam}
-                  onClose={() => setIsViewModalOpen(false)}
-                />
-              )}
-              
               <div className="response-team-pagination">
                 <button onClick={() => handlePageChange(pagination.current_page - 1)} disabled={pagination.current_page === 1}>
                   &lt; Prev
