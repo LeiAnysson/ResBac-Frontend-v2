@@ -1,25 +1,115 @@
 import NavBar from "../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminSettings.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { apiFetch } from '../../utils/apiFetch';
+import { printTable } from "../../utils/printTable";
+
+console.log(printTable);
 
 const AdminSettings = () => {
   const [activityLogs, setActivityLogs] = useState([]);
+  const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
+  const fileInputRef = useRef(null);
+  const [isMaintenanceMode, setIsMaintenanceMode] = useState(false); //NOT FUNCTIONAL YET!!!
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [message, setMessage] = useState('');
+  const [incidentTypes, setIncidentTypes] = useState([]);
+  const [incidentPagination, setIncidentPagination] = useState({ current_page: 1, last_page: 1 });
+  const [loading, setLoading] = useState(true);
+
+  const fetchActivityLogs = async (page = 1, filters = {}) => {
+      try {
+        const data = await apiFetch(`http://127.0.0.1:8000/api/admin/activity-logs?page=${page}`);
+
+        setActivityLogs(data.data);
+        setPagination({
+          current_page: data.current_page,
+          last_page: data.last_page,
+        });
+      } catch (error) {
+        console.error("Failed to fetch activity logs:", error);
+      }
+  };
+
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/admin/activity-logs")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setActivityLogs(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching activity logs:", error);
+      fetchActivityLogs();
+  }, []);
+
+  const handlePrintAll = async () => {
+    const data = await apiFetch("http://127.0.0.1:8000/api/admin/activity-logs/all");
+
+    printTable(data, [
+      { header: "User ID", key: "user_id" },
+      { header: "Action", key: "action" },
+      { header: "Entity", key: "entity" },
+      { header: "Timestamp", key: "created_at" },
+    ], "Activity Logs");
+  };
+
+  const handleImportClick = () => {
+    if (!isMaintenanceMode) return;
+
+    const confirmRestore = window.confirm(
+      "Restoring will overwrite current system data. Do you want to continue?"
+    );
+
+    if (confirmRestore) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setMessage(`Selected file: ${file.name}`);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (!selectedFile) {
+      setMessage("No file selected for restore.");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("backupFile", selectedFile);
+
+      const response = await fetch("/api/restore", {
+        method: "POST",
+        body: formData,
       });
+      if (response.ok) {
+        setMessage("Restore completed successfully!");
+      } else {
+        setMessage("Restore failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Restore error:", error);
+      setMessage("An error occurred during restore.");
+    }
+  };
+  
+  const fetchIncidentTypes = async (page = 1) => {
+    try {
+      const data = await apiFetch(`http://127.0.0.1:8000/api/admin/incident-types?page=${page}`);
+      setIncidentTypes(data.data);
+      setIncidentPagination({
+        current_page: data.current_page,
+        last_page: data.last_page,
+      });
+    } catch (err) {
+      console.error("Failed to fetch incident types: ", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchIncidentTypes();
   }, []);
 
   return (
@@ -30,17 +120,17 @@ const AdminSettings = () => {
         <main className="dashboard-content-area">
           <h2 className="settings-title">Settings</h2>
           <div className="settings-grid">
-            {/* Activity Log - Full width top row */}
+
             <div className="settings-card activity-log full-width">
               <div className="card-header">
                 <span className="card-icon">🔄</span>
                 <h4>Activity Log</h4>
               </div>
               <div className="settings-description">View Recent system activities and user actions.</div>
-              <table className="activity-logs">
+              <table id="activity-log-table" className="activity-logs">
                 <thead>
                   <tr>
-                    <th>User</th>
+                    <th>User ID</th>
                     <th>Action</th>
                     <th>Entity</th>
                     <th>Timestamp</th>
@@ -63,7 +153,28 @@ const AdminSettings = () => {
                   )}
                 </tbody>
               </table>
-              <button className="btn btn-primary">Export Log</button>
+              
+              <div className="table-footer">
+                <button className="btn btn-primary" onClick={handlePrintAll}>Export Log</button>
+
+                <div className="pagination">
+                  <button
+                    disabled={pagination.current_page === 1}
+                    onClick={() => fetchActivityLogs(pagination.current_page - 1)}
+                  >
+                    Prev
+                  </button>
+                  <span>
+                    {pagination.current_page} / {pagination.last_page}
+                  </span>
+                  <button
+                    disabled={pagination.current_page === pagination.last_page}
+                    onClick={() => fetchActivityLogs(pagination.current_page + 1)}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
             </div>
             
             {/* Lookup Tables - Left side of middle row */}
@@ -78,28 +189,40 @@ const AdminSettings = () => {
                 <thead>
                   <tr>
                     <th>Incident Type</th>
-                    <th>Priority Level</th>
+                    <th>Default Priority Level</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Fire</td>
-                    <td>High</td>
-                  </tr>
-                  <tr>
-                    <td>Medical Emergency</td>
-                    <td>High</td>
-                  </tr>
-                  <tr>
-                    <td>Flood</td>
-                    <td>Medium</td>
-                  </tr>
-                  <tr>
-                    <td>Road Accident</td>
-                    <td>Medium</td>
-                  </tr>
+                  {incidentTypes.map((incident) => (
+                    <tr key={incident.id}>
+                      <td>{incident.name}</td>
+                      <td>{incident.priority?.priority_name || "N/A"}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
+              
+              <div className="table-footer">
+                <div className="pagination">
+                  <button
+                    disabled={incidentPagination.current_page === 1}
+                    onClick={() => fetchIncidentTypes(incidentPagination.current_page - 1)}
+                  >
+                    Prev
+                  </button>
+
+                  <span>
+                    {incidentPagination.current_page} / {incidentPagination.last_page}
+                  </span>
+
+                  <button
+                    disabled={incidentPagination.current_page === incidentPagination.last_page}
+                    onClick={() => fetchIncidentTypes(incidentPagination.current_page + 1)}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
             </div>
             
             {/* Schedule Backup - Right side of middle row */}
@@ -131,7 +254,12 @@ const AdminSettings = () => {
                 <h4>Export Data</h4>
               </div>
               <div className="settings-description">Download a copy of your system data.</div>
-              <button className="btn btn-primary">Export</button>
+              <button
+                onClick={() => window.open('http://127.0.0.1:8000/backup-database', '_blank')}
+                className="btn btn-primary"
+              >
+                Export
+              </button>
             </div>
             
             {/* Import Data - Right side of bottom row */}
@@ -141,7 +269,34 @@ const AdminSettings = () => {
                 <h4>Import Data</h4>
               </div>
               <div className="settings-description">Insert a copy of your system data.</div>
-              <button className="btn btn-primary">Import</button>
+              <button
+                className="btn btn-primary"
+                onClick={handleImportClick}
+                disabled={!isMaintenanceMode}
+                title={
+                  !isMaintenanceMode
+                    ? "Enable Maintenance Mode to restore data."
+                    : "Import backup file"
+                }
+              >
+                Import
+              </button>
+
+              {selectedFile && (
+                <button className="restore-btn" onClick={handleRestore}>
+                  Confirm Restore
+                </button>
+              )}
+
+              {message && <div className="restore-message">{message}</div>}
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                accept=".sql,.json,.zip"
+                onChange={handleFileChange}
+              />
             </div>
           </div>
         </main>

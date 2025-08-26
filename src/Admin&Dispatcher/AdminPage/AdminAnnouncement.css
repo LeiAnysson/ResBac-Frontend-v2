@@ -49,11 +49,18 @@
   margin-bottom: 8px;
 }
 
+.announcement-image {
+  flex-shrink: 0;
+}
+
 .announcement-image img {
   max-width: 120px;
   max-height: 100px;
+  width: auto;
+  height: auto;
   border-radius: 8px;
   margin-left: 18px;
+  object-fit: cover; 
 }
 
 .announcement-pagination {

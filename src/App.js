@@ -17,6 +17,8 @@ import AdminResponseTeam from './Admin&Dispatcher/AdminPage/AdminResponseTeam';
 import AdminTeamPageView from "./Admin&Dispatcher/AdminPage/AdminTeamPageView";
 import AdminAnnouncement from './Admin&Dispatcher/AdminPage/AdminAnnouncement';
 import AdminSettings from './Admin&Dispatcher/AdminPage/AdminSettings';
+import AdminCreateTeam from './Admin&Dispatcher/AdminPage/Functionalities/AdminCreateTeam';
+import AdminCreateUser from './Admin&Dispatcher/AdminPage/Functionalities/AdminCreateUser';
 
 import ResidentDashboard from './Resident/ResidentDashboard';
 import ResidentAnnouncement from './Resident/ResidentAnnouncement';

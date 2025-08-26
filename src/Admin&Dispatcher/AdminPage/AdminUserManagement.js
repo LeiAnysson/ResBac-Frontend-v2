@@ -49,12 +49,10 @@ const UserPage = () => {
             <h1 className="user-management-title">User Overview</h1>
             <div className="user-management-card">
               <div className="user-management-controls">
-                <input
-                  className="user-search-input"
-                  type="text"
-                  placeholder="Search..."
-                />
-                <button className="user-search-btn">Search</button>
+                <input className="search-input search-input-filled" placeholder="Search..." />
+                <button className="search-btn search-btn-primary search-btn-icon">
+                  <span className="search-icon">🔍</span>
+                </button>
                 <select className="user-filter-select"
                   name="role"
                   value={filters.role} 

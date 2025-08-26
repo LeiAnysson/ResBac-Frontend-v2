@@ -1,3 +1,5 @@
+import logo from "../assets/LogoB.png"; 
+
 export function printTable(data, columns, title) {
   const currentDateTime = new Date().toLocaleString();
 
@@ -25,7 +27,7 @@ export function printTable(data, columns, title) {
             align-items: center;
           }
           .header-left img {
-            height: 50px;
+            height: 100px;
             margin-right: 15px;
           }
           h1 {
@@ -91,7 +93,7 @@ export function printTable(data, columns, title) {
       <body>
         <div class="header">
           <div class="header-left">
-            <img src="YOUR_LOGO_URL_HERE" alt="ResBac Logo" />
+            <img src="${logo}" alt="ResBac Logo"/>
             <div>
               <h1>ResBac – Municipal Emergency Assistance & Incident Response</h1>
               <div class="subtitle">${title}</div>
