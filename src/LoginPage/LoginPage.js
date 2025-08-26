@@ -46,8 +46,10 @@ const LoginPage = () => {
             navigate('/dispatcher');
           } else if (data.user.role_id === 4) {
             navigate('/resident'); 
-          } else {
+          } else if (data.user.role_id === 3) {
             navigate('/responder');
+          }else {
+            navigate('/');
           }
         } else {
           setError(data.message || 'Invalid login');

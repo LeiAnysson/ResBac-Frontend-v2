@@ -98,6 +98,16 @@
   opacity: 1;
 }
 
+.nav-icon.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+.nav-icon.active .nav-img {
+  opacity: 1;
+  filter: brightness(0) invert(1);
+}
+
 .nav-icon-text {
   font-size: 1.5rem;
   filter: grayscale(100%);
