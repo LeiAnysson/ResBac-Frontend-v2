@@ -25,6 +25,18 @@ import ResidentNotification from './Resident/ResidentNotification';
 import ResidentHistory from './Resident/ResidentHistory';
 import ResidentProfile from './Resident/ResidentProfile';
 import ResidentEditProfile from './Resident/ResidentEditProfile';
+import ResidentCall from './Resident/ResidentCall';
+import ResidentWaiting from './Resident/ResidentWaiting';
+import ResidentArrived from './Resident/ResidentArrived';
+import ResidentComplete from './Resident/ResidentComplete';
+import ResidentWitReport from './Resident/ResidentWitReport';
+
+import ResponderDashboard from './Responder/ResponderDashboard';
+import ResponderProfile from './Responder/ResponderProfile';
+import ResponderEditProfile from './Responder/ResponderEditProfile';
+import ResponderNotification from './Responder/ResponderNotification';
+import ResponderReports from './Responder/ResponderReports';
+import ResponderViewReport from './Responder/ResponderViewReport';
 
 function App() {
   return (
@@ -57,6 +69,19 @@ function App() {
         <Route path="/resident/history" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentHistory /></ProtectedRoute>} />
         <Route path="/resident/profile" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentProfile /></ProtectedRoute>} />
         <Route path="/resident/edit-profile" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentEditProfile /></ProtectedRoute>} />
+        <Route path="/resident/call" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentCall /></ProtectedRoute>} />
+        <Route path="/resident/waiting" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentWaiting /></ProtectedRoute>} />
+        <Route path="/resident/arrived" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentArrived /></ProtectedRoute>} />
+        <Route path="/resident/complete" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentComplete /></ProtectedRoute>} />
+        <Route path="/resident/witness-report" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentWitReport /></ProtectedRoute>} />
+
+        {/* Responder */}
+        <Route path="/responder" element={<ProtectedRoute allowedRoles={["Responder"]}><ResponderDashboard /></ProtectedRoute>} />
+        <Route path="/responder/profile" element={<ProtectedRoute allowedRoles={["Responder"]}><ResponderProfile /></ProtectedRoute>} />
+        <Route path="/responder/edit-profile" element={<ProtectedRoute allowedRoles={["Responder"]}><ResponderEditProfile /></ProtectedRoute>} />
+        <Route path="/responder/notification" element={<ProtectedRoute allowedRoles={["Responder"]}><ResponderNotification /></ProtectedRoute>} />
+        <Route path="/responder/reports" element={<ProtectedRoute allowedRoles={["Responder"]}><ResponderReports /></ProtectedRoute>} />
+        <Route path="/responder/reports/view-report" element={<ProtectedRoute allowedRoles={  ["Responder"]}><ResponderViewReport /></ProtectedRoute>} />
       </Routes>
     </Router>
   );

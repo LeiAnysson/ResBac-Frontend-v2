@@ -1,0 +1,136 @@
+/* Responder Reports Styles */
+.responder-reports {
+	min-height: 100vh;
+	background-color: #f7f8fa;
+	position: relative;
+}
+
+/* Title row with back and search */
+.title-with-actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 90px; /* space for fixed header */
+	margin-left: 1rem;
+	margin-right: 1rem;
+}
+
+.back-button {
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.back-button:hover {
+  transform: scale(1.05);
+}
+
+.back-button:active {
+  transform: scale(0.95);
+}
+
+.back-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* Reports card */
+.reports-card {
+	background: #fff;
+	border: 1px solid #b3c6e0;
+	border-radius: 10px;
+	margin: 12px 16px;
+	padding: 8px 0;
+	min-height: 320px;
+}
+
+.reports-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.report-row {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 12px 12px;
+	border-bottom: 1px solid #eee;
+}
+
+.report-row:last-child {
+	border-bottom: none;
+}
+
+.report-info {
+	flex: 1;
+}
+
+.report-datetime {
+	font-size: 12px;
+	color: #666;
+	margin: 0 0 6px 0;
+}
+
+.report-incident {
+	font-size: 14px;
+	color: #222;
+	margin: 0 0 4px 0;
+	font-weight: 600;
+}
+
+.incident-type {
+	color: #e74c3c;
+	font-weight: 700;
+}
+
+.report-location {
+	font-size: 12px;
+	color: #666;
+	margin: 0;
+}
+
+/* Right side status labels */
+.status-label {
+	font-size: 12px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.status-enroute { color: #f39c12; }
+.status-cancelled { color: #e74c3c; }
+.status-resolved { color: #27ae60; }
+.status-pending { color: #7f8c8d; }
+
+/* Empty state */
+.empty-card {
+	background: #fff;
+	border: 1px solid #b3c6e0;
+	border-radius: 10px;
+	margin: 12px 16px;
+	padding: 24px;
+	text-align: center;
+}
+
+.empty-text {
+	color: #888;
+	margin: 0;
+}
+
+/* Plain text version when no inner container desired */
+.reports-empty {
+	text-align: center;
+	padding: 16px 0;
+}
+
+/* Space for bottom nav */
+.responder-reports { padding-bottom: 80px; }
