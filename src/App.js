@@ -51,9 +51,11 @@ function App() {
         {/* Admin */}
         <Route path="/admin" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminDashboard /></ProtectedRoute>} />
         <Route path="/admin/user-management" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminUserManagement /></ProtectedRoute>} />
+        <Route path="/admin/create-user" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminCreateUser /></ProtectedRoute>} />
         <Route path="/admin/emergency-reports" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminReportsPage /></ProtectedRoute>} />
         <Route path="/admin/emergency-reports/:id" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminReportsPageView /></ProtectedRoute>} />
         <Route path="/admin/response-team" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminResponseTeam /></ProtectedRoute>} />
+        <Route path="/admin/create-team" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminCreateTeam /></ProtectedRoute>} />
         <Route path="/admin/response-teams/:id" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminTeamPageView /></ProtectedRoute>} />
         <Route path="/admin/announcement" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminAnnouncement /></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminSettings /></ProtectedRoute>} />

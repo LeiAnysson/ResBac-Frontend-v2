@@ -1,169 +1,275 @@
+/* Import Buttons.css, ButtonsSearch.css, and TextBoxSearch.css for styling */
+@import url("../../Components/ComponentsButtons/Buttons.css");
+@import url("../../Components/ComponentsButtons/ButtonsSearch.css");
+@import url("../../Components/ComponentsButtons/TextBoxSearch.css");
+
 .admin-page-container {
-    display: flex;
-    min-height: 100vh;
-    background: #f5f6fa;
-  }
-  
+  display: flex;
+  min-height: 100vh;
+  background: #f5f6fa;
+}
+
+.admin-main-content {
+  flex: 1;
+  margin-left: 260px; 
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+@media (max-width: 900px) {
   .admin-main-content {
-    flex: 1;
-    margin-left: 260px; 
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    margin-left: 70px; 
   }
-  
-  @media (max-width: 900px) {
-    .admin-main-content {
-      margin-left: 70px; 
-    }
+}
+
+@media (max-width: 600px) {
+  .admin-main-content {
+    margin-left: 0;
   }
-  @media (max-width: 600px) {
-    .admin-main-content {
-      margin-left: 0;
-    }
-  }
-  
+}
+
+.user-management-content {
+  padding: 2rem 2.5rem;
+  flex: 1;
+}
+
+.user-management-title {
+  color: #1a56db;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 0px;
+}
+
+.user-management-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.user-management-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  color: #374151;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+.user-management-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-section {
+  display: flex;
+  gap: 0.5rem;
+  flex: 2;
+  min-width: 200px;
+}
+
+
+
+.filter-section {
+  display: flex;
+  gap: 0.5rem;
+  min-width: 200px;
+}
+
+.user-filter-select {
+  min-width: 120px;
+  padding: 0.6rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #374151;
+  background-color: #fff;
+}
+
+.user-filter-select:focus {
+  outline: none;
+  border-color: #1a56db;
+  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+}
+
+.action-section {
+  margin-left: auto;
+}
+
+.create-user-btn {
+  white-space: nowrap;
+}
+
+.user-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.user-table th,
+.user-table td {
+  padding: 0.8rem 0.7rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.user-table th {
+  color: #374151;
+  font-weight: 600;
+  background: #f9fafb;
+}
+
+.user-table td {
+  color: #6b7280;
+}
+
+/* Alternating row colors */
+.even-row {
+  background-color: #f9fafb;
+}
+
+.odd-row {
+  background-color: #ffffff;
+}
+
+.no-data {
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.user-status-active {
+  background: #a6f5b6;
+  color: #1a7f37;
+  padding: 0.3rem 1rem;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.user-action-btn {
+  background: #1a56db;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #fff;
+  padding: 6px 8px;
+  transition: background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.user-action-btn:hover {
+  background: #1e40af;
+}
+
+.user-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #6b7280;
+  font-size: 14px;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.pagination-info {
+  color: #6b7280;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  font-size: 13px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
   .user-management-content {
-    padding: 2rem 2.5rem;
-    flex: 1;
-  }
-  
-  .user-management-title {
-    color: #23408e;
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 0px;
+    padding: 1rem 0.5rem;
   }
   
   .user-management-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(35, 64, 142, 0.07);
-    padding: 1.5rem;
-    margin-top: 1rem;
+    padding: 1rem;
   }
   
   .user-management-controls {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.2rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
   }
   
-  .user-search-input {
-    flex: 2;
-    min-width: 180px;
-    padding: 0.6rem 1rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    font-size: 14px;
-  }
-  
-  .user-search-btn {
-    background: #23408e;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 0.6rem 1.5rem;
-    font-size: 15px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  
-  .user-search-btn:hover {
-    background: #1a2e5b;
-  }
-  
-  .user-filter-select {
-    min-width: 120px;
-    padding: 0.6rem 1rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    font-size: 15px;
-  }
-  
-  .user-table-wrapper {
-    overflow-x: auto;
-  }
-  
-  .user-table {
+  .search-section,
+  .filter-section,
+  .action-section {
     width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1rem;
+  }
+  
+  .search-section {
+    flex-direction: column;
+  }
+  
+  .filter-section {
+    justify-content: space-between;
+  }
+  
+  .action-section {
+    margin-left: 0;
+    margin-top: 0.5rem;
   }
   
   .user-table th,
   .user-table td {
-    padding: 0.8rem 0.7rem;
-    text-align: left;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 14px;
-  }
-  
-  .user-table th {
-    color: #888;
-    font-weight: 600;
-    background: #f7f8fa;
-  }
-  
-  .user-status-active {
-    background: #a6f5b6;
-    color: #1a7f37;
-    padding: 0.3rem 1rem;
-    border-radius: 12px;
+    padding: 0.5rem 0.3rem;
     font-size: 13px;
-    font-weight: 500;
+  }
+}
+
+@media (max-width: 600px) {
+  .user-management-title {
+    font-size: 1.1rem;
   }
   
-  .user-action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem;
-    color: #23408e;
-    transition: color 0.2s;
+  .user-management-card {
+    padding: 0.5rem;
   }
   
-  .user-action-btn:hover {
-    color: #1a2e5b;
+  .user-table th,
+  .user-table td {
+    padding: 0.3rem 0.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .user-management-content {
+    padding: 0.5rem 0.2rem;
   }
   
   .user-pagination {
-    display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 0.5rem;
     align-items: center;
-    color: #888;
-    font-size: 14px;
-    margin-top: 0.5rem;
   }
-  
-  @media (max-width: 900px) {
-    .user-management-content {
-      padding: 1rem 0.5rem;
-    }
-    .user-management-card {
-      padding: 1rem;
-    }
-    .user-table th,
-    .user-table td {
-      padding: 0.5rem 0.3rem;
-      font-size: 14px;
-    }
-  }
-  
-  @media (max-width: 600px) {
-    .user-management-title {
-      font-size: 1.1rem;
-    }
-    .user-management-card {
-      padding: 0.5rem;
-    }
-    .user-table th,
-    .user-table td {
-      padding: 0.3rem 0.2rem;
-      font-size: 0.9rem;
-    }
-    .user-management-content {
-      padding: 0.5rem 0.2rem;
-    }
-  }
+}

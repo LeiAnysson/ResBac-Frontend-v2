@@ -1,13 +1,6 @@
-.emergency-report-badge {
-  background: #1746a2;
-  color: #fff;
-  padding: 10px 15px;
-  border-radius: 12px 12px 0 0;
-  font-weight: bold;
-  font-size: 13px;
-  margin: 0;
-  display: block;
-}
+@import url("../../Components/ComponentsButtons/ButtonsSearch.css");
+@import url("../../Components/ComponentsButtons/TextBoxSearch.css");
+
 
 .emergency-report-card {
   background: #fff;
@@ -200,15 +193,7 @@
   font-size: 14px;
 }
 
-.emergency-reports-search-btn {
-  background: #1746a2;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 18px;
-  font-weight: 500;
-  cursor: pointer;
-}
+
 
 .emergency-reports-table {
   width: 100%;
