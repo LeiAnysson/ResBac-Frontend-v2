@@ -1,0 +1,36 @@
+.call-popup-overlay {
+  position: fixed;
+  bottom: 20px; 
+  right: 20px; 
+  width: 280px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  z-index: 2000;
+}
+
+.call-popup-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.answer-btn {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.decline-btn {
+  background: #e53935;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}

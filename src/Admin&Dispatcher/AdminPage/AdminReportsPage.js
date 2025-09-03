@@ -4,33 +4,53 @@ import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminReportsPage.css";
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../utils/apiFetch';
+import { reverseGeocode } from '../../utils/hereApi';
 
 const AdminReportsPage = () => {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
 
-  const fetchReports = async (page = 1, filters = {}) => {
-      const params = new URLSearchParams({
-        page,
-        ...(filters.role && { role: filters.role }),
-        ...(filters.residency_status && { residency_status: filters.residency_status }),
-      });
+  const fetchReports = async (page = 1) => {
     try {
-        const data = await apiFetch(`http://127.0.0.1:8000/api/admin/incidents?page=${page}`);
-        setReports(data.data);
-        setPagination({
-          current_page: data.current_page,
-          last_page: data.last_page
-        });
-      } catch (error) {
-        console.error("Failed to fetch reports:", error);
-      }
+      const data = await apiFetch(`http://127.0.0.1:8000/api/incidents?page=${page}`);
+
+      const processedReports = await Promise.all(
+        data.data.map(async (report) => {
+          // 1️⃣ Location from reverse geocode
+          let location = '—';
+          if (report.latitude && report.longitude) {
+            const address = await reverseGeocode(report.latitude, report.longitude);
+            location = address || 'Unknown location';
+          }
+
+          // 2️⃣ Landmark from backend
+          const landmark = report.landmark || '—';
+
+          return { ...report, location, landmark };
+        })
+      );
+
+      setReports(processedReports);
+      setPagination({
+        current_page: data.current_page,
+        last_page: data.last_page,
+      });
+    } catch (error) {
+      console.error("Failed to fetch reports:", error);
+    }
   };
 
   useEffect(() => {
     fetchReports();
   }, []);
+
+  const getBasePath = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user?.role_id === 2
+      ? "/dispatcher/emergency-reports"
+      : "/admin/emergency-reports";
+  };
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.last_page) {
@@ -70,11 +90,11 @@ const AdminReportsPage = () => {
 
                     <td>
                       <span className={`type-badge type-${report.incident_type.name.toLowerCase()}`}>
-                        {report.incident_type.name}
+                        {report.incident_type?.name || 'Unknown'}
                       </span>
                     </td>
 
-                    <td>{report.landmark || '—'}</td>
+                    <td>{report.location || '—'}</td>
 
                     <td>{new Date(report.reported_at).toLocaleString()}</td>
 
@@ -85,9 +105,8 @@ const AdminReportsPage = () => {
                     </td>
 
                     <td>
-                      <button
-                        className="view-btn"
-                        onClick={() => navigate(`/admin/emergency-reports/${report.id}`)}
+                      <button className="view-btn"
+                        onClick={() => navigate(`${getBasePath()}/${report.id}`)}
                       >
                         View
                       </button>

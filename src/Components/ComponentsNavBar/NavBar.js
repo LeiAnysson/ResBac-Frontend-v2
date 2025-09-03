@@ -15,6 +15,9 @@ const NavBar = () => {
     return storedUser ? JSON.parse(storedUser) : null;
   });
 
+  const isAdmin = user?.role?.name === 'Admin';
+  const isDispatcher = user?.role?.name === 'MDRRMO';
+  
   const handleLogout = async () => {
     const token = localStorage.getItem('token');
     try {
@@ -79,71 +82,26 @@ const NavBar = () => {
         <hr className="navbar-divider"/>
         <div className="navbar-menu">
           {/* Dashboard */}
-          {user?.role?.name === 'Admin' ? (
-            <Link
-              to="/admin"
-              className={`navbar-menu-item${location.pathname === "/admin" ? " active" : ""}`}
-            >
-              <MdHome className="navbar-menu-icon" />
-              <span>Dashboard</span>
-            </Link>
-          ) : user?.role?.name === 'MDRRMO' ? (
-            <Link
-              to="/dispatcher"
-              className={`navbar-menu-item${location.pathname === "/dispatcher" ? " active" : ""}`}
-            >
-              <MdHome className="navbar-menu-icon" />
-              <span>Dashboard</span>
-            </Link>
-          ) : null}
+          {isAdmin && <Link to="/admin" className={`navbar-menu-item${location.pathname === "/admin" ? " active" : ""}`}><MdHome className="navbar-menu-icon" /><span>Dashboard</span></Link>}
+          {isDispatcher && <Link to="/dispatcher" className={`navbar-menu-item${location.pathname === "/dispatcher" ? " active" : ""}`}><MdHome className="navbar-menu-icon" /><span>Dashboard</span></Link>}
 
           {/* Admin-only */}
-          {user?.role?.name === 'Admin' && (
-            <>
-              <Link
-                to="/admin/user-management"
-                className={`navbar-menu-item${location.pathname === "/admin/user-management" ? " active" : ""}`}
-              >
-                <MdPeople className="navbar-menu-icon" />
-                <span>User Management</span>
-              </Link>
-              <Link
-                to="/admin/emergency-reports"
-                className={`navbar-menu-item${location.pathname === "/admin/emergency-reports" ? " active" : ""}`}
-              >
-                <MdAssessment className="navbar-menu-icon" />
-                <span>Emergency Reports</span>
-              </Link>
-              <Link
-                to="/admin/response-team"
-                className={`navbar-menu-item${location.pathname === "/admin/response-team" ? " active" : ""}`}
-              >
-                <MdNotificationsActive className="navbar-menu-icon" />
-                <span>Response Team</span>
-              </Link>
-              <Link
-                to="/admin/announcement"
-                className={`navbar-menu-item${location.pathname === "/admin/announcement" ? " active" : ""}`}
-              >
-                <MdCampaign className="navbar-menu-icon" />
-                <span>Announcements</span>
-              </Link>
-              <Link
-                to="/admin/settings"
-                className={`navbar-menu-item${location.pathname === "/admin/settings" ? " active" : ""}`}
-              >
-                <MdSettings className="navbar-menu-icon" />
-                <span>Settings</span>
-              </Link>
-            </>
-          )}
-        </div>
+          {isAdmin && <Link to="/admin/user-management" className={`navbar-menu-item${location.pathname === "/admin/user-management" ? " active" : ""}`}><MdPeople className="navbar-menu-icon" /><span>User Management</span></Link>}
 
-        <div className="navbar-logout" onClick={handleLogout}>
-          <MdLogout />
-          <span>Logout</span>
+          {/* Shared links */}
+          {(isAdmin || isDispatcher) && <>
+            <Link to={isAdmin ? "/admin/emergency-reports" : "/dispatcher/emergency-reports"} className={`navbar-menu-item${location.pathname.includes("emergency-reports") ? " active" : ""}`}><MdAssessment className="navbar-menu-icon" /><span>Emergency Reports</span></Link>
+            <Link to={isAdmin ? "/admin/response-team" : "/dispatcher/response-team"} className={`navbar-menu-item${location.pathname.includes("response-team") ? " active" : ""}`}><MdNotificationsActive className="navbar-menu-icon" /><span>Response Team</span></Link>
+            <Link to={isAdmin ? "/admin/announcement" : "/dispatcher/announcement"} className={`navbar-menu-item${location.pathname.includes("announcement") ? " active" : ""}`}><MdCampaign className="navbar-menu-icon" /><span>Announcement</span></Link>
+          </>}
+
+          {/* Admin-only settings */}
+          {isAdmin && <Link to="/admin/settings" className={`navbar-menu-item${location.pathname === "/admin/settings" ? " active" : ""}`} style={{ marginTop: 'auto' }}><MdSettings className="navbar-menu-icon" /><span>Settings</span></Link>}
+
+          {/* Logout */}
+          <div className="navbar-logout" onClick={handleLogout} style={{ cursor: 'pointer' }}><MdLogout className="navbar-menu-icon" /><span>Logout</span></div>
         </div>
-      </div>
+      </div>  
     </nav>
   );
 };

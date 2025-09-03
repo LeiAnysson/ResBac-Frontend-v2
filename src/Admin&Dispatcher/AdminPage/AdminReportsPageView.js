@@ -3,27 +3,29 @@ import NavBar from "../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminReportsPage.css"; 
 import React, { useState, useEffect } from 'react';
+import ReportDetailsCard from "./Functionalities/ReportDetailsCard";
+import { apiFetch } from '../../utils/apiFetch';
 
-const AdminReportPageView = () => {
+const AdminReportPageView = ({ reportFromCall }) => {
   const { id } = useParams();
-  const [report, setReport] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [report, setReport] = useState(reportFromCall || null);
+  const [loading, setLoading] = useState(!reportFromCall);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/admin/incidents/${id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error('Report not found');
-        return res.json();
-      })
-      .then((data) => {
-        setReport(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Error fetching report:', err);
-        setLoading(false);
-      });
-  }, [id]);
+    if (!reportFromCall && id) {
+      const getReport = async () => {
+        try {
+          const data = await apiFetch(`http://127.0.0.1:8000/api/incidents/${id}`);
+          setReport(data);
+        } catch (err) {
+          console.error("Failed to fetch report: ", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      getReport();
+    }
+  }, [id, reportFromCall]);
 
   if (loading) {
     return (
@@ -51,7 +53,7 @@ const AdminReportPageView = () => {
         </div>
       </div>
     );
-  };
+  }
 
   return (
     <div className="admin-dashboard-container">
@@ -65,65 +67,12 @@ const AdminReportPageView = () => {
               <span role="img" aria-label="alert">🚨</span> Emergency Incident and Disaster Reports
             </span>
 
-            <div className="emergency-report-card">
-              <div className="emergency-report-header">
-                <div className="incident-details">
-                  <div>
-                    <span className="incident-type-label">Incident Type:</span>
-                    <span className={`type-badge incident-type-${report.incident_type.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                      {report.incident_type.name}
-                    </span>
-                  </div>
-                  <div className="incident-meta">
-                    {report && report.reported_at && (
-                      <span>
-                        {new Intl.DateTimeFormat('en-US', {
-                          dateStyle: 'long',
-                          timeStyle: 'short',
-                        }).format(new Date(report.reported_at))}
-                      </span>
-                    )}
-                  </div>
-                  <div className="incident-location-detail">
-                    {report.landmark ?? 'Unknown location'}
-                  </div>
-                  <div className="incident-reporter">
-                    <span className="reporter-label"><b>Reported By: </b></span>
-                    <span className="reporter-name">{report.user ? `${report.user.first_name} ${report.user.last_name}` : 'N/A'}</span>
-                  </div>
-                </div>
-                
-                <div className="incident-actions-header">
-                  <button className="backup-btn">Backup</button>
-                  <button className="invalid-btn">Mark as Invalid</button>
-                </div>
-              </div>
-              
-              <div className="incident-location">
-                <h4>Location</h4>
-                <img
-                  src={report.map_url ?? '/default-map.png'}
-                  alt="Map"
-                  className="incident-map"
-                />
-              </div>
-
-              <div className="incident-description">
-                <h4>Description</h4>
-                <input
-                  className="description-input"
-                  value={report.description}
-                  readOnly
-                />
-              </div>
-              <div className="incident-actions">
-                <button className="send-btn">Send To Responder</button>
-              </div>
-            </div>
+            <ReportDetailsCard report={report} />
           </div>
         </main>
       </div>
     </div>
   );
 };
+
 export default AdminReportPageView;

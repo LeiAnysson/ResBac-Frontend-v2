@@ -8,6 +8,7 @@ import SignInPage from './SignInPage/SignInPage';
 import RegistrationPending from  './RegistrationLoading/RegistrationPending';
 
 import DispatcherDashboard from './Admin&Dispatcher/DispatcherPage/DispatcherDashboard';
+import DispatcherNotifications from './Admin&Dispatcher/DispatcherPage/DispatcherNotifications';
 
 import AdminDashboard from './Admin&Dispatcher/AdminPage/AdminDashboard';
 import AdminUserManagement from './Admin&Dispatcher/AdminPage/AdminUserManagement';
@@ -43,6 +44,7 @@ import ResponderViewReport from './Responder/ResponderViewReport';
 function App() {
   return (
     <Router>
+      <DispatcherNotifications />
       <Routes>
         {/* Public */}
         <Route path="/" element={<LandingPage />} />
@@ -64,6 +66,10 @@ function App() {
 
         {/* Dispatcher */}
         <Route path="/dispatcher" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><DispatcherDashboard /></ProtectedRoute>} />
+        <Route path="/dispatcher/emergency-reports" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminReportsPage /></ProtectedRoute>} />
+        <Route path="/dispatcher/response-team" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminResponseTeam /></ProtectedRoute>} />
+        <Route path="/dispatcher/announcement" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminAnnouncement /></ProtectedRoute>} />
+        <Route path="/dispatcher/emergency-reports/:id" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminReportsPageView /></ProtectedRoute>}/>
 
         {/* Resident */}
         <Route path="/resident" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentDashboard /></ProtectedRoute>} />

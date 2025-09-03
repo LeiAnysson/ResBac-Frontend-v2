@@ -248,6 +248,10 @@ html, body {
     flex-direction: column;
     gap: 1.2rem;
   }
+  .dashboard-content-area {
+    padding: 1rem 0.5rem;
+    margin-left: 100px;
+  }
 }
 
 @media (max-width: 800px) {
@@ -256,6 +260,7 @@ html, body {
   }
   .dashboard-content-area {
     padding: 1rem 0.5rem;
+    margin-left: 100px;
   }
 }
 
@@ -269,5 +274,9 @@ html, body {
   .stat-card {
     min-width: 120px;
     padding: 0.7rem 0.8rem;
+  }
+  .dashboard-content-area {
+    padding: 1rem 0.5rem;
+    margin-left: 100px;
   }
 } 

@@ -52,7 +52,7 @@ const AdminDashboard = () => {
 
 
   // useEffect(() => {
-  //   fetch('http://127.0.0.1:8000/api/admin/incidents/weekly-reports')
+  //   fetch('http://127.0.0.1:8000/api/incidents/weekly-reports')
   //     .then(res => res.json())
   //     .then(data => {
   //       setReportsThisWeek(data.weekly_reports);
