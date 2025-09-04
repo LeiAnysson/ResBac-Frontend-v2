@@ -4,17 +4,11 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import Echo from "laravel-echo";
-import Pusher from "pusher-js";
+import * as Ably from "ably";
 
-window.Pusher = Pusher;
+const ably = new Ably.Realtime(process.env.REACT_APP_ABLY_KEY);
 
-window.Echo = new Echo({
-    broadcaster: "pusher",
-    key: process.env.REACT_APP_PUSHER_KEY,
-    cluster: process.env.REACT_APP_PUSHER_CLUSTER,
-    forceTLS: true,
-});
+window.ably = ably;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

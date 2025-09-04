@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './ResidentCall.css';
 import endCallIcon from '../assets/endcall.png';
+import * as Ably from 'ably';
+
+const ably = new Ably.Realtime({ key: process.env.REACT_APP_ABLY_KEY });
 
 const ResidentCall = () => {
   const navigate = useNavigate();
@@ -10,7 +13,9 @@ const ResidentCall = () => {
   const [callStatus, setCallStatus] = useState('calling'); 
   const [callDuration, setCallDuration] = useState(0);
   const [timerRef, setTimerRef] = useState(null);
+
   const residentId = localStorage.getItem('userId');
+  const privateChannelName = `resident.${residentId}`;
 
   useEffect(() => {
     if (!incidentType) {
@@ -21,15 +26,19 @@ const ResidentCall = () => {
   useEffect(() => {
     if (!residentId) return;
 
-    const channel = window.Echo.private(`resident.${residentId}`)
-      .listen('.CallAccepted', (e) => {
-        console.log('Call accepted by dispatcher:', e);
-        setCallStatus('connected'); 
-      });
+    const channel = ably.channels.get(privateChannelName);
 
-    return () => channel.stopListening('.CallAccepted');
+    const handleCallAccepted = (msg) => {
+      console.log('Call accepted by dispatcher:', msg.data);
+      setCallStatus('connected');
+    };
+
+    channel.subscribe('CallAccepted', handleCallAccepted);
+
+    return () => {
+      channel.unsubscribe('CallAccepted', handleCallAccepted);
+    };
   }, [residentId]);
-
 
   useEffect(() => {
     if (callStatus === 'connected') {

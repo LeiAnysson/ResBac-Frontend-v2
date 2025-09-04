@@ -250,7 +250,8 @@ html, body {
   }
   .dashboard-content-area {
     padding: 1rem 0.5rem;
-    margin-left: 100px;
+    margin-left: 80px;
+    width:auto;
   }
 }
 
@@ -260,7 +261,8 @@ html, body {
   }
   .dashboard-content-area {
     padding: 1rem 0.5rem;
-    margin-left: 100px;
+    margin-left: 80px;
+    width:auto;
   }
 }
 
@@ -278,5 +280,6 @@ html, body {
   .dashboard-content-area {
     padding: 1rem 0.5rem;
     margin-left: 100px;
+    width: auto;
   }
 } 
