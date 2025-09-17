@@ -17,14 +17,12 @@ const AdminReportsPage = () => {
 
       const processedReports = await Promise.all(
         data.data.map(async (report) => {
-          // 1️⃣ Location from reverse geocode
           let location = '—';
           if (report.latitude && report.longitude) {
             const address = await reverseGeocode(report.latitude, report.longitude);
             location = address || 'Unknown location';
           }
 
-          // 2️⃣ Landmark from backend
           const landmark = report.landmark || '—';
 
           return { ...report, location, landmark };

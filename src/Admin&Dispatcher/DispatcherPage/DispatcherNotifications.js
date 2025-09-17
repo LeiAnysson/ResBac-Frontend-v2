@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AdminReportPageView from "../AdminPage/AdminReportsPageView";
-import * as Ably from "ably";
 import './DispatcherNotifications.css';
 import { apiFetch } from '../../utils/apiFetch';
-
-const ably = new Ably.Realtime(process.env.REACT_APP_ABLY_KEY);
-ably.connection.on('connected', () => console.log('Ably connected!'));
-ably.connection.on('failed', (err) => console.error('Ably connection failed', err));
 
 const DispatcherNotifications = () => {
   const [incomingCalls, setIncomingCalls] = useState([]);
@@ -19,33 +14,35 @@ const DispatcherNotifications = () => {
   }, []);
 
   useEffect(() => {
-    const channel = ably.channels.get("dispatcher-channel");
+    if (!window.echo) return;
 
-    const handleIncomingCall = (msg) => {
-      const report = msg.data;
+    const channel = window.echo.private('dispatcher-channel');  //private:dispatcher-channel or private-dispatcher-channel?
+
+    channel.listen(".NotificationEvent", (event) => {
+      console.log("NotificationEvent:", event);
+
+      if (Notification.permission === "granted") {
+        new Notification("New Notification", {
+          body: event.message || "You have a new notification",
+          icon: "/logo192.png",
+        });
+      }
+    });
+
+    channel.listen(".IncidentCallCreated", (report) => {
       console.log("Incoming call event:", report);
-      setIncomingCalls(prev => [...prev, report]);
+      setIncomingCalls((prev) => [...prev, report]);
+
       if (Notification.permission === "granted") {
         new Notification("Incoming Emergency Call!", {
           body: `Incident Type: ${report.incident_type?.name || "Unknown"}`,
           icon: "/logo192.png",
         });
       }
-    };
-
-    const handleCallAccepted = (msg) => {
-      const acceptedReport = msg.data;
-      console.log("Call accepted event:", acceptedReport);
-      setIncomingCalls(prev => prev.filter(c => c.id !== acceptedReport.id));
-      setActiveCall(acceptedReport);
-    };
-
-    channel.subscribe("IncidentCallCreated", handleIncomingCall);
-    channel.subscribe("CallAccepted", handleCallAccepted);
+    });
 
     return () => {
-      channel.unsubscribe("IncidentCallCreated", handleIncomingCall);
-      channel.unsubscribe("CallAccepted", handleCallAccepted);
+      window.echo.leave('dispatcher-channel');
     };
   }, []);
 
@@ -57,14 +54,14 @@ const DispatcherNotifications = () => {
       });
 
       setActiveCall(data.incident);
-      setIncomingCalls(prev => prev.filter(c => c.id !== call.id));
+      setIncomingCalls((prev) => prev.filter((c) => c.id !== call.id));
     } catch (error) {
       console.error("Failed to accept call: ", error);
     }
   };
 
   const rejectCall = (call) => {
-    setIncomingCalls(prev => prev.filter(c => c.id !== call.id));
+    setIncomingCalls((prev) => prev.filter((c) => c.id !== call.id));
   };
 
   const endCall = () => setActiveCall(null);
@@ -74,7 +71,7 @@ const DispatcherNotifications = () => {
       {incomingCalls.map((call) => (
         <div key={call.id} className="incoming-call-popup">
           <h4>Incoming Call</h4>
-          <p>Incident Type: {call.incident_type?.name || 'Unknown'}</p>
+          <p>Incident Type: {call.incident_type?.name || "Unknown"}</p>
           <button onClick={() => acceptCall(call)}>Accept</button>
           <button onClick={() => rejectCall(call)}>Reject</button>
         </div>
@@ -82,7 +79,9 @@ const DispatcherNotifications = () => {
 
       {activeCall && (
         <div className="floating-active-call">
-          <p>On Call: {activeCall.user?.first_name} {activeCall.user?.last_name}</p>
+          <p>
+            On Call: {activeCall.user?.first_name} {activeCall.user?.last_name}
+          </p>
           <button onClick={endCall}>End Call</button>
         </div>
       )}

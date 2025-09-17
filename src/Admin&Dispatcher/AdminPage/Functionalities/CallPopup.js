@@ -22,7 +22,7 @@ const DispatcherNotifications = () => {
     if (Notification.permission === "granted") {
       const notification = new Notification("Incoming Emergency Call!", {
         body: `Incident Type: ${report.incident_type.name}`,
-        icon: "/logo192.png",
+        icon: "/logoB.png",
       });
 
       notification.onclick = () => {

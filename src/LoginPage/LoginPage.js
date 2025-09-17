@@ -35,6 +35,52 @@ const LoginPage = () => {
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
 
+          const echo = window.initEcho();
+          setTimeout(() => console.log(echo.connector.ably.channels.all), 1000);
+
+          const ablyConn = echo.connector?.ably?.connection;
+          if (ablyConn) {
+            ablyConn.on((stateChange) => {
+              console.log("Ably connection state:", stateChange.current);
+            });
+          } else {
+            console.error("Ably connection not found inside Echo");
+          }
+
+          if (data.user.role_id === 2) {
+            echo.private('dispatcher-channel')
+              .listen('.IncidentCallCreated', (report) => {
+                console.log('Incoming call:', report);
+              });
+          }
+
+          if (data.user.role_id === 4) {
+            echo.private(`resident.${data.user.id}`)
+              .listen('.CallAccepted', (event) => {
+                console.log('Call accepted:', event);
+              });
+          }
+
+          if (data.user.role_id === 4) {
+            echo.private(`resident.${data.user.id}`)
+              .listen('.CallAccepted', (event) => {
+                console.log('Call accepted:', event);
+              });
+          }
+
+          //-----------TEST---------------
+
+          echo.private('dispatcher-channel')
+              .listen('.TestBroadcast', (e) => {
+                  console.log("Dispatcher channel event:", e);
+              });
+
+          echo.private('resident.5')
+              .listen('.TestBroadcast', (e) => {
+                  console.log("Resident channel event:", e);
+              });
+
+
           if (data.user.role_id === 4 && data.user.residency_status === 'pending') {
             alert('Your residency is still pending approval.');
             return; 
