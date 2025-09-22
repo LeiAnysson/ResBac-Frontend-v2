@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AdminReportPageView from "../AdminPage/AdminReportsPageView";
-import './DispatcherNotifications.css';
-import { apiFetch } from '../../utils/apiFetch';
+import "./DispatcherNotifications.css";
+import { apiFetch } from "../../utils/apiFetch";
 
 const DispatcherNotifications = () => {
   const [incomingCalls, setIncomingCalls] = useState([]);
@@ -14,44 +14,41 @@ const DispatcherNotifications = () => {
   }, []);
 
   useEffect(() => {
-    if (!window.echo) return;
-
-    const channel = window.echo.private('dispatcher-channel');  //private:dispatcher-channel or private-dispatcher-channel?
-
-    channel.listen(".NotificationEvent", (event) => {
-      console.log("NotificationEvent:", event);
-
-      if (Notification.permission === "granted") {
-        new Notification("New Notification", {
-          body: event.message || "You have a new notification",
-          icon: "/logo192.png",
-        });
-      }
-    });
-
-    channel.listen(".IncidentCallCreated", (report) => {
-      console.log("Incoming call event:", report);
+    // Handle incoming call
+    const handleIncomingCall = (e) => {
+      const report = e.detail;
+      console.log("Incoming call (in-app popup):", report);
       setIncomingCalls((prev) => [...prev, report]);
+    };
 
-      if (Notification.permission === "granted") {
-        new Notification("Incoming Emergency Call!", {
-          body: `Incident Type: ${report.incident_type?.name || "Unknown"}`,
-          icon: "/logo192.png",
-        });
+    // Handle resident ending call
+    const handleCallEnded = (e) => {
+      const event = e.detail;
+      console.log("Resident ended the call:", event);
+
+      if (activeCall && event.id === activeCall.id) {
+        setActiveCall(null);
       }
-    });
+    };
+
+    window.addEventListener("incidentCallCreated", handleIncomingCall);
+    window.addEventListener("callEnded", handleCallEnded);
 
     return () => {
-      window.echo.leave('dispatcher-channel');
+      window.removeEventListener("incidentCallCreated", handleIncomingCall);
+      window.removeEventListener("callEnded", handleCallEnded);
     };
-  }, []);
+  }, [activeCall]);
 
   const acceptCall = async (call) => {
     try {
-      const data = await apiFetch(`http://127.0.0.1:8000/api/incidents/calls/accept/${call.id}`, {
-        method: 'POST',
-        body: JSON.stringify({ incident_id: call.id }),
-      });
+      const data = await apiFetch(
+        `http://127.0.0.1:8000/api/incidents/calls/accept/${call.id}`,
+        {
+          method: "POST",
+          body: JSON.stringify({ incident_id: call.id }),
+        }
+      );
 
       setActiveCall(data.incident);
       setIncomingCalls((prev) => prev.filter((c) => c.id !== call.id));
@@ -64,7 +61,19 @@ const DispatcherNotifications = () => {
     setIncomingCalls((prev) => prev.filter((c) => c.id !== call.id));
   };
 
-  const endCall = () => setActiveCall(null);
+  const endCall = async () => {
+    if (!activeCall) return;
+
+    try {
+      await apiFetch(`http://127.0.0.1:8000/api/incidents/calls/${activeCall.id}`, {
+        method: "POST",
+      });
+
+      setActiveCall(null);
+    } catch (err) {
+      console.error("Failed to end call:", err);
+    }
+  };
 
   return (
     <>

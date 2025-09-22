@@ -71,7 +71,7 @@ const ResidentReport = () => {
         const data = await apiFetch("http://127.0.0.1:8000/api/incidents/from-resident", {
           method: "POST",
           body: JSON.stringify(payload),
-        });
+        }).catch(err => console.error('POST error:', err));
 
         console.log("Incident created:", data);
 

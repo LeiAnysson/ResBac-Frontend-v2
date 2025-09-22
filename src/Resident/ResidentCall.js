@@ -11,26 +11,30 @@ const ResidentCall = () => {
   const [incidentType, setIncidentType] = useState(location.state?.incidentType || "");
   const [callStatus, setCallStatus] = useState("calling");
   const [callDuration, setCallDuration] = useState(0);
-  const [timerRef, setTimerRef] = useState(null);
 
-  const residentId = localStorage.getItem("userId");
+  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const residentId = currentUser?.id;
+
   const clientRef = useRef(null);
   const localAudioTrackRef = useRef(null);
+  const timerRef = useRef(null);
+  const echoChannelRef = useRef(null);
 
   useEffect(() => {
-    if (!incidentType) {
-      navigate("/resident/report");
-    }
+    if (!incidentType) navigate("/resident/report");
   }, [incidentType, navigate]);
 
   useEffect(() => {
-    if (!residentId) return;
-    if (!window.echo) return;
+    if (!residentId || !window.Echo) return;
 
-    const privateChannel = `resident.${residentId}`;
-    console.log(`Subscribing to channel: ${privateChannel}`);
+    console.log("Subscribing to resident channel");
+    const channelName = "resident";
+    const channel = window.Echo.channel(channelName);
+    echoChannelRef.current = channel;
 
-    window.echo.private(privateChannel).listen(".CallAccepted", async (event) => {
+    channel.listen(".CallAccepted", async (event) => {
+      if (event.reporter_id !== residentId) return;
+
       console.log("Call accepted by dispatcher:", event);
 
       try {
@@ -41,7 +45,6 @@ const ResidentCall = () => {
         const { appID, token, channelName, uid } = data;
 
         clientRef.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-
         await clientRef.current.join(appID, channelName, token, uid);
 
         localAudioTrackRef.current = await AgoraRTC.createMicrophoneAudioTrack();
@@ -53,37 +56,64 @@ const ResidentCall = () => {
       }
     });
 
+    channel.listen(".CallEnded", async (event) => {
+      if (event.reporter_id !== residentId) return;
+
+      console.log("Dispatcher ended the call:", event);
+      await endCallCleanup();
+    });
+
     return () => {
-      window.echo.leave(privateChannel);
+      leaveEchoChannel();
       cleanupAgora();
+      clearTimer();
     };
   }, [residentId]);
 
-
   useEffect(() => {
     if (callStatus === "connected") {
-      const timer = setInterval(() => setCallDuration((prev) => prev + 1), 1000);
-      setTimerRef(timer);
-      return () => clearInterval(timer);
+      startTimer();
+    } else {
+      clearTimer();
     }
   }, [callStatus]);
+
+  const startTimer = () => {
+    clearTimer();
+    timerRef.current = setInterval(() => setCallDuration((prev) => prev + 1), 1000);
+  };
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
 
   const cleanupAgora = async () => {
     try {
       if (localAudioTrackRef.current) {
         localAudioTrackRef.current.stop();
         localAudioTrackRef.current.close();
+        localAudioTrackRef.current = null;
       }
       if (clientRef.current) {
         await clientRef.current.leave();
+        clientRef.current = null;
       }
     } catch (err) {
       console.error("Error cleaning up Agora:", err);
     }
   };
 
-  const handleEndCall = async () => {
-    if (timerRef) clearInterval(timerRef);
+  const leaveEchoChannel = () => {
+    if (echoChannelRef.current && window.Echo) {
+      window.Echo.leave("resident");
+      echoChannelRef.current = null;
+    }
+  };
+
+  const endCallCleanup = async () => {
+    clearTimer();
     await cleanupAgora();
     setCallStatus("ended");
 
@@ -95,6 +125,18 @@ const ResidentCall = () => {
         fromSOS: location.state?.fromSOS || false,
       },
     });
+  };
+
+  const handleEndCall = async () => {
+    try {
+      await apiFetch(`http://127.0.0.1:8000/api/incidents/calls/end/${location.state?.incidentId}`, {
+        method: "POST",
+      });
+    } catch (err) {
+      console.error("Failed to notify backend about call end:", err);
+    }
+
+    await endCallCleanup();
   };
 
   const formatTime = (seconds) => {
@@ -110,9 +152,7 @@ const ResidentCall = () => {
           <div className="call-info">
             <h1 className="caller-name">MDRRMO</h1>
             {callStatus === "calling" && <p className="call-status-text">Calling...</p>}
-            {callStatus === "connected" && (
-              <p className="call-duration">{formatTime(callDuration)}</p>
-            )}
+            {callStatus === "connected" && <p className="call-duration">{formatTime(callDuration)}</p>}
             {callStatus === "ended" && <p className="call-status-text">Call Ended</p>}
           </div>
 
