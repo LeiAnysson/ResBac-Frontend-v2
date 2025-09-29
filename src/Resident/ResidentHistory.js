@@ -16,7 +16,7 @@ const ResidentHistory = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const data = await apiFetch('http://127.0.0.1:8000/api/resident/reports');
+        const data = await apiFetch(`${process.env.REACT_APP_URL}/api/resident/reports`);
         setReports(data);
       } catch (err) {
         console.error('Failed to load reports:', err);

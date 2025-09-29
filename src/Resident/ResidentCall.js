@@ -8,17 +8,26 @@ import { apiFetch } from "../utils/apiFetch";
 const ResidentCall = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [incidentType, setIncidentType] = useState(location.state?.incidentType || "");
+  const [incidentType] = useState(location.state?.incidentType || "");
   const [callStatus, setCallStatus] = useState("calling");
   const [callDuration, setCallDuration] = useState(0);
 
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const residentId = currentUser?.id;
 
+  const [activeCall, setActiveCall] = useState(null);
+  const activeCallRef = useRef(null);
+
   const clientRef = useRef(null);
   const localAudioTrackRef = useRef(null);
   const timerRef = useRef(null);
   const echoChannelRef = useRef(null);
+  const incidentIdRef = useRef(location.state?.incidentId || location.state?.incident?.id || null);
+  const audioCtxRef = useRef(null);
+
+  useEffect(() => {
+    activeCallRef.current = activeCall;
+  }, [activeCall]);
 
   useEffect(() => {
     if (!incidentType) navigate("/resident/report");
@@ -30,25 +39,58 @@ const ResidentCall = () => {
     console.log("Subscribing to resident channel");
     const channelName = "resident";
     const channel = window.Echo.channel(channelName);
-    echoChannelRef.current = channel;
+    echoChannelRef.current = { name: channelName, channel };
 
     channel.listen(".CallAccepted", async (event) => {
       if (event.reporter_id !== residentId) return;
 
       console.log("Call accepted by dispatcher:", event);
 
+      if (event.incident) {
+        setActiveCall(event.incident);
+        activeCallRef.current = event.incident;
+        incidentIdRef.current = event.incident.id;
+      }
+
       try {
-        const data = await apiFetch(
-          `http://127.0.0.1:8000/api/agora/token?channel=incident_${event.id}&uid=${residentId}`
-        );
+        const { appID, token, channelName, uid } = event.agora;
 
-        const { appID, token, channelName, uid } = data;
+        console.log("Resident Agora UID from broadcast:", uid);
 
-        clientRef.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-        await clientRef.current.join(appID, channelName, token, uid);
+        if (!clientRef.current) {
+          clientRef.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+        }
+
+        clientRef.current.removeAllListeners();
+
+        if (!audioCtxRef.current) {
+          audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtxRef.current.state === "suspended") {
+          await audioCtxRef.current.resume();
+        }
+
+        clientRef.current.on("user-published", async (user, mediaType) => {
+          if (mediaType === "audio") {
+            await clientRef.current.subscribe(user, mediaType);
+            if (audioCtxRef.current.state === "suspended") {
+              await audioCtxRef.current.resume();
+            }
+            user.audioTrack.play();
+            console.log("Resident: playing remote audio from", user.uid);
+          }
+        });
+
+        clientRef.current.on("user-unpublished", (user) => {
+          console.log("Dispatcher left the call:", user.uid);
+        });
+
+        const assignedUid = await clientRef.current.join(appID, channelName, token || null, uid);
+        console.log("Joined with Agora UID:", assignedUid);
 
         localAudioTrackRef.current = await AgoraRTC.createMicrophoneAudioTrack();
         await clientRef.current.publish([localAudioTrackRef.current]);
+        console.log("Resident: published local audio");
 
         setCallStatus("connected");
       } catch (err) {
@@ -57,9 +99,8 @@ const ResidentCall = () => {
     });
 
     channel.listen(".CallEnded", async (event) => {
-      if (event.reporter_id !== residentId) return;
-
-      console.log("Dispatcher ended the call:", event);
+      if (event.incidentId !== incidentIdRef.current) return;
+      console.log(`Call ended by ${event.endedBy}`);
       await endCallCleanup();
     });
 
@@ -71,17 +112,15 @@ const ResidentCall = () => {
   }, [residentId]);
 
   useEffect(() => {
-    if (callStatus === "connected") {
-      startTimer();
-    } else {
-      clearTimer();
-    }
+    if (callStatus === "connected") startTimer();
+    else clearTimer();
   }, [callStatus]);
 
   const startTimer = () => {
     clearTimer();
     timerRef.current = setInterval(() => setCallDuration((prev) => prev + 1), 1000);
   };
+
   const clearTimer = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -98,6 +137,7 @@ const ResidentCall = () => {
       }
       if (clientRef.current) {
         await clientRef.current.leave();
+        clientRef.current.removeAllListeners();
         clientRef.current = null;
       }
     } catch (err) {
@@ -106,8 +146,16 @@ const ResidentCall = () => {
   };
 
   const leaveEchoChannel = () => {
-    if (echoChannelRef.current && window.Echo) {
-      window.Echo.leave("resident");
+    const ref = echoChannelRef.current;
+    if (!ref || !ref.channel) return;
+
+    try {
+      ref.channel.stopListening(".CallAccepted");
+      ref.channel.stopListening(".CallEnded");
+      if (typeof ref.channel.unsubscribe === "function") ref.channel.unsubscribe();
+    } catch (err) {
+      console.warn("Error leaving Echo channel:", err);
+    } finally {
       echoChannelRef.current = null;
     }
   };
@@ -117,27 +165,49 @@ const ResidentCall = () => {
     await cleanupAgora();
     setCallStatus("ended");
 
+    const incidentObj = activeCallRef.current || location.state?.incident || null;
+
     navigate("/resident/waiting", {
       state: {
         incidentType,
         callDuration,
         timestamp: new Date().toISOString(),
         fromSOS: location.state?.fromSOS || false,
+        emergencyReport: incidentObj,
       },
     });
   };
 
   const handleEndCall = async () => {
+    if (callStatus === "ended") return;
+
+    const idToEnd =
+      incidentIdRef.current ||
+      activeCallRef.current?.id ||
+      location.state?.incident?.id ||
+      null;
+
+    if (!idToEnd) {
+      console.error("Cannot end call: missing incidentId (no idToEnd). Performing local cleanup.");
+      await endCallCleanup();
+      return;
+    }
+
+    console.log("Ending call; incidentId:", idToEnd);
+
     try {
-      await apiFetch(`http://127.0.0.1:8000/api/incidents/calls/end/${location.state?.incidentId}`, {
-        method: "POST",
-      });
+      await apiFetch(
+        `${process.env.REACT_APP_URL}/api/incidents/calls/${idToEnd}/end`,
+        { method: "POST" }
+      );
     } catch (err) {
       console.error("Failed to notify backend about call end:", err);
     }
 
     await endCallCleanup();
   };
+
+
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);

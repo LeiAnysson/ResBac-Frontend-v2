@@ -11,7 +11,7 @@ const AdminAnnouncement = () => {
 
   const fetchAnnouncements = async () => {
     try {
-      const data = await apiFetch(`http://127.0.0.1:8000/api/announcements`);
+      const data = await apiFetch(`${process.env.REACT_APP_URL}/api/announcements`);
       setAnnouncements(data || []); 
     } catch (err) {
       console.error("Failed to fetch announcements:", err);

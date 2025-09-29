@@ -9,7 +9,7 @@ const AdminDashboard = () => {
   const [pendingResidents, setPendingResidents] = useState(0);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/admin/users/total-users')
+    fetch(`${process.env.REACT_APP_URL}/api/admin/users/total-users`)
       .then(res => res.json())
       .then(data => {
         setUserCount(data.total_users); 
@@ -27,7 +27,7 @@ const AdminDashboard = () => {
       return;
     }
 
-    fetch("http://127.0.0.1:8000/api/admin/residents/pending-residents", {
+    fetch(`${process.env.REACT_APP_URL}/api/admin/residents/pending-residents`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -52,7 +52,7 @@ const AdminDashboard = () => {
 
 
   // useEffect(() => {
-  //   fetch('http://127.0.0.1:8000/api/incidents/weekly-reports')
+  //   fetch('${process.env.REACT_APP_URL}/api/incidents/weekly-reports')
   //     .then(res => res.json())
   //     .then(data => {
   //       setReportsThisWeek(data.weekly_reports);

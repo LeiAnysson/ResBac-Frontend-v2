@@ -15,7 +15,7 @@ const AdminReportPageView = ({ reportFromCall }) => {
     if (!reportFromCall && id) {
       const getReport = async () => {
         try {
-          const data = await apiFetch(`http://127.0.0.1:8000/api/incidents/${id}`);
+          const data = await apiFetch(`${process.env.REACT_APP_URL}/api/incidents/${id}`);
           setReport(data);
         } catch (err) {
           console.error("Failed to fetch report: ", err);

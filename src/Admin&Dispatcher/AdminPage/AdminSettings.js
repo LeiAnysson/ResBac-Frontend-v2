@@ -20,7 +20,7 @@ const AdminSettings = () => {
 
   const fetchActivityLogs = async (page = 1, filters = {}) => {
       try {
-        const data = await apiFetch(`http://127.0.0.1:8000/api/admin/activity-logs?page=${page}`);
+        const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/activity-logs?page=${page}`);
 
         setActivityLogs(data.data);
         setPagination({
@@ -38,7 +38,7 @@ const AdminSettings = () => {
   }, []);
 
   const handlePrintAll = async () => {
-    const data = await apiFetch("http://127.0.0.1:8000/api/admin/activity-logs/all");
+    const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/activity-logs/all`);
 
     printTable(data, [
       { header: "User ID", key: "user_id" },
@@ -95,7 +95,7 @@ const AdminSettings = () => {
   
   const fetchIncidentTypes = async (page = 1) => {
     try {
-      const data = await apiFetch(`http://127.0.0.1:8000/api/admin/incident-types?page=${page}`);
+      const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/incident-types?page=${page}`);
       setIncidentTypes(data.data);
       setIncidentPagination({
         current_page: data.current_page,

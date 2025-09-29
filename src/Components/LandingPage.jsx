@@ -119,8 +119,8 @@ const LandingPage = () => {
       
       {/* Emergency Cross */}
       <circle cx="330" cy="162" r="18" fill="#ff0000" className="emergency-cross"/>
-      <line x1="321" y1="162" x2="339" y1="162" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" className="cross-horizontal"/>
-      <line x1="330" y1="153" x2="330" y1="171" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" className="cross-vertical"/>
+      <line x1="321" y1="162" x2="339" y2="162" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" className="cross-horizontal"/>
+      <line x1="330" y1="153" x2="330" y2="171" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" className="cross-vertical"/>
       
       {/* Emergency Lights with Intense Animation */}
       <circle cx="200" cy="80" r="15" fill="#ffff00" className="light-top" filter="url(#glow)"/>
@@ -132,39 +132,39 @@ const LandingPage = () => {
         <circle cx="100" cy="220" r="25" fill="#333" stroke="#666" strokeWidth="2"/>
         <circle cx="100" cy="220" r="15" fill="#666"/>
         <circle cx="100" cy="220" r="8" fill="#999"/>
-        <line x1="100" y1="195" x2="100" y1="245" stroke="#999" strokeWidth="2" className="wheel-spoke"/>
-        <line x1="75" y1="220" x2="125" y1="220" stroke="#999" strokeWidth="2" className="wheel-spoke"/>
+        <line x1="100" y1="195" x2="100" y2="245" stroke="#999" strokeWidth="2" className="wheel-spoke"/>
+        <line x1="75" y1="220" x2="125" y2="220" stroke="#999" strokeWidth="2" className="wheel-spoke"/>
       </g>
       
       <g className="wheel-back">
         <circle cx="280" cy="220" r="25" fill="#333" stroke="#666" strokeWidth="2"/>
         <circle cx="280" cy="220" r="15" fill="#666"/>
         <circle cx="280" cy="220" r="8" fill="#999"/>
-        <line x1="280" y1="195" x2="280" y1="245" stroke="#999" strokeWidth="2" className="wheel-spoke"/>
-        <line x1="255" y1="220" x2="305" y1="220" stroke="#999" strokeWidth="2" className="wheel-spoke"/>
+        <line x1="280" y1="195" x2="280" y2="245" stroke="#999" strokeWidth="2" className="wheel-spoke"/>
+        <line x1="255" y1="220" x2="305" y2="220" stroke="#999" strokeWidth="2" className="wheel-spoke"/>
       </g>
       
       {/* Front Grill */}
       <rect x="30" y="120" width="20" height="80" fill="#333" className="front-grill"/>
-      <line x1="30" y1="130" x2="50" y1="130" stroke="#666" strokeWidth="1" className="grill-line"/>
-      <line x1="30" y1="140" x2="50" y1="140" stroke="#666" strokeWidth="1" className="grill-line"/>
-      <line x1="30" y1="150" x2="50" y1="150" stroke="#666" strokeWidth="1" className="grill-line"/>
-      <line x1="30" y1="160" x2="50" y1="160" stroke="#666" strokeWidth="1" className="grill-line"/>
-      <line x1="30" y1="170" x2="50" y1="170" stroke="#666" strokeWidth="1" className="grill-line"/>
-      <line x1="30" y1="180" x2="50" y1="180" stroke="#666" strokeWidth="1" className="grill-line"/>
+      <line x1="30" y1="130" x2="50" y2="130" stroke="#666" strokeWidth="1" className="grill-line"/>
+      <line x1="30" y1="140" x2="50" y2="140" stroke="#666" strokeWidth="1" className="grill-line"/>
+      <line x1="30" y1="150" x2="50" y2="150" stroke="#666" strokeWidth="1" className="grill-line"/>
+      <line x1="30" y1="160" x2="50" y2="160" stroke="#666" strokeWidth="1" className="grill-line"/>
+      <line x1="30" y1="170" x2="50" y2="170" stroke="#666" strokeWidth="1" className="grill-line"/>
+      <line x1="30" y1="180" x2="50" y2="180" stroke="#666" strokeWidth="1" className="grill-line"/>
       
       {/* Side Door */}
       <rect x="150" y="110" width="80" height="100" fill="#f0f0f0" stroke="#333" strokeWidth="1" className="side-door"/>
-      <line x1="190" y1="110" x2="190" y1="210" stroke="#333" strokeWidth="1" className="door-seam"/>
+      <line x1="190" y1="110" x2="190" y2="210" stroke="#333" strokeWidth="1" className="door-seam"/>
       
       {/* Emergency Siren */}
       <rect x="180" y="70" width="40" height="20" rx="5" fill="#ff0000" className="emergency-siren"/>
       <rect x="185" y="75" width="30" height="10" fill="#ffffff" opacity="0.8"/>
       
       {/* Motion Lines for Speed Effect */}
-      <line x1="350" y1="140" x2="380" y1="140" stroke="#ffffff" strokeWidth="2" opacity="0.6" className="motion-line"/>
-      <line x1="350" y1="160" x2="380" y1="160" stroke="#ffffff" strokeWidth="2" opacity="0.4" className="motion-line"/>
-      <line x1="350" y1="180" x2="380" y1="180" stroke="#ffffff" strokeWidth="2" opacity="0.2" className="motion-line"/>
+      <line x1="350" y1="140" x2="380" y2="140" stroke="#ffffff" strokeWidth="2" opacity="0.6" className="motion-line"/>
+      <line x1="350" y1="160" x2="380" y2="160" stroke="#ffffff" strokeWidth="2" opacity="0.4" className="motion-line"/>
+      <line x1="350" y1="180" x2="380" y2="180" stroke="#ffffff" strokeWidth="2" opacity="0.2" className="motion-line"/>
     </svg>
    {/* Emergency Scene Elements */}
     <div className="emergency-elements">

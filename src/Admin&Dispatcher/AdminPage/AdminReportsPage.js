@@ -13,7 +13,7 @@ const AdminReportsPage = () => {
 
   const fetchReports = async (page = 1) => {
     try {
-      const data = await apiFetch(`http://127.0.0.1:8000/api/incidents?page=${page}`);
+      const data = await apiFetch(`${process.env.REACT_APP_URL}/api/incidents?page=${page}`);
 
       const processedReports = await Promise.all(
         data.data.map(async (report) => {
@@ -42,6 +42,16 @@ const AdminReportsPage = () => {
   useEffect(() => {
     fetchReports();
   }, []);
+
+  const getPriorityColor = (priorityLevel) => {
+    switch (priorityLevel) {
+      case 4: return '#fd3d40ff'; 
+      case 3: return '#f96567ff';
+      case 2: return '#fa8789ff';
+      case 1: return '#fca8a9ff';
+      default: return '#ff6666'; 
+    }
+  };
 
   const getBasePath = () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -87,7 +97,10 @@ const AdminReportsPage = () => {
                     <td>{report.id}</td>
 
                     <td>
-                      <span className={`type-badge type-${report.incident_type.name.toLowerCase()}`}>
+                      <span
+                        className="type-badge"
+                        style={{ backgroundColor: getPriorityColor(report.incident_type?.priority?.priority_level) }}
+                      >
                         {report.incident_type?.name || 'Unknown'}
                       </span>
                     </td>

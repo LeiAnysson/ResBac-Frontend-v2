@@ -1,145 +1,115 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import './ResidentWaiting.css';
-import Header from '../Components/ComponentsHeaderWebApp/header.jsx';
-import BottomNav from '../Components/ComponentsBottomNavWebApp/BottomNav.jsx';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import "./ResidentWaiting.css";
+import Header from "../Components/ComponentsHeaderWebApp/header.jsx";
+import BottomNav from "../Components/ComponentsBottomNavWebApp/BottomNav.jsx";
+
+let hereMapsLoaded = false;
 
 const ResidentWaiting = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Get data passed from the call screen
+  const mapRef = useRef(null);
+
   const callData = location.state || {};
-  
-  const [emergencyReport, setEmergencyReport] = useState({
-    id: '',
-    type: callData.incidentType || '',
-    description: '',
-    location: '',
-    coordinates: {
-      latitude: 0,
-      longitude: 0
-    },
-    status: 'pending',
-    submittedAt: callData.timestamp || new Date().toISOString(),
-    estimatedResponseTime: '5-10 minutes',
-    assignedDispatcher: null,
-    priority: 'medium',
-    callDuration: callData.callDuration || 0,
-    fromWitnessReport: callData.fromWitnessReport || false,
-    fromSOS: callData.fromSOS || false
-  });
+  const initialReport = callData.emergencyReport || null;
+
+  const [emergencyReport, setEmergencyReport] = useState(
+    initialReport || {
+      id: "",
+      type: callData.incidentType || "",
+      description: "",
+      location: "",
+      coordinates: {
+        latitude: 14.7995,
+        longitude: 120.9267,
+      },
+      status: "pending",
+      submittedAt: callData.timestamp || new Date().toISOString(),
+      estimatedResponseTime: "5-10 minutes",
+      assignedDispatcher: null,
+      priority: "medium",
+      callDuration: callData.callDuration || 0,
+      fromWitnessReport: callData.fromWitnessReport || false,
+      fromSOS: callData.fromSOS || false,
+    }
+  );
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Simulate fetching emergency report data from backend
   useEffect(() => {
-    const fetchEmergencyReport = async () => {
-      setLoading(true);
-      try {
-        // TODO: Replace with actual API call
-        // const response = await fetch('/api/emergency-reports/current');
-        // const data = await response.json();
-        
-        // If no call data is present, redirect to report page
-        if (!callData.incidentType && !callData.fromWitnessReport && !callData.fromSOS) {
-          console.warn('No incident data provided, redirecting to report page');
-          navigate('/resident/report');
-          return;
-        }
-        
-        // Mock data for demonstration
-        const mockData = {
-          id: 'ER-2024-001',
-          type: callData.incidentType || (callData.fromSOS ? 'Emergency' : 'Witness Report'),
-          description: callData.fromSOS 
-            ? 'SOS emergency call completed - high priority dispatch'
-            : callData.fromWitnessReport 
-              ? 'Witness report submitted - under review'
-              : 'Emergency call completed - awaiting dispatch',
-          location: '123 Main Street, Bocaue',
-          coordinates: {
-            latitude: 14.7995,
-            longitude: 120.9267
-          },
-          status: 'pending',
-          submittedAt: callData.timestamp || new Date().toISOString(),
-          estimatedResponseTime: callData.fromSOS ? '2-5 minutes' : '5-10 minutes',
-          assignedDispatcher: null,
-          priority: callData.fromSOS ? 'critical' : 'high',
-          callDuration: callData.callDuration || 0,
-          fromWitnessReport: callData.fromWitnessReport || false,
-          fromSOS: callData.fromSOS || false
-        };
-        
-        setEmergencyReport(mockData);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load emergency report details');
-        console.error('Error fetching emergency report:', err);
-      } finally {
-        setLoading(false);
-      }
+    if (!emergencyReport.coordinates) return;
+
+    console.log("Resident got incident:", emergencyReport);
+
+    const loadHereMaps = () => {
+      if (window.H) return Promise.resolve();
+      if (hereMapsLoaded) return Promise.resolve();
+
+      const scripts = [
+        "https://js.api.here.com/v3/3.1/mapsjs-core.js",
+        "https://js.api.here.com/v3/3.1/mapsjs-service.js",
+        "https://js.api.here.com/v3/3.1/mapsjs-ui.js",
+        "https://js.api.here.com/v3/3.1/mapsjs-mapevents.js",
+      ];
+
+      hereMapsLoaded = true;
+
+      return Promise.all(
+        scripts.map(
+          (src) =>
+            new Promise((resolve, reject) => {
+              const script = document.createElement("script");
+              script.src = src;
+              script.onload = resolve;
+              script.onerror = reject;
+              document.body.appendChild(script);
+            })
+        )
+      );
     };
 
-    fetchEmergencyReport();
-  }, [callData, navigate]);
+    loadHereMaps().then(() => {
+      if (!mapRef.current || mapRef.current.hasChildNodes()) return;
 
-  // TODO: Add map data fetching when backend API is ready
-  // useEffect(() => {
-  //   const fetchMapData = async () => {
-  //     try {
-  //       // const response = await fetch('/api/map/locations');
-  //       // const mapData = await response.json();
-  //       // setMapData(mapData);
-  //     } catch (err) {
-  //       console.error('Error fetching map data:', err);
-  //     }
-  //   };
-  //   
-  //   fetchMapData();
-  // }, []);
+      const platform = new window.H.service.Platform({
+        apikey: process.env.REACT_APP_HERE_API_KEY,
+      });
 
-  // Function to handle canceling the emergency report
-  const handleCancelReport = async () => {
-    if (window.confirm('Are you sure you want to cancel this emergency report?')) {
-      try {
-        // TODO: Replace with actual API call
-        // await fetch(`/api/emergency-reports/${emergencyReport.id}/cancel`, {
-        //   method: 'PUT',
-        //   headers: { 'Content-Type': 'application/json' }
-        // });
-        
-        navigate('/resident');
-      } catch (err) {
-        setError('Failed to cancel emergency report');
-        console.error('Error canceling report:', err);
-      }
-    }
-  };
+      const defaultLayers = platform.createDefaultLayers();
 
-  // Function to handle updating report status
-  const handleUpdateStatus = async () => {
-    try {
-      // TODO: Replace with actual API call
-      // const response = await fetch(`/api/emergency-reports/${emergencyReport.id}/status`);
-      // const data = await response.json();
-      // setEmergencyReport(prev => ({ ...prev, ...data }));
-      
-      console.log('Checking for status updates...');
-    } catch (err) {
-      console.error('Error updating status:', err);
-    }
-  };
+      const map = new window.H.Map(
+        mapRef.current,
+        defaultLayers.vector.normal.map,
+        {
+          center: {
+            lat: parseFloat(emergencyReport.coordinates.latitude),
+            lng: parseFloat(emergencyReport.coordinates.longitude),
+          },
+          zoom: 15,
+          pixelRatio: window.devicePixelRatio || 1,
+        }
+      );
 
+      window.addEventListener("resize", () => map.getViewPort().resize());
+      new window.H.mapevents.Behavior(new window.H.mapevents.MapEvents(map));
+      window.H.ui.UI.createDefault(map, defaultLayers);
 
+      const marker = new window.H.map.Marker({
+        lat: parseFloat(emergencyReport.coordinates.latitude),
+        lng: parseFloat(emergencyReport.coordinates.longitude),
+      });
+      map.addObject(marker);
 
-  // Auto-refresh status every 30 seconds
+      return () => map.dispose();
+    });
+  }, [emergencyReport.coordinates]);
+
   useEffect(() => {
     const interval = setInterval(() => {
-      if (emergencyReport.status === 'pending') {
-        handleUpdateStatus();
+      if (emergencyReport.status === "pending") {
+        console.log("Checking for status updates...");
       }
     }, 30000);
 
@@ -176,45 +146,39 @@ const ResidentWaiting = () => {
 
   return (
     <div className="waiting-container">
-      {/* Header */}
       <Header />
-      
-             {/* Map Background */}
-       <div className="map-background">
-         {/* Map content will be rendered here when backend API is integrated */}
-         <div className="map-placeholder">
-           {/* TODO: Replace with actual map data from backend API */}
-         </div>
-       </div>
 
-             {/* Status Card Overlay */}
-       <div className="status-card" style={{width: '95%', borderRadius: '50px'}}>
-         <div className="status-icon">
-           <div className="processing-spinner">
-             <div className="spinner-circle"></div>
-           </div>
-         </div>
-         <div className="status-content">
-           <h2 className="status-title">
-             {emergencyReport.fromSOS 
-               ? 'Your SOS emergency call has been successfully submitted'
-               : emergencyReport.fromWitnessReport 
-                 ? 'Your witness report has been successfully submitted'
-                 : 'Your emergency report has been successfully submitted'
-             }
-           </h2>
-           <p className="status-subtitle">
-             {emergencyReport.fromSOS
-               ? 'and is now being dispatched with high priority.'
-               : emergencyReport.fromWitnessReport
-                 ? 'and is now being reviewed by our response team.'
-                 : 'and is now awaiting assignment by a dispatcher.'
-             }
-           </p>
-         </div>
-       </div>
+      <div className="map-background">
+        <div
+          ref={mapRef}
+          style={{ width: "100%", height: "100vh", borderRadius: "8px" }}
+        />
+      </div>
 
-      {/* Bottom Navigation */}
+      <div className="status-card" style={{ width: "95%", borderRadius: "50px" }}>
+        <div className="status-icon">
+          <div className="processing-spinner">
+            <div className="spinner-circle"></div>
+          </div>
+        </div>
+        <div className="status-content">
+          <h2 className="status-title">
+            {emergencyReport.fromSOS
+              ? "Your SOS emergency call has been successfully submitted"
+              : emergencyReport.fromWitnessReport
+              ? "Your witness report has been successfully submitted"
+              : "Your emergency report has been successfully submitted"}
+          </h2>
+          <p className="status-subtitle">
+            {emergencyReport.fromSOS
+              ? "and is now being dispatched with high priority."
+              : emergencyReport.fromWitnessReport
+              ? "and is now being reviewed by our response team."
+              : "and is now awaiting assignment by a dispatcher."}
+          </p>
+        </div>
+      </div>
+
       <BottomNav />
     </div>
   );

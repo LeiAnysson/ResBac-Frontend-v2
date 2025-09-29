@@ -21,7 +21,7 @@ const TeamPage = () => {
 
     const fetchTeams = async (page = 1, filters = {}) => {
       try {
-        const data = await apiFetch(`http://127.0.0.1:8000/api/admin/teams?page=${page}`);
+        const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams?page=${page}`);
         setTeams(data.data);
         setPagination({
           current_page: data.current_page,
@@ -65,7 +65,7 @@ const TeamPage = () => {
       if (!window.confirm("Are you sure you want to delete this team?")) return;
 
       try {
-        await apiFetch(`http://127.0.0.1:8000/api/admin/teams/${id}`, {
+        await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/${id}`, {
           method: "DELETE",
         });
 
@@ -78,7 +78,7 @@ const TeamPage = () => {
     const handleSaveEdit = async () => {
       try {
         // PUT request to update team
-        await apiFetch(`http://127.0.0.1:8000/api/admin/teams/${selectedTeam.id}`, {
+        await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/${selectedTeam.id}`, {
           method: "PUT",
           body: JSON.stringify(editForm),
         });

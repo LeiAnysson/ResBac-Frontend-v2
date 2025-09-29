@@ -13,7 +13,7 @@ const AdminTeamPageView = () => {
     useEffect(() => {
         const fetchTeam = async () => {
             try {
-            const data = await apiFetch(`http://127.0.0.1:8000/api/admin/teams/${id}`);
+            const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/${id}`);
             setTeam(data);
             } catch (err) {
             console.error("Failed to fetch team:", err.message);

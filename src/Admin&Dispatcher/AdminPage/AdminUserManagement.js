@@ -17,7 +17,7 @@ const UserPage = () => {
       });
 
       try {
-        const data = await apiFetch(`http://127.0.0.1:8000/api/admin/users?${params}`); 
+        const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/users?${params}`); 
         setUsers(data.data);
         setPagination({
           current_page: data.current_page,

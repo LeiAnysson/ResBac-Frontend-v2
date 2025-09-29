@@ -8,24 +8,6 @@ const AdminReportCallView = () => {
     const [callStatus, setCallStatus] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
 
-    useEffect(() => {
-        // Fake incoming call after 2s (for testing)
-        const fakeReport = {
-        id: 1,
-        resident_name: "Juan Dela Cruz",
-        incident_type: "Fire",
-        location: "Poblacion, Bocaue",
-        priority: "High",
-        phone: "+63 912 345 6789",
-        };
-
-        setTimeout(() => {
-        setReport(fakeReport);
-        setCallStatus("incoming");
-        setShowPopup(true);
-        }, 2000);
-    }, []);
-
     const handleAnswer = async () => {
         setCallStatus("active");
         setShowPopup(false);
@@ -41,7 +23,7 @@ const AdminReportCallView = () => {
             landmark: "Near Barangay Hall",
         };
 
-        const data = await apiFetch("http://127.0.0.1:8000/api/admin/incidents/accept-call",
+        const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/incidents/accept-call`,
             {
             method: "POST",
             body: JSON.stringify(payload),

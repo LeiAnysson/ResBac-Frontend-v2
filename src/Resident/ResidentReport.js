@@ -20,7 +20,7 @@ const ResidentReport = () => {
         let totalPages = 1;
 
         do {
-          const res = await apiFetch(`http://127.0.0.1:8000/api/incident-types?page=${page}`);
+          const res = await apiFetch(`${process.env.REACT_APP_URL}/api/incident-types?page=${page}`);
           allTypes = [...allTypes, ...res.data]; 
           totalPages = res.last_page; 
           page++;
@@ -30,10 +30,10 @@ const ResidentReport = () => {
           let color = '#ff6666'; 
           if (type.priority) {
             switch (type.priority.priority_level) {
-              case 4: color = '#ff4d4f'; break; 
-              case 3: color = '#ffa940'; break; 
-              case 2: color = '#40a9ff'; break; 
-              case 1: color = '#73d13d'; break; 
+              case 4: color = '#fd3d40ff'; break; 
+              case 3: color = '#f96567ff'; break; 
+              case 2: color = '#fa8789ff'; break; 
+              case 1: color = '#fca8a9ff'; break; 
             }
           }
           return { ...type, color };
@@ -68,7 +68,7 @@ const ResidentReport = () => {
           description: null,
         };
 
-        const data = await apiFetch("http://127.0.0.1:8000/api/incidents/from-resident", {
+        const data = await apiFetch(`${process.env.REACT_APP_URL}/api/incidents/from-resident`, {
           method: "POST",
           body: JSON.stringify(payload),
         }).catch(err => console.error('POST error:', err));
@@ -76,10 +76,21 @@ const ResidentReport = () => {
         console.log("Incident created:", data);
 
         if (reporterType === "Witness") {
-          navigate("/resident/witness-report", { state: { incidentType: incidentType.name, incident: data.incident } });
+          navigate("/resident/witness-report", { 
+            state: { 
+              incidentType: incidentType.name, 
+              incident: data.incident 
+            } 
+          });
         } else if (reporterType === "Victim") {
-          navigate("/resident/call", { state: { incidentType: incidentType.name, incident: data.incident } });
+          navigate("/resident/call", { 
+            state: { 
+              incidentType: incidentType.name, 
+              incident: data.incident 
+            } 
+          });
         }
+
       },
       (err) => {
         console.error("Geolocation error:", err);
