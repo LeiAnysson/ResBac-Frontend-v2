@@ -546,37 +546,89 @@ body {
 }
 
 @media (max-width: 480px) {
+  .landing-header {
+    display: flex;
+    flex-wrap: wrap; /* allow two rows */
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 20px;
+    height: auto; /* height adjusts automatically */
+  }
+
+  /* First row: logo + brand + nav links */
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap; /* wrap links if needed */
+    margin-left: auto; /* push links to right of logo */
+  }
+
+  .logo-image {
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand-name {
+    font-size: 1.2rem;
+  }
+
+  .nav-link-btn {
+    font-size: 0.8rem;
+    padding: 2px 6px;
+  }
+
+  /* Second row: sign-in button */
+  .sign-in-btn {
+    width: 100%; /* take full width */
+    margin-top: 8px; /* space from first row */
+    font-size: 1rem;
+    padding: 8px 20px;
+    text-align: center;
+  }
+
+  /* Hero adjustments */
+  .hero-content {
+    margin-top: 60px;
+  }
+
   .hero-title {
     font-size: 1.8rem;
   }
-  
+
   .hero-subtitle {
     font-size: 0.9rem;
     padding: 6px 15px;
   }
-  
+
+  /* Info & footer adjustments */
   .info-text p {
     font-size: 1rem;
   }
-  
+
   .hotline-section h3 {
     font-size: 1.2rem;
   }
-  
+
   .footer-about h2 {
     font-size: 1.5rem;
   }
-  
+
   .social-icons {
     gap: 15px;
   }
-  
+
   .social-icons a {
     width: 40px;
     height: 40px;
     font-size: 1rem;
   }
-  
+
   .ambulance-svg {
     width: 200px;
     height: 140px;

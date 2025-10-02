@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate} from 'react-router-dom';
 import './SignInPage.css';
 import RegistrationPending from '../RegistrationLoading/RegistrationPending'; 
-
+import UserAgreement from '../RegistrationLoading/UserAgreement';
 
 const SignInPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
   const [registrationComplete, setRegistrationComplete] = useState(false);
+  const [showAgreement, setShowAgreement] = useState(false);
   
   const [formData, setFormData] = useState({
     idType: '',
@@ -45,6 +45,12 @@ const SignInPage = () => {
     setIsLoading(true);
     setError('');
 
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const fullAddress = `${formData.houseNo}, ${formData.street}, ${formData.barangay}`;
 
@@ -56,14 +62,13 @@ const SignInPage = () => {
       formPayload.append('birthdate', formData.birthdate);
       formPayload.append('address', fullAddress);
       formPayload.append('contact_num', formData.contact);
-      formPayload.append('id_number', '');
 
       if (formData.idImage) {
         formPayload.append('id_image', formData.idImage); 
       }
 
-      if (formData.idNumber) {
-        formPayload.append('id_number', formData.idNumber);
+      if (formData.id_number) {
+        formPayload.append('id_number', formData.id_number);
       }
 
       const response = await fetch('http://127.0.0.1:8000/api/register', {
@@ -81,7 +86,7 @@ const SignInPage = () => {
       }
 
       console.log('Registration successful!', result);
-      setRegistrationComplete(true);
+      setShowAgreement(true);
     } catch (err) {
       console.error(err);
       setError(err.message || 'Something went wrong.');
@@ -92,7 +97,12 @@ const SignInPage = () => {
 
   return (
      <>
-      {registrationComplete ? (
+      {showAgreement ? (
+        <UserAgreement onAgree={() => {
+          setShowAgreement(false);
+          setRegistrationComplete(true);
+        }} />
+      ) : registrationComplete ? (
         <RegistrationPending onBack={() => navigate('/login')} />
       ) : (
       <div className="login-root">
@@ -111,6 +121,7 @@ const SignInPage = () => {
             <h2 className="login-title">Sign Up</h2>
             
             <form className="login-form" onSubmit={handleSubmit}>
+            {error && <div className="error-message">{error}</div>}
             {/* ID Type and Upload */}
             <div className="form-row">
               <div className="form-field">
@@ -202,7 +213,9 @@ const SignInPage = () => {
               <input type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="login-input" />
             </div>
 
-            <button type="submit" className="register-btn">Register</button>
+            <button type="submit" className="register-btn" disabled={isLoading}>
+              {isLoading ? "Registering..." : "Register"}
+            </button>
           </form>
 
             <div className="login-signup-row">

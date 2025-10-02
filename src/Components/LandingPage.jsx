@@ -43,25 +43,26 @@ const LandingPage = () => {
           <span className="brand-name">ResBac</span>
         </div>
         <nav className="nav-links">
-          <button 
-            onClick={() => scrollToSection('home')} 
-            className="nav-link-btn"
-          >
-            HOME
-          </button>
-          <button 
-            onClick={() => scrollToSection('about')} 
-            className="nav-link-btn"
-          >
-            ABOUT
-          </button>
-          <button 
-            onClick={() => scrollToSection('contact')} 
-            className="nav-link-btn"
-          >
-            CONTACT
-          </button>
-        </nav>
+            <button 
+              onClick={() => scrollToSection('home')} 
+              className="nav-link-btn"
+            >
+              HOME
+            </button>
+            <button 
+              onClick={() => scrollToSection('about')} 
+              className="nav-link-btn"
+            >
+              ABOUT
+            </button>
+            <button 
+              onClick={() => scrollToSection('contact')} 
+              className="nav-link-btn"
+            >
+              CONTACT
+            </button>
+          </nav>
+        
         <button onClick={handleSignIn} className="sign-in-btn">
           SIGN IN
         </button>

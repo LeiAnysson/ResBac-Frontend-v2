@@ -1,89 +1,118 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../../Components/ComponentsTopBar/TopBar";
+import { apiFetch } from "../../../utils/apiFetch";
 import "./ComponentsTeam&User.css";
 
 const AdminCreateTeam = () => {
+  const { teamId } = useParams();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
-  const [teamData, setTeamData] = useState({
-    teamName: "Team Alpha",
-    availability: "Available",
-    startDate: "2025-08-18",
-    members: [
-      { id: 1, name: "Responder One", isSelected: false },
-      { id: 2, name: "Responder Two", isSelected: false },
-      { id: 3, name: "Responder Three", isSelected: false },
-      { id: 4, name: "Responder Four", isSelected: false },
-      { id: 5, name: "Responder Five", isSelected: false }
-    ]
-  });
+  const [teamData, setTeamData] = useState(null);
+  const [availableUsers, setAvailableUsers] = useState([]);
+  const [showAddDropdown, setShowAddDropdown] = useState(false);
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
-  const handleSave = () => {
-    setIsEditing(false);
-    // Handle save logic here
-    console.log("Team data saved:", teamData);
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    // Reset to original data if needed
-    console.log("Edit cancelled");
-  };
-
-  const handleMemberToggle = (memberId) => {
-    setTeamData(prev => ({
-      ...prev,
-      members: prev.members.map(member =>
-        member.id === memberId
-          ? { ...member, isSelected: !member.isSelected }
-          : member
-      )
-    }));
-  };
-
-  const handleDeleteMember = (memberId) => {
-    setTeamData(prev => ({
-      ...prev,
-      members: prev.members.filter(member => member.id !== memberId)
-    }));
-  };
-
-  const handleAddMember = () => {
-    const newMember = {
-      id: Date.now(),
-      name: `Responder ${teamData.members.length + 1}`,
-      isSelected: false
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/${teamId}`);
+        setTeamData({
+          id: teamId,
+          teamName: data.name,
+          availability: data.status === "active" ? "Available" : "Unavailable",
+          startDate: data.start_date || new Date().toISOString().split("T")[0],
+          members: data.members.map(m => ({
+            id: m.user.id,
+            name: `${m.user.first_name} ${m.user.last_name}`,
+          })),
+        });
+      } catch (err) {
+        console.error("Failed to fetch team:", err);
+      }
     };
+
+    const fetchAvailableUsers = async () => {
+      try {
+        const users = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/users?role=Responder&no_team=1`);
+        setAvailableUsers(users.data);
+      } catch (err) {
+        console.error("Failed to fetch available responders:", err);
+      }
+    };
+
+    fetchTeam();
+    fetchAvailableUsers();
+  }, [teamId]);
+
+  if (!teamData) return <div>Loading...</div>;
+
+  const handleEdit = () => setIsEditing(true);
+  const handleCancel = () => setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/${teamId}`, {
+        method: "PUT",
+        body: JSON.stringify(teamData),
+      });
+      setIsEditing(false);
+      console.log("Team saved:", teamData);
+    } catch (err) {
+      console.error("Failed to save team:", err);
+    }
+  };
+
+  const handleDateChange = async (e) => {
+    const newDate = e.target.value;
+    setTeamData(prev => ({ ...prev, startDate: newDate }));
+
+    try {
+      await apiFetch(`${process.env.REACT_APP_URL}/admin/teams/rotation/start-date`, {
+        method: "PUT",
+        body: JSON.stringify({ rotation_start_date: newDate }),
+      });
+    } catch (err) {
+      console.error("Failed to update rotation date:", err);
+    }
+  };
+
+  const formatDateForDisplay = (dateString) =>
+    new Date(dateString).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+
+  const handleDeleteMember = async (memberId) => {
+    if (!window.confirm("Remove this member?")) return;
+
+    await apiFetch(`${process.env.REACT_APP_URL}/admin/teams/${teamId}/remove-member/${memberId}`, { method: "DELETE" });
+
     setTeamData(prev => ({
       ...prev,
-      members: [...prev.members, newMember]
+      members: prev.members.filter(m => m.id !== memberId)
     }));
+
+    const removedUser = availableUsers.find(u => u.id === memberId);
+    if (!removedUser) setAvailableUsers(prev => [...prev, { id: memberId, name: "Unknown" }]);
   };
 
-  const handleDateChange = (e) => {
-    setTeamData(prev => ({
-      ...prev,
-      startDate: e.target.value
-    }));
-  };
+  const handleAddMember = async (userId) => {
+    try {
+      const response = await apiFetch(
+        `${process.env.REACT_APP_URL}/admin/teams/${teamId}/add-member`,
+        {
+          method: "POST",
+          body: JSON.stringify({ user_id: userId }),
+        }
+      );
 
-  const formatDateForDisplay = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: 'numeric'
-    });
-  };
+      setTeamData(prev => ({
+        ...prev,
+        members: [...prev.members, { id: response.member.id, name: response.member.name }]
+      }));
 
-  const handleBackToTeams = () => {
-    navigate('/admin/response-team');
+      setAvailableUsers(prev => prev.filter(u => u.id !== Number(userId)));
+      setShowAddDropdown(false);
+    } catch (err) {
+      console.error("Failed to add member:", err);
+    }
   };
 
   return (
@@ -93,115 +122,78 @@ const AdminCreateTeam = () => {
         <NavBar />
         <main className="dashboard-content-area">
           <div className="create-team-wrapper compact">
-            {/* Header - Just the team name and icon */}
             <div className="ct-header">
               <div className="cu-header-icon">i</div>
               <h2>{teamData.teamName}</h2>
             </div>
 
-            {/* Edit button separated below header */}
             {!isEditing && (
               <div className="ct-edit-section">
-                <button
-                  type="button"
-                  className="btn btn-primary edit-btn-separated"
-                  onClick={handleEdit}
-                >
+                <button className="btn btn-primary edit-btn-separated" onClick={handleEdit}>
                   Edit
                 </button>
               </div>
             )}
 
-            {/* Main Content */}
             <div className="ct-content">
-              {/* Left Column - Team Information */}
               <div className="ct-info-section">
                 <div className="ct-info-item">
                   <label>Availability:</label>
-                  <span className="ct-status available">{teamData.availability}</span>
+                  <span className={`ct-status ${teamData.availability === "Available" ? "available" : "unavailable"}`}>
+                    {teamData.availability}
+                  </span>
                 </div>
-                
+
                 <div className="ct-info-item">
                   <label>Members:</label>
                   <div className="ct-members-list">
                     {teamData.members.map(member => (
                       <div key={member.id} className="ct-member-item">
-                        {isEditing && (
-                          <input
-                            type="checkbox"
-                            checked={member.isSelected}
-                            onChange={() => handleMemberToggle(member.id)}
-                            className="ct-checkbox"
-                          />
-                        )}
                         <span className="ct-member-name">{member.name}</span>
                         {isEditing && (
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteMember(member.id)}
-                            className="ct-delete-btn"
-                            title="Delete member"
-                          >
-                            🗑️
-                          </button>
+                          <button onClick={() => handleDeleteMember(member.id)} className="ct-delete-btn">🗑️</button>
                         )}
                       </div>
                     ))}
+
                     {isEditing && (
-                      <button
-                        type="button"
-                        onClick={handleAddMember}
-                        className="ct-add-member-btn"
-                        title="Add new member"
-                      >
-                        <span className="ct-plus">+</span>
-                      </button>
+                      <div className="ct-add-member-wrapper">
+                        <button onClick={() => setShowAddDropdown(!showAddDropdown)} className="ct-add-member-btn">+</button>
+                        {showAddDropdown && (
+                          <select
+                            onChange={(e) => handleAddMember(e.target.value)}
+                            defaultValue=""
+                          >
+                            <option value="">Select responder...</option>
+                            {availableUsers.map(u => (
+                              <option key={u.id} value={u.id}>
+                                {u.first_name} {u.last_name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Right Column - Schedule */}
               <div className="ct-schedule-section">
                 <div className="ct-info-item">
-                  <label>Schedule:</label>
-                  <div className="ct-date-input">
-                    <label htmlFor="startDate">Start Date:</label>
-                    {isEditing ? (
-                      <input
-                        id="startDate"
-                        type="date"
-                        value={teamData.startDate}
-                        onChange={handleDateChange}
-                        className="cu-input"
-                      />
-                    ) : (
-                      <span className="ct-date-display">
-                        {formatDateForDisplay(teamData.startDate)}
-                      </span>
-                    )}
-                  </div>
+                  <label>Start Date:</label>
+                  {isEditing ? (
+                    <input type="date" value={teamData.startDate} onChange={handleDateChange} className="cu-input" />
+                  ) : (
+                    <span>{formatDateForDisplay(teamData.startDate)}</span>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Actions - Only show Save/Cancel when editing */}
             {isEditing && (
               <div className="ct-actions">
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleSave}
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-outline"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </button>
+                <button className="btn btn-primary" onClick={handleSave}>Save</button>
+                <button className="btn btn-outline" onClick={handleCancel}>Cancel</button>
               </div>
             )}
           </div>

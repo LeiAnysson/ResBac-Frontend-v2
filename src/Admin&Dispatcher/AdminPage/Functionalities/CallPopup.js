@@ -1,73 +1,56 @@
 import React, { useEffect, useState } from "react";
-import ReportDetailsCard from "./ReportDetailsCard";
-import CallPopup from "./CallPopup";
-import './CallPopup.css';
+import "./CallPopup.css";
+import endCallIcon from "../assets/endcall.png";
+import { reverseGeocode } from '../../utils/hereApi';
 
-const DispatcherNotifications = () => {
-  const [incomingCall, setIncomingCall] = useState(null);
-  const [activeCall, setActiveCall] = useState(null); 
+const CallPopup = ({ show, caller, incident, onEnd }) => {
+  const [location, setLocation] = useState("Fetching location...");
+  const [callDuration, setCallDuration] = useState(0);
 
   useEffect(() => {
-    window.Echo.channel("dispatcher-channel")
-      .listen("IncidentCallCreated", (e) => {
-        console.log("Incoming call event:", e);
-        setIncomingCall(e.report); 
-        showBrowserNotification(e.report);
-      });
-  }, []);
-
-  const showBrowserNotification = (report) => {
-    if (Notification.permission !== "granted") Notification.requestPermission();
-
-    if (Notification.permission === "granted") {
-      const notification = new Notification("Incoming Emergency Call!", {
-        body: `Incident Type: ${report.incident_type.name}`,
-        icon: "/logoB.png",
-      });
-
-      notification.onclick = () => {
-        window.focus();
-        setIncomingCall(report);
-      };
+    let timer;
+    if (show && incident?.callStatus === "connected") {
+      timer = setInterval(() => setCallDuration(prev => prev + 1), 1000);
+    } else {
+      setCallDuration(0);
     }
+    return () => clearInterval(timer);
+  }, [show, incident]);
+
+  useEffect(() => {
+    if (incident?.latitude && incident?.longitude) {
+      reverseGeocode(incident.latitude, incident.longitude).then(addr => setLocation(addr));
+    }
+  }, [incident]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
+    const secs = (seconds % 60).toString().padStart(2, "0");
+    return `${mins}:${secs}`;
   };
 
-  const acceptCall = () => {
-    console.log("Call accepted for report:", incomingCall.id);
-    setActiveCall(incomingCall);
-    setIncomingCall(null);
-  };
-
-  const rejectCall = () => {
-    console.log("Call rejected for report:", incomingCall.id);
-    setIncomingCall(null);
-  };
-
-  const endCall = () => {
-    console.log("Call ended for report:", activeCall.id);
-    setActiveCall(null);
-  };
+  if (!show) return null;
 
   return (
-    <>
-      <CallPopup
-        show={!!incomingCall}
-        caller={incomingCall?.user}
-        callStatus="incoming"
-        onAnswer={acceptCall}
-        onDecline={rejectCall}
-      />
+    <div className="floating-call-popup">
+      <div className="call-info-mini">
+        <h4 className="caller-name">
+          {caller?.first_name} {caller?.last_name || "Resident"}
+        </h4>
+        {incident?.callStatus === "calling" && <p className="call-status">Calling...</p>}
+        {incident?.callStatus === "connected" && (
+          <p className="call-duration">{formatTime(callDuration)}</p>
+        )}
+        <p className="incident-location">{location}</p>
+      </div>
 
-      <CallPopup
-        show={!!activeCall}
-        caller={activeCall?.user}
-        callStatus="active"
-        onEnd={endCall}
-      />
-
-      {activeCall && <ReportDetailsCard report={activeCall} />}
-    </>
+      {incident?.callStatus !== "ended" && (
+        <button className="end-call-btn" onClick={onEnd}>
+          <img src={endCallIcon} alt="End Call" />
+        </button>
+      )}
+    </div>
   );
 };
 
-export default DispatcherNotifications;
+export default CallPopup;

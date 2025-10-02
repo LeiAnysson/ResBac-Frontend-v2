@@ -1,16 +1,14 @@
-/* Responder Reports Styles */
 .responder-reports {
 	min-height: 100vh;
 	background-color: #f7f8fa;
 	position: relative;
 }
 
-/* Title row with back and search */
 .title-with-actions {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-top: 90px; /* space for fixed header */
+	margin-top: 90px;
 	margin-left: 1rem;
 	margin-right: 1rem;
 }
@@ -43,7 +41,6 @@
   object-fit: contain;
 }
 
-/* Reports card */
 .reports-card {
 	background: #fff;
 	border: 1px solid #b3c6e0;
@@ -99,7 +96,6 @@
 	margin: 0;
 }
 
-/* Right side status labels */
 .status-label {
 	font-size: 12px;
 	font-weight: 600;
@@ -111,7 +107,6 @@
 .status-resolved { color: #27ae60; }
 .status-pending { color: #7f8c8d; }
 
-/* Empty state */
 .empty-card {
 	background: #fff;
 	border: 1px solid #b3c6e0;
@@ -126,11 +121,48 @@
 	margin: 0;
 }
 
-/* Plain text version when no inner container desired */
 .reports-empty {
 	text-align: center;
 	padding: 16px 0;
 }
 
-/* Space for bottom nav */
 .responder-reports { padding-bottom: 80px; }
+
+.assigned-incident-popup {
+  position: fixed;  
+  top: 20px;           
+  right: 20px;         
+  width: 300px;
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1000;        
+  animation: slideIn 0.5s ease-out;
+  font-family: Arial, sans-serif;
+  margin-bottom: 10px;
+}
+
+.assigned-incident-popup h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #007bff;
+}
+
+.assigned-incident-popup p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+

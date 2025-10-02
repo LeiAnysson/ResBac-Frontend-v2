@@ -13,15 +13,20 @@ const TeamPage = () => {
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState(null);
+    const [search, setSearch] = useState("");
     const [editForm, setEditForm] = useState({
       team_name: "",
       status: "",
       schedules: [],
     });
-
-    const fetchTeams = async (page = 1, filters = {}) => {
+    
+    const fetchTeams = async (page = 1, filters = {}, searchQuery = "") => {
+      const params = new URLSearchParams({
+        page,
+        ...(searchQuery && { search: searchQuery }),
+      });
       try {
-        const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams?page=${page}`);
+        const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams?${params}`);
         setTeams(data.data);
         setPagination({
           current_page: data.current_page,
@@ -33,12 +38,17 @@ const TeamPage = () => {
     };
 
     useEffect(() => {
-      fetchTeams();
-    }, []);
+      const delayDebounce = setTimeout(() => {
+        fetchTeams(1, search);
+      }, 300);
+
+      return () => clearTimeout(delayDebounce);
+    }, [search]);
+
 
     const handlePageChange = (newPage) => {
       if (newPage >= 1 && newPage <= pagination.last_page) {
-        fetchTeams(newPage);
+        fetchTeams(newPage, search);
       }
     };
 
@@ -109,10 +119,12 @@ const TeamPage = () => {
             <h2 className="response-team-title">Response Team</h2>
             <div className="response-team-card">
               <div className="response-team-controls">
-                <input className="search-input search-input-filled" placeholder="Search..." />
-                <button className="search-btn search-btn-primary search-btn-icon">
-                  <span className="search-icon">🔍</span>
-                </button>
+                <input
+                  className="search-input search-input-filled"
+                  placeholder="Search..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
                 <button className="create-team-btn" onClick={handleCreateTeam}>Create Team</button>
               </div>
               <table className="response-team-table">

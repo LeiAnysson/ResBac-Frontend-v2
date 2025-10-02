@@ -1,71 +1,96 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ResponderReports.css';
-import '../Components/Shared/SharedComponents.css';
 import ResponderHeader from '../Components/NewComponentsHeaderWebApp/ResponderHeader';
 import ResponderBottomNav from '../Components/NewComponentsBottomNavWebApp/ResponderBottomNav';
 import BackButton from '../assets/backbutton.png';
+import { apiFetch } from '../utils/apiFetch';
 
 const ResponderReports = () => {
-	const navigate = useNavigate();
-	// Backend-ready: dynamic list, but no fetching here
-	const [reports] = useState([]);
+  	const navigate = useNavigate();
+  	const [reports, setReports] = useState([]);
+	const [assignedIncidents, setAssignedIncidents] = useState([]);
 
-	const getStatusClass = (status) => {
-		if (!status) return '';
-		const normalized = String(status).toLowerCase();
-		if (normalized.includes('cancel')) return 'status-cancelled';
-		if (normalized.includes('resolve')) return 'status-resolved';
-		if (normalized.includes('route') || normalized.includes('en route')) return 'status-enroute';
-		return 'status-pending';
-	};
 
-	const prettyStatus = (status) => {
-		if (!status) return '';
-		const s = String(status).toLowerCase();
-		if (s.includes('cancel')) return 'Cancelled';
-		if (s.includes('resolve')) return 'Resolved';
-		if (s.includes('route') || s.includes('en route')) return 'En Route';
-		return 'Pending';
-	};
+	useEffect(() => {
+		const fetchReports = async () => {
+		try {
+			const data = await apiFetch(`${process.env.REACT_APP_URL}/api/responder/reports`);
+			setReports(data);
+		} catch (err) {
+			console.error('Failed to load reports:', err);
+		}
+		};
+
+		fetchReports();
+	}, []);
+
+	useEffect(() => {
+		const handler = (e) => {
+			setReports(prev => [e.detail, ...prev]);
+			setAssignedIncidents(prev => [e.detail, ...prev]);
+			
+			setTimeout(() => {
+				setAssignedIncidents(prev => prev.filter(i => i.id !== e.detail.id));
+			}, 5000);
+		};
+
+		window.addEventListener("incidentAssigned", handler);
+
+		return () => window.removeEventListener("incidentAssigned", handler);
+	}, []);
+
+
 
 	return (
 		<div className="responder-reports">
-			{/* Header */}
-			<ResponderHeader />
+		<ResponderHeader />
 
-			{/* Title row */}
-			<div className="title-container reports-title">
-				<button className="back-button" onClick={() => navigate(-1)}>
-					<img className="back-button-icon" src={BackButton} alt="Back" />
-				</button>
-				<h1>Assigned Reports</h1>
-			</div>
+		<div className="title-container reports-title">
+			<button className="back-button" onClick={() => navigate(-1)}>
+			<img className="back-button-icon" src={BackButton} alt="Back" />
+			</button>
+			<h1>Assigned Reports</h1>
+		</div>
 
-			{/* Reports card */}
-			<div className="reports-card">
-				{reports.length > 0 ? (
-					<div className="reports-list">
-						{reports.map((report) => (
-							<div key={report.id} className="report-row">
-								<div className="report-info">
-									<p className="report-datetime">{report.dateTime}</p>
-									<p className="report-incident">Incident Type: <span className="incident-type">{report.incidentType}</span></p>
-									<p className="report-location">{report.location}</p>
-								</div>
-								{report.status ? (
-									<span className={`status-label ${getStatusClass(report.status)}`}>{prettyStatus(report.status)}</span>
-								) : null}
-							</div>
-						))}
+		<div className="responder-notifications">
+			{assignedIncidents.map((inc) => (
+				<div key={inc.id} className="assigned-incident-popup">
+				<h4>{inc.incident_type?.name || "Unknown Type"}</h4>
+				<p>Location: {inc.landmark || `${inc.latitude}, ${inc.longitude}`}</p>
+				</div>
+			))}
+		</div>
+
+		<div className="reports-card">
+			{reports.length > 0 ? (
+			<div className="reports-list">
+				{reports.map((report) => (
+				<div
+					key={report.id}
+					className="report-row"
+					onClick={() => navigate(`/responder/reports/view-report/${report.id}`)}
+					style={{ cursor: 'pointer' }}
+				>
+					<div className="report-info">
+					<p className="report-datetime">{report.date}</p>
+					<p className="report-incident">Incident Type: {report.type}</p>
+					<p className="report-location">{report.landmark}</p>
 					</div>
-				) : (
-					<p className="empty-text reports-empty">No assigned reports</p>
-				)}
+					{report.status && (
+					<span className={`status-label status-${report.status.toLowerCase()}`}>
+						{report.status}
+					</span>
+					)}
+				</div>
+				))}
 			</div>
+			) : (
+			<p className="empty-text reports-empty">No assigned reports</p>
+			)}
+		</div>
 
-			{/* Bottom Navigation */}
-			<ResponderBottomNav />
+		<ResponderBottomNav />
 		</div>
 	);
 };

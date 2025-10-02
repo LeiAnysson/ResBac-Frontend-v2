@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import { encryptPasswordData } from '../utils/crypto';
+import { AuthContext } from "../context/AuthContext";
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();  
+    const navigate = useNavigate(); 
+    const { login } = useContext(AuthContext);
 
     const handleLogin = async (e) => {
       e.preventDefault();
@@ -32,8 +34,7 @@ const LoginPage = () => {
         const data = await response.json();
 
         if (response.ok) {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
+          login(data.user, data.token);
 
           if (data.user.role_id === 4 && data.user.residency_status === 'pending') {
             alert('Your residency is still pending approval.');

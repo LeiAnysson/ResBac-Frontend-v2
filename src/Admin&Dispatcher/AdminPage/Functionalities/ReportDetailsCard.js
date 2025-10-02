@@ -1,9 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 let hereMapsLoaded = false;
 
-const ReportDetailsCard = ({ report }) => {
+const ReportDetailsCard = ({ report, editable, setReport }) => {
   const mapRef = useRef(null);
+  const [updateMessage, setUpdateMessage] = useState(report.description ?? "");
+  const [landmark, setLandmark] = useState(report.landmark ?? "");
+
+  useEffect(() => {
+    setUpdateMessage(report.description ?? "");
+    setLandmark(report.landmark ?? "");
+  }, [report]);
 
   useEffect(() => {
     if (!report?.latitude || !report?.longitude) return;
@@ -67,6 +74,58 @@ const ReportDetailsCard = ({ report }) => {
     });
   }, [report]);
 
+  const sendUpdate = async () => {
+    if (!updateMessage.trim() && (!editable || !landmark?.trim())) return;
+
+    try {
+      const body = { update_message: updateMessage };
+      if (editable && landmark?.trim()) body.landmark = landmark;
+
+      const data = await apiFetch(
+        `${process.env.REACT_APP_URL}/api/incidents/${report.id}/updates`,
+        {
+          method: "POST",
+          body: JSON.stringify(body),
+        }
+      );
+
+      setReport(prev => ({
+        ...prev,
+        description: updateMessage,
+        landmark: landmark,
+      }));
+
+      console.log("Update sent:", data);
+      alert("Update sent to responder!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send update. Try again.");
+    }
+  };
+
+  const markInvalid = async () => {
+    if (!window.confirm("Are you sure you want to mark this report as invalid?")) return;
+
+    try {
+      const data = await apiFetch(
+        `${process.env.REACT_APP_URL}/api/incidents/${report.id}/mark-invalid`,
+        { method: "POST" }
+      );
+
+      setReport(prev => ({
+        ...prev,
+        status: 'invalid'
+      }));
+
+      alert("Report marked as invalid!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to mark report as invalid. Try again.");
+    }
+  };
+
+
+
   if (!report) return null;
 
   return (
@@ -78,6 +137,11 @@ const ReportDetailsCard = ({ report }) => {
             <span className={`type-badge incident-type-${report.incident_type.name.toLowerCase().replace(/\s+/g, '-')}`}>
               {report.incident_type?.name  || 'Unknown'}
             </span>
+            {report.duplicates && (
+              <span className="duplicate-badge">
+                {JSON.parse(report.duplicates).length} duplicates
+              </span>
+            )}
           </div>
           <div className="incident-meta">
             {report?.reported_at && (
@@ -97,12 +161,25 @@ const ReportDetailsCard = ({ report }) => {
             </span>
           </div>
           <div className="incident-location-detail">
-            {report.landmark || 'Unknown location'}
+            {editable ? (
+              <input
+                className="landmark-input"
+                value={landmark}
+                onChange={(e) => setLandmark(e.target.value)}
+                placeholder="Enter landmark"
+                readOnly={report.status === 'invalid'}
+              />
+            ) : (
+              report.status === 'invalid' ? (
+                <span className="invalid-text">Invalid</span>
+              ) : (
+                report.landmark || "Unknown location"
+              )
+            )}
           </div>
         </div>
         <div className="incident-actions-header">
-          <button className="backup-btn">Backup</button>
-          <button className="invalid-btn">Mark as Invalid</button>
+          <button className="invalid-btn" onClick={markInvalid}>Mark as Invalid</button>
         </div>
       </div>
 
@@ -118,12 +195,15 @@ const ReportDetailsCard = ({ report }) => {
         <h4>Description</h4>
         <input
           className="description-input"
-          value={report.description ?? ""}
-          readOnly
+          value={updateMessage}
+          readOnly={!editable || report.status === 'invalid'}
+          onChange={(e) => setUpdateMessage(e.target.value)}
         />
       </div>
       <div className="incident-actions">
-        <button className="send-btn">Send To Responder</button>
+        <button className="send-btn" onClick={sendUpdate}>
+          Send To Responder
+        </button>
       </div>
     </div>
   );

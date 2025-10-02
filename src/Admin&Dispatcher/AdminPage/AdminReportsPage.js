@@ -10,10 +10,14 @@ const AdminReportsPage = () => {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
+  const [search, setSearch] = useState("");
 
-  const fetchReports = async (page = 1) => {
+  const fetchReports = async (page = 1, searchQuery = "") => {
     try {
-      const data = await apiFetch(`${process.env.REACT_APP_URL}/api/incidents?page=${page}`);
+      const params = new URLSearchParams({ page });
+      if (searchQuery) params.append("search", searchQuery);
+
+      const data = await apiFetch(`${process.env.REACT_APP_URL}/api/incidents?page=${params}`);
 
       const processedReports = await Promise.all(
         data.data.map(async (report) => {
@@ -40,11 +44,16 @@ const AdminReportsPage = () => {
   };
 
   useEffect(() => {
-    fetchReports();
-  }, []);
+    const delayDebounce = setTimeout(() => {
+      fetchReports(1, search); 
+    }, 300);
 
-  const getPriorityColor = (priorityLevel) => {
-    switch (priorityLevel) {
+    return () => clearTimeout(delayDebounce);
+  }, [search]);
+
+  const getPriorityColor = (report) => {
+    const level = Number(report.incident_type?.priority?.priority_level) || 0;
+    switch (level) {
       case 4: return '#fd3d40ff'; 
       case 3: return '#f96567ff';
       case 2: return '#fa8789ff';
@@ -75,10 +84,12 @@ const AdminReportsPage = () => {
           <h1 className="emergency-reports-title">Emergency Reports Overview</h1>
           <div className="emergency-reports-card">
             <div className="emergency-reports-controls">
-              <input className="search-input search-input-filled" placeholder="Search..." />
-              <button className="search-btn search-btn-primary">
-                <span className="search-icon">🔍</span> Search
-              </button>
+              <input
+                className="search-input search-input-filled"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </div>
             <table className="emergency-reports-table">
               <thead>
@@ -99,7 +110,7 @@ const AdminReportsPage = () => {
                     <td>
                       <span
                         className="type-badge"
-                        style={{ backgroundColor: getPriorityColor(report.incident_type?.priority?.priority_level) }}
+                        style={{ backgroundColor: getPriorityColor(report) }}
                       >
                         {report.incident_type?.name || 'Unknown'}
                       </span>

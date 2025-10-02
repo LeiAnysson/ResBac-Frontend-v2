@@ -75,6 +75,18 @@ const ResidentReport = () => {
 
         console.log("Incident created:", data);
 
+        if (data.duplicate_of) {
+          alert("This incident was already reported. We've added you as a duplicate reporter.");
+
+          navigate("/resident/waiting", {
+            state: { 
+              duplicateOf: data.duplicate_of,
+              duplicates: data.duplicates
+            }
+          });
+          return;
+        }
+
         if (reporterType === "Witness") {
           navigate("/resident/witness-report", { 
             state: { 

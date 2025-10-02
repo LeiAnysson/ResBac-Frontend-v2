@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import ReportDetailsCard from "./Functionalities/ReportDetailsCard";
 import { apiFetch } from '../../utils/apiFetch';
 
-const AdminReportPageView = ({ reportFromCall }) => {
+const AdminReportPageView = ({ reportFromCall, editable }) => {
   const { id } = useParams();
   const [report, setReport] = useState(reportFromCall || null);
   const [loading, setLoading] = useState(!reportFromCall);
@@ -67,7 +67,11 @@ const AdminReportPageView = ({ reportFromCall }) => {
               <span role="img" aria-label="alert">🚨</span> Emergency Incident and Disaster Reports
             </span>
 
-            <ReportDetailsCard report={report} />
+            <ReportDetailsCard 
+              report={report} 
+              editable={editable} 
+              setReport={setReport}
+            />
           </div>
         </main>
       </div>
@@ -76,3 +80,4 @@ const AdminReportPageView = ({ reportFromCall }) => {
 };
 
 export default AdminReportPageView;
+u470152037_resbac_admin

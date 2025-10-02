@@ -3,17 +3,21 @@ import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminUserManagement.css";
 import React, { useState, useEffect } from "react";
 import { apiFetch } from '../../utils/apiFetch';
+import { useNavigate } from "react-router-dom";
 
 const UserPage = () => {
     const [users, setUsers] = useState([]);
     const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
     const [filters, setFilters] = useState({ role: "", residency_status: "" });
+    const [search, setSearch] = useState("");
+    const navigate = useNavigate();
 
-    const fetchUsers = async (page = 1, filters = {}) => {
+    const fetchUsers = async (page = 1, filters = {}, searchQuery = "") => {
       const params = new URLSearchParams({
         page,
         ...(filters.role && { role: filters.role }),
         ...(filters.residency_status && { residency_status: filters.residency_status }),
+        ...(searchQuery && { search: searchQuery }),
       });
 
       try {
@@ -29,11 +33,15 @@ const UserPage = () => {
     };
 
     useEffect(() => {
-      fetchUsers(1, filters);
-    }, [filters]);
+      const delayDebounce = setTimeout(() => {
+        fetchUsers(1, filters, search);
+      }, 300);
+
+      return () => clearTimeout(delayDebounce);
+    }, [search, filters]);
 
     const handlePageChange = (newPage) => {
-      fetchUsers(newPage, filters);
+      fetchUsers(newPage, filters, search);
     };
 
     const handleFilterChange = (e) => {
@@ -49,10 +57,12 @@ const UserPage = () => {
             <h1 className="user-management-title">User Overview</h1>
             <div className="user-management-card">
               <div className="user-management-controls">
-                <input className="search-input search-input-filled" placeholder="Search..." />
-                <button className="search-btn search-btn-primary search-btn-icon">
-                  <span className="search-icon">🔍</span>
-                </button>
+                <input
+                  className="search-input search-input-filled"
+                  placeholder="Search..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
                 <select className="user-filter-select"
                   name="role"
                   value={filters.role} 
@@ -95,10 +105,21 @@ const UserPage = () => {
                         <td>{user.role?.name || 'No role'}</td>
                         <td>{user.created_at ? new Date(user.created_at).toLocaleDateString() : "No date"}</td>
                         <td>
-                          <span className="user-status-active">{user.residency_status || "N/A"}</span>
+                          <span
+                            className={`user-status 
+                              ${user.residency_status === "approved" ? "active" : ""} 
+                              ${user.residency_status === "pending" ? "pending" : ""} 
+                              ${user.residency_status === "rejected" ? "rejected" : ""}`}
+                          >
+                            {user.residency_status === "approved" ? "Active" : user.residency_status || "N/A"}
+                          </span>
                         </td>
                         <td>
-                          <button className="user-action-btn" title="Edit">
+                          <button 
+                              className="user-action-btn" 
+                              title="Approve / View"
+                              onClick={() => navigate(`/admin/residency-approval/${user.id}`)}
+                            >
                             <span role="img" aria-label="edit">📝</span>
                           </button>
                         </td>

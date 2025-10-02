@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import Ably from "ably";
 import "./ResidentWaiting.css";
 import Header from "../Components/ComponentsHeaderWebApp/header.jsx";
 import BottomNav from "../Components/ComponentsBottomNavWebApp/BottomNav.jsx";
@@ -12,36 +13,18 @@ const ResidentWaiting = () => {
   const mapRef = useRef(null);
 
   const callData = location.state || {};
-  const initialReport = callData.emergencyReport || null;
+  const report = callData.emergencyReport || null;
+  const assignedTeam = report?.assignedTeam || null;
 
-  const [emergencyReport, setEmergencyReport] = useState(
-    initialReport || {
-      id: "",
-      type: callData.incidentType || "",
-      description: "",
-      location: "",
-      coordinates: {
-        latitude: 14.7995,
-        longitude: 120.9267,
-      },
-      status: "pending",
-      submittedAt: callData.timestamp || new Date().toISOString(),
-      estimatedResponseTime: "5-10 minutes",
-      assignedDispatcher: null,
-      priority: "medium",
-      callDuration: callData.callDuration || 0,
-      fromWitnessReport: callData.fromWitnessReport || false,
-      fromSOS: callData.fromSOS || false,
-    }
-  );
+  const [responderLocation, setResponderLocation] = useState(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const ablyRef = useRef(null);
+  const responderMarkerRef = useRef(null);
+  const mapInstanceRef = useRef(null);
 
   useEffect(() => {
-    if (!emergencyReport.coordinates) return;
-
-    console.log("Resident got incident:", emergencyReport);
+    if (!report?.coordinates) return;
 
     const loadHereMaps = () => {
       if (window.H) return Promise.resolve();
@@ -53,7 +36,6 @@ const ResidentWaiting = () => {
         "https://js.api.here.com/v3/3.1/mapsjs-ui.js",
         "https://js.api.here.com/v3/3.1/mapsjs-mapevents.js",
       ];
-
       hereMapsLoaded = true;
 
       return Promise.all(
@@ -70,22 +52,22 @@ const ResidentWaiting = () => {
       );
     };
 
+    let map;
     loadHereMaps().then(() => {
       if (!mapRef.current || mapRef.current.hasChildNodes()) return;
 
       const platform = new window.H.service.Platform({
         apikey: process.env.REACT_APP_HERE_API_KEY,
       });
-
       const defaultLayers = platform.createDefaultLayers();
 
-      const map = new window.H.Map(
+      map = new window.H.Map(
         mapRef.current,
         defaultLayers.vector.normal.map,
         {
           center: {
-            lat: parseFloat(emergencyReport.coordinates.latitude),
-            lng: parseFloat(emergencyReport.coordinates.longitude),
+            lat: parseFloat(report.coordinates.latitude),
+            lng: parseFloat(report.coordinates.longitude),
           },
           zoom: 15,
           pixelRatio: window.devicePixelRatio || 1,
@@ -96,53 +78,54 @@ const ResidentWaiting = () => {
       new window.H.mapevents.Behavior(new window.H.mapevents.MapEvents(map));
       window.H.ui.UI.createDefault(map, defaultLayers);
 
-      const marker = new window.H.map.Marker({
-        lat: parseFloat(emergencyReport.coordinates.latitude),
-        lng: parseFloat(emergencyReport.coordinates.longitude),
+      const incidentMarker = new window.H.map.Marker({
+        lat: parseFloat(report.coordinates.latitude),
+        lng: parseFloat(report.coordinates.longitude),
       });
-      map.addObject(marker);
+      map.addObject(incidentMarker);
 
-      return () => map.dispose();
+      mapInstanceRef.current = map;
+      setMapLoaded(true);
     });
-  }, [emergencyReport.coordinates]);
+
+    return () => {
+      if (map) map.dispose();
+    };
+  }, [report]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (emergencyReport.status === "pending") {
-        console.log("Checking for status updates...");
+    if (!mapLoaded || !assignedTeam) return;
+
+    const ably = new Ably.Realtime({ key: process.env.REACT_APP_ABLY_KEY });
+    ablyRef.current = ably;
+
+    const channel = ably.channels.get("responder-location");
+
+    channel.subscribe((msg) => {
+      const data = msg.data;
+      if (data.teamId !== assignedTeam) return;
+
+      const newLocation = { lat: data.lat, lng: data.lng };
+      setResponderLocation(newLocation);
+
+      const map = mapInstanceRef.current;
+      if (!map) return;
+
+      if (!responderMarkerRef.current) {
+        responderMarkerRef.current = new window.H.map.Marker(newLocation);
+        map.addObject(responderMarkerRef.current);
+      } else {
+        responderMarkerRef.current.setGeometry(newLocation);
       }
-    }, 30000);
 
-    return () => clearInterval(interval);
-  }, [emergencyReport.status]);
+      map.setCenter(newLocation);
+    });
 
-  if (loading) {
-    return (
-      <div className="waiting-container">
-        <Header />
-        <div className="loading-overlay">
-          <p>Loading...</p>
-        </div>
-        <BottomNav />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="waiting-container">
-        <Header />
-        <div className="error-overlay">
-          <div className="error-icon">⚠️</div>
-          <p className="error-message">{error}</p>
-          <button className="retry-button" onClick={() => window.location.reload()}>
-            Retry
-          </button>
-        </div>
-        <BottomNav />
-      </div>
-    );
-  }
+    return () => {
+      channel.unsubscribe();
+      ably.close();
+    };
+  }, [mapLoaded, assignedTeam]);
 
   return (
     <div className="waiting-container">
@@ -163,16 +146,16 @@ const ResidentWaiting = () => {
         </div>
         <div className="status-content">
           <h2 className="status-title">
-            {emergencyReport.fromSOS
+            {report?.fromSOS
               ? "Your SOS emergency call has been successfully submitted"
-              : emergencyReport.fromWitnessReport
+              : report?.fromWitnessReport
               ? "Your witness report has been successfully submitted"
-              : "Your emergency report has been successfully submitted"}
+              : "Your report has been successfully submitted"}
           </h2>
           <p className="status-subtitle">
-            {emergencyReport.fromSOS
+            {report?.fromSOS
               ? "and is now being dispatched with high priority."
-              : emergencyReport.fromWitnessReport
+              : report?.fromWitnessReport
               ? "and is now being reviewed by our response team."
               : "and is now awaiting assignment by a dispatcher."}
           </p>

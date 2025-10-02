@@ -160,6 +160,13 @@
   flex: 1;
 }
 
+.error-message {
+  margin-top: 10px;
+  color: #e74c3c;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 
 @media (max-width: 900px) {
   .login-root {

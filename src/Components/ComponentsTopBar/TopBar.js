@@ -1,10 +1,9 @@
-// capstone/src/Components/ComponentsTopBar/TopBar.js
 import React from 'react';
 import './TopBar.css';
 
 const TopBar = () => (
   <header className="topbar">
-    <img className="topbar-logo" src="/logo192.png" alt="Logo" />
+    <img className="topbar-logo" src="/LogoB.png" alt="Logo" />
     <span className="topbar-title"></span>
     <div className="topbar-actions">
       <span className="topbar-notification">

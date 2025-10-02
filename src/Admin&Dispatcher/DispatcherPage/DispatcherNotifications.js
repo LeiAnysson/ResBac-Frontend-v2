@@ -3,6 +3,7 @@ import AdminReportPageView from "../AdminPage/AdminReportsPageView";
 import "./DispatcherNotifications.css";
 import { apiFetch } from "../../utils/apiFetch";
 import AgoraRTC from "agora-rtc-sdk-ng";
+import CallPopup from "../AdminPage/Functionalities/CallPopup";
 
 const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
@@ -10,6 +11,7 @@ const DispatcherNotifications = () => {
   const [incomingCalls, setIncomingCalls] = useState([]);
   const [activeCall, setActiveCall] = useState(null);
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
+  const [duplicateReports, setDuplicateReports] = useState([]);
 
   const echoChannelRef = useRef(null);
   const activeCallRef = useRef(null);
@@ -41,26 +43,39 @@ const DispatcherNotifications = () => {
       }
     };
 
+    const handleDuplicate = (e) => {
+      const dup = e.detail;
+      console.log("Duplicate report detected:", dup);
+
+      setDuplicateReports((prev) => [...prev, dup]);
+
+      setTimeout(() => {
+        setDuplicateReports((prev) =>
+          prev.filter((d) => d.incident_id !== dup.incident_id)
+        );
+      }, 5000);
+    };
+
     window.addEventListener("incidentCallCreated", handleIncomingCall);
     window.addEventListener("callEnded", handleCallEnded);
+    window.addEventListener("duplicateReportCreated", handleDuplicate);
 
     const handleUserPublished = async (user, mediaType) => {
-    if (mediaType === "audio") {
-      try {
-        await client.subscribe(user, mediaType);
+      if (mediaType === "audio") {
+        try {
+          await client.subscribe(user, mediaType);
 
-        if (audioCtxRef.current && audioCtxRef.current.state === "suspended") {
-          await audioCtxRef.current.resume();
+          if (audioCtxRef.current && audioCtxRef.current.state === "suspended") {
+            await audioCtxRef.current.resume();
+          }
+          
+          user.audioTrack.play();
+          console.log("Playing remote audio from:", user.uid);
+        } catch (err) {
+          console.warn("Failed to subscribe/play remote audio:", err);
         }
-        
-        user.audioTrack.play();
-        console.log("Playing remote audio from:", user.uid);
-      } catch (err) {
-        console.warn("Failed to subscribe/play remote audio:", err);
       }
-    }
-  };
-
+    };
 
     const handleUserUnpublished = (user) => {
       console.log("Remote user left:", user.uid);
@@ -89,6 +104,7 @@ const DispatcherNotifications = () => {
     return () => {
       window.removeEventListener("incidentCallCreated", handleIncomingCall);
       window.removeEventListener("callEnded", handleCallEnded);
+      window.removeEventListener("duplicateReportCreated", handleDuplicate); 
 
       client.removeAllListeners("user-published");
       client.removeAllListeners("user-unpublished");
@@ -142,9 +158,8 @@ const DispatcherNotifications = () => {
       );
     } catch (err) {
       console.error("Failed to notify backend about call end:", err);
+      await cleanupCall();
     }
-
-    await cleanupCall();
   };
 
   const cleanupCall = async () => {
@@ -186,33 +201,60 @@ const DispatcherNotifications = () => {
     }
   };
 
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 4: return "#fd3d40ff";
+      case 3: return "#f96567ff";
+      case 2: return "#fa8789ff";
+      case 1: return "#fca8a9ff";
+      default: return "#ffffff";
+    }
+  };
+
   return (
     <>
-      {incomingCalls.map((call) => (
-        <div key={call.id} className="incoming-call-popup">
-          <h4>Incoming Call</h4>
-          <p>Incident Type: {call.incident_type?.name || "Unknown"}</p>
-          <button type="button" onClick={() => acceptCall(call)}>
-            Accept
-          </button>
-          <button type="button" onClick={() => rejectCall(call)}>
-            Reject
-          </button>
-        </div>
-      ))}
+      {incomingCalls.map((call) => {
+        const borderColor = getPriorityColor(call.incident_type?.priority?.priority_level);
 
-      {activeCall && (
-        <div className="floating-active-call">
-          <p>
-            On Call: {activeCall.user?.first_name} {activeCall.user?.last_name}
-          </p>
-          <button type="button" onClick={endCall}>
-            End Call
-          </button>
-        </div>
-      )}
+        return (
+          <div key={call.id} className="incoming-call-popup" style={{ borderColor: borderColor }}>
+            <h4>Incoming Call</h4>
+            <p>Incident Type: {call.incident_type?.name || "Unknown"}</p>
+            <button type="button" onClick={() => acceptCall(call)}>
+              Accept
+            </button>
+            <button type="button" onClick={() => rejectCall(call)}>
+              Reject
+            </button>
+          </div>
+        );
+      })}
 
-      {activeCall && <AdminReportPageView reportFromCall={activeCall} />}
+      {duplicateReports.map((dup) => {
+        const borderColor = getPriorityColor(dup.incident_type?.priority?.priority_level);
+
+        return (
+          <div key={`dup-${dup.incident_id}`} className="duplicate-popup" style={{ borderColor }}>
+            <h5>Duplicate Report</h5>
+            <p>Incident #{dup.incident_id}</p>
+            <p>{dup.incident_type?.name || "Unknown Type"}</p>
+            <p>Total reports: {dup.duplicate_count}</p>
+          </div>
+        );
+      })}
+
+      <CallPopup
+        show={!!activeCall}
+        caller={activeCall?.user}
+        onEnd={endCall}
+      />
+
+      {activeCall && 
+        <AdminReportPageView 
+          reportFromCall={activeCall}
+          editable={!!activeCall} 
+        />
+      }
     </>
   );
 };

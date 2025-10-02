@@ -275,3 +275,13 @@
   font-size: 13px;
   margin-bottom: 3px;
 }
+
+.duplicate-badge {
+  background: #ffcc00;
+  color: #000;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 8px;
+}

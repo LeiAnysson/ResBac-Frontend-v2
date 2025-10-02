@@ -1,14 +1,27 @@
-.call-popup-overlay {
+.call-popup {
   position: fixed;
-  bottom: 20px; 
-  right: 20px; 
-  width: 280px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 15px;
+  top: 20px;
+  right: 20px;
+  width: 240px;
+  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+  border-radius: 10px;
+  padding: 12px;
   text-align: center;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   z-index: 2000;
+  font-family: sans-serif;
+  font-size: 14px;
+  color: #fff;
+}
+
+.call-popup h4 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.call-popup p {
+  margin: 4px 0;
+  font-size: 14px;
 }
 
 .call-popup-actions {
@@ -21,16 +34,38 @@
   background: #4CAF50;
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 13px;
 }
 
 .decline-btn {
   background: #e53935;
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 13px;
 }
+
+.end-btn {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.incident-location {
+  font-size: 12px;
+  color: #e3f2fd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
