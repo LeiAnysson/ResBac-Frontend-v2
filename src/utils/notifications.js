@@ -39,7 +39,6 @@ export const setupNotifications = () => {
     });
 
     window.Echo.channel("dispatcher").listen(".CallEnded", (event) => {
-        console.log("Call ended event for dispatcher:", event);
         window.dispatchEvent(new CustomEvent("callEnded", { detail: event }));
     });
 
@@ -70,6 +69,10 @@ export const setupNotifications = () => {
         console.log("Dispatcher accepted your call:", event);
         showNotification("Call Accepted", "A dispatcher is now handling your call.");
         }
+    });
+
+    window.Echo.channel("resident").listen(".CallEnded", (event) => {
+        window.dispatchEvent(new CustomEvent("callEnded", { detail: event }));
     });
 
     /*

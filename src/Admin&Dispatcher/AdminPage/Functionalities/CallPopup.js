@@ -1,27 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./CallPopup.css";
 import endCallIcon from "../../../assets/endcall.png";
 import { reverseGeocode } from '../../../utils/hereApi';
 
-const CallPopup = ({ show, caller, incident, onEnd }) => {
+const CallPopup = ({ show, caller, incident, callDuration, onEnd }) => {
   const [location, setLocation] = useState("Fetching location...");
-  const [callDuration, setCallDuration] = useState(0);
 
   useEffect(() => {
-    let timer;
-    if (show && incident?.callStatus === "connected") {
-      timer = setInterval(() => setCallDuration(prev => prev + 1), 1000);
-    } else {
-      setCallDuration(0);
-    }
-    return () => clearInterval(timer);
-  }, [show, incident]);
+    const fetchLocation = async () => {
+      if (incident?.latitude != null && incident?.longitude != null) {
+        try {
+          const addr = await reverseGeocode(incident.latitude, incident.longitude);
+          setLocation(addr);
+        } catch (err) {
+          console.error("Reverse geocode failed:", err);
+          setLocation(`${incident.latitude}, ${incident.longitude}`);
+        }
+      }
+    };
 
-  useEffect(() => {
-    if (incident?.latitude && incident?.longitude) {
-      reverseGeocode(incident.latitude, incident.longitude).then(addr => setLocation(addr));
-    }
-  }, [incident]);
+    fetchLocation();
+  }, [incident?.latitude, incident?.longitude]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -29,12 +28,13 @@ const CallPopup = ({ show, caller, incident, onEnd }) => {
     return `${mins}:${secs}`;
   };
 
-  if (!show) return null;
+  if (!show || incident?.callStatus === "ended") return null;
 
   return (
     <div className="floating-call-popup">
       <div className="call-info-mini">
-        <h4 className="caller-name">
+        <label className="d-caller-label">Resident</label>
+        <h4 className="d-caller-name">
           {caller?.first_name} {caller?.last_name || "Resident"}
         </h4>
         {incident?.callStatus === "calling" && <p className="call-status">Calling...</p>}
@@ -45,9 +45,11 @@ const CallPopup = ({ show, caller, incident, onEnd }) => {
       </div>
 
       {incident?.callStatus !== "ended" && (
-        <button className="end-call-btn" onClick={onEnd}>
-          <img src={endCallIcon} alt="End Call" />
-        </button>
+        <div className="call-popup-actions">
+          <button className="end-call-btn" onClick={onEnd}>
+            <img src={endCallIcon} alt="End Call" />
+          </button>
+        </div>
       )}
     </div>
   );

@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
         .then(data => {
           setUser(data);
           localStorage.setItem("user", JSON.stringify(data)); 
-          setLoading(false);
+          setTimeout(() => setLoading(false), 1000);
         })
         .catch(() => {
           localStorage.removeItem("token");

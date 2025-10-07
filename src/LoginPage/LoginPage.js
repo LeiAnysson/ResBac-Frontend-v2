@@ -1,15 +1,31 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import { encryptPasswordData } from '../utils/crypto';
 import { AuthContext } from "../context/AuthContext";
+import Spinner from '../utils/Spinner';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate(); 
-    const { login } = useContext(AuthContext);
+    const { login, loading } = useContext(AuthContext);
+
+    useEffect(() => {
+      const token = localStorage.getItem("token");
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      if (token && user) {
+        if (user.role_id === 1) navigate("/admin");
+        else if (user.role_id === 2) navigate("/dispatcher");
+        else if (user.role_id === 3) navigate("/responder");
+        else if (user.role_id === 4) navigate("/resident");
+        else navigate("/");
+      }
+    }, [navigate]);
+
+    if(loading) return <Spinner message="Loading..." />;
 
     const handleLogin = async (e) => {
       e.preventDefault();

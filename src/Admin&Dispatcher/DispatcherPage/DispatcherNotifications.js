@@ -12,6 +12,8 @@ const DispatcherNotifications = () => {
   const [activeCall, setActiveCall] = useState(null);
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
   const [duplicateReports, setDuplicateReports] = useState([]);
+  const [callDuration, setCallDuration] = useState(0);
+  const timerRef = useRef(null);
 
   const echoChannelRef = useRef(null);
   const activeCallRef = useRef(null);
@@ -34,13 +36,17 @@ const DispatcherNotifications = () => {
       setIncomingCalls((prev) => [...prev, report]);
     };
 
-    const handleCallEnded = (e) => {
-      const event = e.detail;
-      console.log("Resident ended the call:", event);
+    const handleCallEnded = async (event) => {
+      const incidentId = String(event.incidentId);
+      const currentIncidentId = String(activeCallRef.current?.id ?? "");
 
-      if (activeCallRef.current && event.id === activeCallRef.current.id) {
-        cleanupCall();
+      if (!currentIncidentId || incidentId !== currentIncidentId) {
+        console.log("CallEnded not for dispatcher -> ignoring", event);
+        return;
       }
+
+      console.log(`Dispatcher's call ended by ${event.endedByRole} (user ${event.endedById})`);
+      await cleanupCall();
     };
 
     const handleDuplicate = (e) => {
@@ -91,11 +97,25 @@ const DispatcherNotifications = () => {
         echoChannelRef.current = { name: chName, channel: channelObj };
 
         channelObj.listen(".CallEnded", async (event) => {
-          if (!activeCallRef.current) return; 
-          if (event.incidentId !== activeCallRef.current?.id) return;
-          console.log(`Call ended by ${event.endedBy}`);
-          await cleanupCall();
+          console.log("Dispatcher received .CallEnded event:", event);
+
+          if (!activeCallRef.current) {
+            console.log("Dispatcher: no active call currently — ignoring CallEnded event.");
+            return;
+          }
+
+          console.log(
+            `Dispatcher activeCall.id = ${activeCallRef.current.id}, event.incidentId = ${event.incidentId}`
+          );
+
+          if (String(event.incidentId) === String(activeCallRef.current.id)) {
+            console.log("Dispatcher: CallEnded matches active call, cleaning up popup...");
+            await cleanupCall();
+          } else {
+            console.log("Dispatcher: CallEnded does not match active call — ignoring.");
+          }
         });
+
       } catch (err) {
         console.warn("Failed to join Echo channel (dispatcher):", err);
       }
@@ -139,8 +159,15 @@ const DispatcherNotifications = () => {
       setLocalAudioTrack(micTrack);
 
       console.log("Dispatcher: published local audio");
+      
+      if (!timerRef.current) {
+        setCallDuration(0);
+        startTimer();
+        setActiveCall(prev => ({ ...prev, callStatus: "connected" }));
+      }
     } catch (error) {
       console.error("Failed to accept call: ", error);
+      clearTimer();
     }
   };
 
@@ -160,6 +187,8 @@ const DispatcherNotifications = () => {
       console.error("Failed to notify backend about call end:", err);
       await cleanupCall();
     }
+    clearTimer();
+    setCallDuration(0);
   };
 
   const cleanupCall = async () => {
@@ -172,6 +201,8 @@ const DispatcherNotifications = () => {
       }
       setLocalAudioTrack(null);
     }
+    clearTimer();
+    setCallDuration(0);
 
     try {
       await client.leave();
@@ -200,6 +231,19 @@ const DispatcherNotifications = () => {
       echoChannelRef.current = null;
     }
   };
+
+  const startTimer = () => {
+    clearTimer();
+    timerRef.current = setInterval(() => setCallDuration(prev => prev + 1), 1000);
+  };
+
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
 
   const getPriorityColor = (priority) => {
     switch (priority) {
@@ -246,6 +290,8 @@ const DispatcherNotifications = () => {
       <CallPopup
         show={!!activeCall}
         caller={activeCall?.user}
+        incident={activeCall}
+        callDuration={callDuration}
         onEnd={endCall}
       />
 

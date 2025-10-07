@@ -33,81 +33,155 @@ const ResidentCall = () => {
     if (!incidentType) navigate("/resident/report");
   }, [incidentType, navigate]);
 
-  useEffect(() => {
-    if (!residentId || !window.Echo) return;
+  const handleCallAccepted = async (event) => {
+    console.log("handleCallAccepted fired with event:", event);
 
-    console.log("Subscribing to resident channel");
-    const channelName = "resident";
-    const channel = window.Echo.channel(channelName);
-    echoChannelRef.current = { name: channelName, channel };
+    if (!event) {
+      console.warn("CallAccepted event empty — ignoring.");
+      return;
+    }
 
-    channel.listen(".CallAccepted", async (event) => {
-      if (event.reporter_id !== residentId) return;
+    // make ID comparison robust (string/number)
+    if (String(event.reporter_id) !== String(residentId)) {
+      console.log("CallAccepted event not for this resident:", event.reporter_id, "!= ", residentId);
+      return;
+    }
 
-      console.log("Call accepted by dispatcher:", event);
+    console.log("Call accepted by dispatcher (for me):", event);
 
-      if (event.incident) {
-        setActiveCall(event.incident);
-        activeCallRef.current = event.incident;
-        incidentIdRef.current = event.incident.id;
+    if (event.incident) {
+      setActiveCall(event.incident);
+      activeCallRef.current = event.incident;
+      incidentIdRef.current = event.incident.id;
+    }
+
+    try {
+      const { appID, token, channelName, uid } = event.agora || {};
+      console.log("agora payload:", { appID, tokenPresent: !!token, channelName, uid });
+
+      if (!appID || !channelName || uid == null) {
+        console.error("Missing Agora payload — cannot join", event.agora);
+        return;
       }
 
-      try {
-        const { appID, token, channelName, uid } = event.agora;
+      if (!clientRef.current) {
+        clientRef.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+        console.log("Created new Agora client");
+      }
 
-        console.log("Resident Agora UID from broadcast:", uid);
+      // remove previous listeners to avoid duplicates
+      clientRef.current.removeAllListeners();
 
-        if (!clientRef.current) {
-          clientRef.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-        }
-
-        clientRef.current.removeAllListeners();
-
-        if (!audioCtxRef.current) {
-          audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtxRef.current.state === "suspended") {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+        console.log("Created audio context");
+      }
+      if (audioCtxRef.current.state === "suspended") {
+        try {
           await audioCtxRef.current.resume();
+          console.log("audio context resumed");
+        } catch (err) {
+          console.warn("audio context resume failed:", err);
         }
+      }
 
-        clientRef.current.on("user-published", async (user, mediaType) => {
+      clientRef.current.on("user-published", async (user, mediaType) => {
+        console.log("user-published event:", user.uid, mediaType);
+        try {
           if (mediaType === "audio") {
             await clientRef.current.subscribe(user, mediaType);
-            if (audioCtxRef.current.state === "suspended") {
+            if (audioCtxRef.current && audioCtxRef.current.state === "suspended") {
               await audioCtxRef.current.resume();
+              console.log("audio context resumed inside user-published");
             }
             user.audioTrack.play();
             console.log("Resident: playing remote audio from", user.uid);
           }
-        });
+        } catch (e) {
+          console.error("Error in user-published handling:", e);
+        }
+      });
 
-        clientRef.current.on("user-unpublished", (user) => {
-          console.log("Dispatcher left the call:", user.uid);
-        });
+      clientRef.current.on("user-unpublished", (user) => {
+        console.log("Dispatcher left/unpublished:", user.uid);
+      });
 
-        const assignedUid = await clientRef.current.join(appID, channelName, token || null, uid);
-        console.log("Joined with Agora UID:", assignedUid);
+      console.log("Joining Agora channel:", channelName, "uid:", uid);
+      const assignedUid = await clientRef.current.join(appID, channelName, token || null, uid);
+      console.log("Joined Agora with uid:", assignedUid);
 
-        localAudioTrackRef.current = await AgoraRTC.createMicrophoneAudioTrack();
-        await clientRef.current.publish([localAudioTrackRef.current]);
-        console.log("Resident: published local audio");
+      console.log("Creating microphone audio track...");
+      localAudioTrackRef.current = await AgoraRTC.createMicrophoneAudioTrack();
+      console.log("Microphone track created:", localAudioTrackRef.current?.getTrackId?.());
 
-        setCallStatus("connected");
-      } catch (err) {
-        console.error("Agora join error:", err);
+      console.log("Publishing local audio...");
+      await clientRef.current.publish([localAudioTrackRef.current]);
+      console.log("Resident: published local audio successfully");
+
+      setCallStatus("connected");
+    } catch (err) {
+      console.error("Agora join/publish error in handleCallAccepted:", err);
+    }
+  };
+
+  const handleCallEnded = async (event) => {
+    const incidentId = String(event.incidentId);
+    const reporterId = String(event.reporterId);
+    const currentIncidentId = String(incidentIdRef.current ?? location.state?.incident?.id);
+    const currentResidentId = String(currentUser.id);
+
+    if (incidentId !== currentIncidentId || reporterId !== currentResidentId) {
+      console.log("CallEnded not for this resident -> ignoring", event);
+      return;
+    }
+
+    console.log(`Resident call ended by ${event.endedByRole} (user ${event.endedById})`);
+    await endCallCleanup();
+  };
+
+  useEffect(() => {
+    const setupEcho = async () => {
+      let waited = 0;
+      while (!window.Echo && waited < 5000) {
+        await new Promise(r => setTimeout(r, 100));
+        waited += 100;
       }
-    });
+      if (!window.Echo) {
+        console.error("Echo not available after wait — cannot subscribe to resident channel");
+        return;
+      }
 
-    channel.listen(".CallEnded", async (event) => {
-      if (event.incidentId !== incidentIdRef.current) return;
-      console.log(`Call ended by ${event.endedBy}`);
-      await endCallCleanup();
-    });
+      console.log("Subscribing to resident channel once Echo is ready");
+      const channel = window.Echo.channel("resident");
+      echoChannelRef.current = channel;
+
+      channel.listen(".CallAccepted", (ev) => {
+        console.log("raw .CallAccepted received on channel:", ev);
+        handleCallAccepted(ev);
+      });
+
+      channel.listen(".CallEnded", (ev) => {
+        console.log("raw .CallEnded received on channel:", ev);
+        handleCallEnded(ev);
+      });
+    };
+
+    setupEcho();
 
     return () => {
-      leaveEchoChannel();
+      console.log("Unmounting ResidentCall — cleaning up Echo and Agora");
       cleanupAgora();
       clearTimer();
+
+      if (echoChannelRef.current) {
+        try {
+          echoChannelRef.current.stopListening(".CallAccepted");
+          echoChannelRef.current.stopListening(".CallEnded");
+        } catch (err) {
+          console.warn("Error while stopping Echo listeners:", err);
+        }
+        echoChannelRef.current = null;
+      }
     };
   }, [residentId]);
 
@@ -142,21 +216,6 @@ const ResidentCall = () => {
       }
     } catch (err) {
       console.error("Error cleaning up Agora:", err);
-    }
-  };
-
-  const leaveEchoChannel = () => {
-    const ref = echoChannelRef.current;
-    if (!ref || !ref.channel) return;
-
-    try {
-      ref.channel.stopListening(".CallAccepted");
-      ref.channel.stopListening(".CallEnded");
-      if (typeof ref.channel.unsubscribe === "function") ref.channel.unsubscribe();
-    } catch (err) {
-      console.warn("Error leaving Echo channel:", err);
-    } finally {
-      echoChannelRef.current = null;
     }
   };
 
@@ -198,7 +257,10 @@ const ResidentCall = () => {
     try {
       await apiFetch(
         `${process.env.REACT_APP_URL}/api/incidents/calls/${idToEnd}/end`,
-        { method: "POST" }
+        {
+          method: "POST",
+          body: JSON.stringify({ endedBy: residentId }),
+        }
       );
     } catch (err) {
       console.error("Failed to notify backend about call end:", err);
@@ -206,8 +268,6 @@ const ResidentCall = () => {
 
     await endCallCleanup();
   };
-
-
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
