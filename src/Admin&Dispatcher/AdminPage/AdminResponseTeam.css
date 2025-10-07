@@ -19,24 +19,6 @@
   margin-bottom: 12px;
 }
 
-.response-team-search {
-  flex: 1;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  font-size: 15px;
-}
-
-.response-team-search-btn {
-  background: #1746a2;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 18px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
 .create-team-btn {
   background: #2563eb;
   color: #fff;
@@ -69,13 +51,16 @@
   font-weight: 500;
 }
 
-.availability {
-  color: #15803d;
+.status-available {
+  color: #16a34a;
+  font-weight: 600;
 }
 
-.unavailable {
-  color: #b91c1c;
+.status-unavailable {
+  color: #dc2626;
+  font-weight: 600;
 }
+
 
 .response-team-pagination {
   display: flex;
@@ -85,9 +70,20 @@
   margin-top: 8px;
 }
 
-.view-btn, .delete-btn {
+.view-btn {
   background: #e0e7ff;
   color: #2563eb;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.delete-btn {
+  background: #ffe0e0;
+  color: #eb2525;
   border: none;
   border-radius: 6px;
   padding: 6px 18px;

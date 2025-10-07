@@ -80,4 +80,3 @@ const AdminReportPageView = ({ reportFromCall, editable }) => {
 };
 
 export default AdminReportPageView;
-u470152037_resbac_admin

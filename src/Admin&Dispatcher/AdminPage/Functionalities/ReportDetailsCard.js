@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { apiFetch } from '../../../utils/apiFetch';
 
 let hereMapsLoaded = false;
 
@@ -179,7 +180,17 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
           </div>
         </div>
         <div className="incident-actions-header">
-          <button className="invalid-btn" onClick={markInvalid}>Mark as Invalid</button>
+          <button 
+            className="invalid-btn" 
+            onClick={markInvalid} 
+            disabled={report.status === 'invalid'}
+            style={{
+              opacity: report.status === 'invalid' ? 0.6 : 1,
+              cursor: report.status === 'invalid' ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {report.status === 'invalid' ? 'Already Invalid' : 'Mark as Invalid'}
+          </button>
         </div>
       </div>
 
@@ -187,7 +198,7 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
         <h4>Location</h4>
         <div
           ref={mapRef}
-          style={{ width: "100%", height: "250px", borderRadius: "8px" }}
+          style={{ width: "100%", height: "200px", borderRadius: "8px" }}
         />
       </div>
 

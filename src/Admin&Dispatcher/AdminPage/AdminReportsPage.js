@@ -17,7 +17,7 @@ const AdminReportsPage = () => {
       const params = new URLSearchParams({ page });
       if (searchQuery) params.append("search", searchQuery);
 
-      const data = await apiFetch(`${process.env.REACT_APP_URL}/api/incidents?page=${params}`);
+      const data = await apiFetch(`${process.env.REACT_APP_URL}/api/incidents?${params.toString()}`);
 
       const processedReports = await Promise.all(
         data.data.map(async (report) => {
@@ -52,7 +52,7 @@ const AdminReportsPage = () => {
   }, [search]);
 
   const getPriorityColor = (report) => {
-    const level = Number(report.incident_type?.priority?.priority_level) || 0;
+    const level = Number(report.incident_type?.priority_id) || 0;
     switch (level) {
       case 4: return '#fd3d40ff'; 
       case 3: return '#f96567ff';

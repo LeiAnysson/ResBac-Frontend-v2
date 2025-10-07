@@ -141,24 +141,3 @@
     }
   }
   
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    .search-input {
-      background-color: #1f2937;
-      border-color: #4b5563;
-      color: #f9fafb;
-    }
-    
-    .search-input::placeholder {
-      color: #9ca3af;
-    }
-    
-    .search-input-filled {
-      background-color: #374151;
-      border-color: #4b5563;
-    }
-    
-    .search-input-filled:focus {
-      background-color: #1f2937;
-    }
-  }

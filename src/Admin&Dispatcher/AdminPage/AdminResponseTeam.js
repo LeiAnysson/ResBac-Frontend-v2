@@ -4,7 +4,6 @@ import "./AdminResponseTeam.css";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from '../../utils/apiFetch';
-import AdminTeamPageView from "./AdminTeamPageView";
 
 const TeamPage = () => {
     const [teams, setTeams] = useState([]);
@@ -52,25 +51,6 @@ const TeamPage = () => {
       }
     };
 
-    const formatAvailability = (status) => {
-      return status.toLowerCase() === "active" ? "Available" : "Unavailable";
-    };
-
-    const getAvailabilityClass = (status) => {
-      return status.toLowerCase() === "active" ? "availability" : "unavailable";
-    };
-
-     const handleView = (team) => {
-      setSelectedTeam(team);
-      setIsViewModalOpen(true);
-    };
-
-    const closeViewModal = () => {
-      setIsViewModalOpen(false);
-      setSelectedTeam(null);
-      setIsEditing(false);
-    };
-
     const handleDelete = async (id) => {
       if (!window.confirm("Are you sure you want to delete this team?")) return;
 
@@ -83,31 +63,6 @@ const TeamPage = () => {
       } catch (err) {
         console.error("Failed to delete team:", err);
       }
-    };
-
-    const handleSaveEdit = async () => {
-      try {
-        // PUT request to update team
-        await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/${selectedTeam.id}`, {
-          method: "PUT",
-          body: JSON.stringify(editForm),
-        });
-
-        // refresh team list after save
-        fetchTeams(pagination.current_page);
-
-        // close modal + reset
-        setIsEditing(false);
-        setIsViewModalOpen(false);
-        setSelectedTeam(null);
-
-      } catch (err) {
-        console.error("Failed to save edits:", err);
-      }
-    };
-
-    const handleCreateTeam = () => {
-      navigate('/admin/create-team');
     };
 
     return (
@@ -125,7 +80,7 @@ const TeamPage = () => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-                <button className="create-team-btn" onClick={handleCreateTeam}>Create Team</button>
+                <button className="create-team-btn" onClick={() => navigate('/admin/response-teams/create')}>Create Team</button>
               </div>
               <table className="response-team-table">
                 <thead>
@@ -139,8 +94,8 @@ const TeamPage = () => {
                   {teams.map((team) => (
                     <tr key={team.id}>
                       <td>{team.team_name}</td>
-                      <td className={getAvailabilityClass(team.status)}>
-                        {formatAvailability(team.status)}
+                      <td className={team.status === 'available' ? 'status-available' : 'status-unavailable'}>
+                        {team.status.charAt(0).toUpperCase() + team.status.slice(1)}
                       </td>
                       <td>
                         <button className="view-btn" onClick={() => navigate(`/admin/response-teams/${team.id}`)}>View</button>
@@ -150,13 +105,6 @@ const TeamPage = () => {
                   ))}
                 </tbody>
               </table>
-
-              {isViewModalOpen && selectedTeam && (
-                <AdminTeamPageView
-                  team={selectedTeam}
-                  onClose={() => setIsViewModalOpen(false)}
-                />
-              )}
 
               <div className="response-team-pagination">
                 <button onClick={() => handlePageChange(pagination.current_page - 1)} disabled={pagination.current_page === 1}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import { encryptPasswordData } from '../utils/crypto';
@@ -65,7 +65,7 @@ const LoginPage = () => {
     <div className="login-root">
       {/* Left Section */}
       <div className="login-left">
-        <img src="/bocaue-logo.png" alt="Bocaue Rescue Logo" className="login-logo" />
+        <img src="/LogoB.png" alt="Bocaue Rescue Logo" className="login-logo" />
         <div className="login-org-name">BOCAUE RESCUE EMS</div>
         <div className="login-org-desc">
           MUNICIPAL EMERGENCY ASSISTANCE AND<br />INCIDENT RESPONSE

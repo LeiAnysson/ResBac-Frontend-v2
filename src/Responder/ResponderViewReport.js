@@ -82,52 +82,50 @@ const ResponderViewReport = () => {
 	}, []);
 
 	useEffect(() => {
-		if (!report?.latitude || !report?.longitude || !responderLocation) return;
+		if (!report?.latitude || !report?.longitude) return;
 
 		const loadHereMaps = () => {
-		if (window.H) return Promise.resolve();
-		if (hereMapsLoaded) return Promise.resolve();
+			if (window.H) return Promise.resolve();
+			if (hereMapsLoaded) return Promise.resolve();
 
-		const scripts = [
+			const scripts = [
 			'https://js.api.here.com/v3/3.1/mapsjs-core.js',
 			'https://js.api.here.com/v3/3.1/mapsjs-service.js',
 			'https://js.api.here.com/v3/3.1/mapsjs-ui.js',
 			'https://js.api.here.com/v3/3.1/mapsjs-mapevents.js',
-		];
+			];
 
-		hereMapsLoaded = true;
+			hereMapsLoaded = true;
 
-		return Promise.all(
+			return Promise.all(
 			scripts.map(
-			(src) =>
+				(src) =>
 				new Promise((resolve, reject) => {
-				const script = document.createElement('script');
-				script.src = src;
-				script.onload = resolve;
-				script.onerror = reject;
-				document.body.appendChild(script);
+					const script = document.createElement('script');
+					script.src = src;
+					script.onload = resolve;
+					script.onerror = reject;
+					document.body.appendChild(script);
 				})
 			)
-		);
+			);
 		};
 
-		let intervalId;
-		let map;
-		let handleResize;
+		let map, responderMarker, incidentMarker, routeLine, handleResize;
 
 		loadHereMaps()
-		.then(() => {
+			.then(() => {
 			if (!mapRef.current || mapRef.current.hasChildNodes()) return;
 
 			const platform = new window.H.service.Platform({
-			apikey: process.env.REACT_APP_HERE_API_KEY,
+				apikey: process.env.REACT_APP_HERE_API_KEY,
 			});
-
 			const defaultLayers = platform.createDefaultLayers();
+
 			map = new window.H.Map(mapRef.current, defaultLayers.vector.normal.map, {
-			center: responderLocation,
-			zoom: 14,
-			pixelRatio: window.devicePixelRatio || 1,
+				center: { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
+				zoom: 14,
+				pixelRatio: window.devicePixelRatio || 1,
 			});
 
 			handleResize = () => map.getViewPort().resize();
@@ -136,55 +134,82 @@ const ResponderViewReport = () => {
 			new window.H.mapevents.Behavior(new window.H.mapevents.MapEvents(map));
 			window.H.ui.UI.createDefault(map, defaultLayers);
 
-			const responderMarker = new window.H.map.Marker(responderLocation);
-			const incidentMarker = new window.H.map.Marker({
-			lat: parseFloat(report.latitude),
-			lng: parseFloat(report.longitude),
+			incidentMarker = new window.H.map.Marker({
+				lat: parseFloat(report.latitude),
+				lng: parseFloat(report.longitude),
 			});
+			map.addObject(incidentMarker);
 
-			map.addObjects([responderMarker, incidentMarker]);
+			const carIcon = new window.H.map.Icon('https://cdn-icons-png.flaticon.com/512/8023/8023798.png', { size: { w: 32, h: 32 } });
 
-			const router = platform.getRoutingService();
-			router.calculateRoute(
-			{
-				mode: 'fastest;car',
-				representation: 'display',
-				waypoint0: `${responderLocation.lat},${responderLocation.lng}`,
-				waypoint1: `${report.latitude},${report.longitude}`,
-				routeattributes: 'waypoints,summary,shape,legs',
-			},
-			(result) => {
-				if (result.response?.route) {
-				const lineString = new window.H.geo.LineString();
-				result.response.route[0].shape.forEach((point) => {
-					const [lat, lng] = point.split(',');
-					lineString.pushLatLngAlt(parseFloat(lat), parseFloat(lng));
-				});
-				const routeLine = new window.H.map.Polyline(lineString, {
+			responderMarker = new window.H.map.Marker(
+				responderLocation || { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
+				{ icon: carIcon }
+			);
+			map.addObject(responderMarker);
+
+			if (!ablyRef.current) {
+				ablyRef.current = new Ably.Realtime({ key: process.env.REACT_APP_ABLY_KEY });
+			}
+			const channel = ablyRef.current.channels.get('responder-location');
+
+			const updateRoute = async (start) => {
+				if (!start) return;
+
+				try {
+				const url = `https://router.hereapi.com/v8/routes?apikey=${process.env.REACT_APP_HERE_API_KEY}&transportMode=car&origin=${start.lat},${start.lng}&destination=${report.latitude},${report.longitude}&return=polyline,summary`;
+				const res = await fetch(url);
+				const data = await res.json();
+
+				if (data.routes?.length) {
+					const encodedPolyline = data.routes[0].sections[0].polyline;
+					const lineString = window.H.geo.LineString.fromFlexiblePolyline(encodedPolyline);
+
+					if (routeLine) map.removeObject(routeLine);
+
+					routeLine = new window.H.map.Polyline(lineString, {
 					style: { strokeColor: 'blue', lineWidth: 4 },
-				});
-				map.addObject(routeLine);
-				map.getViewModel().setLookAtData({ bounds: routeLine.getBoundingBox() });
+					});
+					map.addObject(routeLine);
+
+					map.getViewModel().setLookAtData({ bounds: routeLine.getBoundingBox() });
 				}
-			},
-			(error) => console.error(error)
+				} catch (err) {
+				console.error('Routing error (v8):', err);
+				}
+			};
+
+			const watchId = navigator.geolocation.watchPosition(
+				(position) => {
+				const newLocation = {
+					lat: position.coords.latitude,
+					lng: position.coords.longitude,
+				};
+				setResponderLocation(newLocation);
+				responderMarker.setGeometry(newLocation);
+
+				channel.publish('update', {
+					teamId: report.assignedTeam,
+					lat: newLocation.lat,
+					lng: newLocation.lng,
+					timestamp: new Date().toISOString(),
+				});
+
+				updateRoute(newLocation);
+				},
+				(err) => console.error('Failed to get location:', err),
+				{ enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
 			);
 
-			intervalId = setInterval(() => {
-			if (responderLocation) {
-				responderMarker.setGeometry(responderLocation);
-				map.setCenter(responderLocation);
-			}
-			}, 2000);
-		})
-		.catch((err) => console.error('Failed to load HERE Maps scripts:', err));
+			return () => {
+				navigator.geolocation.clearWatch(watchId);
+				if (map) map.dispose();
+				if (handleResize) window.removeEventListener('resize', handleResize);
+			};
+			})
+			.catch((err) => console.error('Failed to load HERE Maps scripts:', err));
+		}, [report]);
 
-		return () => {
-		clearInterval(intervalId);
-		if (map) map.dispose();
-		if (handleResize) window.removeEventListener('resize', handleResize);
-		};
-	}, [report, responderLocation]);
 
 	const handleUpdateStatus = async () => {
 		try {

@@ -3,11 +3,13 @@ import NavBar from "../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminAnnouncement.css";
 import { apiFetch } from "../../utils/apiFetch";
+import { useNavigate } from "react-router-dom";
 
 const AdminAnnouncement = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchAnnouncements = async () => {
     try {
@@ -20,6 +22,23 @@ const AdminAnnouncement = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this announcement?")) return;
+
+    try {
+      await apiFetch(`${process.env.REACT_APP_URL}/api/admin/announcements/${id}`, {
+        method: "DELETE",
+      });
+
+      setAnnouncements(prev => prev.filter(a => a.id !== id));
+      alert("Announcement deleted!");
+    } catch (err) {
+      console.error("Failed to delete announcement:", err);
+      alert("Error deleting announcement. Check console.");
+    }
+  };
+
+
   useEffect(() => {
     fetchAnnouncements();
   }, []);
@@ -30,10 +49,10 @@ const AdminAnnouncement = () => {
       <div className="dashboard-main-content">
         <NavBar />
         <main className="dashboard-content-area">
-          <h2 className="announcement-title">Announcements & Updates</h2>
+          <h2 className="admin-announcement-title">Announcements & Updates</h2>
           
           {user?.role?.name === 'Admin' && (
-            <button className="create-announcement-btn">Create Announcement</button>
+            <button className="create-announcement-btn" onClick={() => navigate('/admin/announcement/create')}>Create Announcement</button>
           )}
 
           {announcements.length === 0 ? (
@@ -60,9 +79,19 @@ const AdminAnnouncement = () => {
                   {a.images?.length > 0 && (
                     <div className="announcement-image">
                       {a.images.map(img => (
-                        <img key={img.id} src={`http://127.0.0.1:8000${img.file_path}`} alt="Announcement" />
+                        <img key={img.id} src={`${process.env.REACT_APP_URL}${img.file_path}`} alt="Announcement" />
                       ))}
                     </div>
+                  )}
+
+                  {user?.role?.name === "Admin" && (
+                    <button
+                      className="announcement-delete-btn"
+                      onClick={() => handleDelete(a.id)}
+                      title="Delete announcement"
+                    >
+                      🗑️
+                    </button>
                   )}
 
                 </div>

@@ -58,7 +58,7 @@ const UserPage = () => {
             <div className="user-management-card">
               <div className="user-management-controls">
                 <input
-                  className="search-input search-input-filled"
+                  className="u-search-input search-input search-input-filled"
                   placeholder="Search..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -84,6 +84,7 @@ const UserPage = () => {
                   <option value = "approved">Approved</option>
                   <option value = "pending">Pending</option>
                 </select>
+                <button className="create-user-btn" onClick={() => navigate('/admin/users/create')}>Create User</button>
               </div>
               <div className="user-table-wrapper">
                 <table className="user-table">
@@ -115,13 +116,8 @@ const UserPage = () => {
                           </span>
                         </td>
                         <td>
-                          <button 
-                              className="user-action-btn" 
-                              title="Approve / View"
-                              onClick={() => navigate(`/admin/residency-approval/${user.id}`)}
-                            >
-                            <span role="img" aria-label="edit">📝</span>
-                          </button>
+                          <button className="view-btn" onClick={() => navigate(`/admin/users/${user.id}`)}>View</button>
+                          <button className="view-btn" onClick={() => navigate(`/admin/users/${user.id}/edit`)}>Edit</button>
                         </td>
                       </tr>
                     ))}

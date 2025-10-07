@@ -34,15 +34,29 @@ body, html {
 .topbar-actions {
   display: flex;
   align-items: center;
+  margin-left: auto;
   gap: 1.5rem;
 }
 
 .topbar-notification {
+  width: 35px;
+  height: 35px;
   font-size: .5rem;
   color: #fff;
   cursor: pointer;
   position: relative;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.1s ease;
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+}
 
+.topbar-notification-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .topbar-notification-badge {
@@ -60,6 +74,36 @@ body, html {
   font-size: 0.85rem;
   font-weight: bold;
 }
+
+.notification-popup {
+  position: absolute;
+  top: 50px; /* slightly below the bell */
+  right: 0;
+  width: 250px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  padding: 0.5rem 0;
+  z-index: 200;
+}
+
+.notification-popup ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-popup li {
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+}
+
+.notification-popup li:hover {
+  background: #f2f2f2;
+}
+
 
 @media (max-width: 600px) {
   .topbar {

@@ -1,4 +1,3 @@
-/* Import Buttons.css, ButtonsSearch.css, and TextBoxSearch.css for styling */
 @import url("../../Components/ComponentsButtons/Buttons.css");
 @import url("../../Components/ComponentsButtons/ButtonsSearch.css");
 @import url("../../Components/ComponentsButtons/TextBoxSearch.css");
@@ -35,7 +34,7 @@
 }
 
 .user-management-title {
-  color: #1a56db;
+  color: #23408e;
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 0px;
@@ -76,6 +75,9 @@
   min-width: 200px;
 }
 
+.u-search-input {
+  flex: 1;
+}
 
 
 .filter-section {
@@ -106,6 +108,13 @@
 
 .create-user-btn {
   white-space: nowrap;
+  background: #2563eb;
+  padding: 0.7rem 1rem;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 .user-table-wrapper {

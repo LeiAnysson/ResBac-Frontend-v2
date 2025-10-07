@@ -71,7 +71,7 @@ const SignInPage = () => {
         formPayload.append('id_number', formData.id_number);
       }
 
-      const response = await fetch('http://127.0.0.1:8000/api/register', {
+      const response = await fetch(`${process.env.REACT_APP_URL}/api/register`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json'

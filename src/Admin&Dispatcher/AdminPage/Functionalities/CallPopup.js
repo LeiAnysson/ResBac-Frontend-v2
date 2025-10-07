@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./CallPopup.css";
-import endCallIcon from "../assets/endcall.png";
-import { reverseGeocode } from '../../utils/hereApi';
+import endCallIcon from "../../../assets/endcall.png";
+import { reverseGeocode } from '../../../utils/hereApi';
 
 const CallPopup = ({ show, caller, incident, onEnd }) => {
   const [location, setLocation] = useState("Fetching location...");
@@ -41,7 +41,7 @@ const CallPopup = ({ show, caller, incident, onEnd }) => {
         {incident?.callStatus === "connected" && (
           <p className="call-duration">{formatTime(callDuration)}</p>
         )}
-        <p className="incident-location">{location}</p>
+        <p className="call-popup-location">{location}</p>
       </div>
 
       {incident?.callStatus !== "ended" && (

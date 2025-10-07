@@ -1,20 +1,12 @@
-/* Shared styles for Create User and Create Team components */
-
-/* Common wrapper styles */
-
-
-/* Compact wrapper styles */
 .create-user-wrapper.compact {
-  max-width: 1000px;
-  margin-left: 100px;
-  margin-top: 40px;
+  margin-left: 10px;
+  margin-top: 20px;
   padding: 0;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Compact grid layout */
 .cu-grid.compact {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 180px;
@@ -23,7 +15,6 @@
   padding: 0 20px;
 }
 
-/* Compact header */
 .cu-header {
   background: #1e40af;
   color: white;
@@ -35,30 +26,71 @@
   margin-bottom: 20px;
 }
 
-.cu-header-icon {
-  width: 35px;
-  height: 35px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 16px;
-}
-
 .cu-header h2 {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
 }
 
-/* Compact form */
 .cu-form {
   padding: 0 0 20px 0;
 }
 
-/* Grid layout */
+.cu-info-section {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: 150px 1fr;
+  row-gap: 10px;
+  column-gap: 20px;
+  align-items: center;
+}
+
+.cu-content {
+  padding: 0 5px 5px;
+}
+
+.cu-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; 
+  font-size: 13px;
+  margin-top: 40px;
+  margin-left: 50px;
+}
+
+.cu-info-table td {
+  padding: 0px 8px;
+  vertical-align: top;
+  word-wrap: break-word
+}
+
+.cu-info-table .label {
+  font-weight: 600;
+  color: #1e40af;
+  font-size: 14px;
+  width: 50%;
+  white-space: nowrap;
+}
+
+.cu-info-table .value {
+  font-size: 13px;
+  color: gray;
+  width: 30%;
+}
+
+.cu-info-table .image-label {
+  font-weight: 600;
+  color: #1e40af;
+  width: 20%;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
 .cu-grid,
 .ct-grid {
   display: grid;
@@ -67,7 +99,6 @@
   margin-bottom: 30px;
 }
 
-/* Column styles */
 .cu-col,
 .ct-col {
   display: flex;
@@ -75,28 +106,48 @@
   gap: 15px;
 }
 
-/* Compact columns */
 .cu-col.compact {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Compact upload column */
+.ca-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.ca-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; 
+  width: 100%;
+}
+
+.ca-label {
+  width: 100%;
+  padding: 0px 5px;
+  font-size: 15px;
+  color: #1e40af;
+  font-weight: 600;
+}
+
 .cu-upload-col {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-/* Compact upload column */
 .cu-upload-col.compact {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Label styles */
 .cu-col label,
 .ct-col label,
 .cu-upload-col label,
@@ -107,7 +158,6 @@
   margin-bottom: 5px;
 }
 
-/* Compact labels */
 .cu-col label.compact,
 .cu-upload-col label.compact {
   font-weight: 600;
@@ -116,7 +166,6 @@
   margin-bottom: 3px;
 }
 
-/* Input styles */
 .cu-input,
 .ct-input {
   padding: 12px 16px;
@@ -127,7 +176,6 @@
   background: white;
 }
 
-/* Compact inputs with lighter border */
 .cu-input.compact {
   padding: 10px 14px;
   border: 1px solid #d1d5db;
@@ -149,7 +197,6 @@
   color: #9ca3af;
 }
 
-/* Select dropdown styles */
 .cu-input[type="select"],
 .ct-input[type="select"],
 select.cu-input,
@@ -163,7 +210,6 @@ select.ct-input {
   appearance: none;
 }
 
-/* Upload box styles */
 .cu-upload-box,
 .ct-upload-box {
   width: 200px;
@@ -178,7 +224,6 @@ select.ct-input {
   cursor: pointer;
 }
 
-/* Compact upload box */
 .cu-upload-box.compact {
   width: 180px;
   height: 180px;
@@ -212,12 +257,11 @@ select.ct-input {
 
 /* Compact actions */
 .cu-actions {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #e5e7eb;
-  margin: 0 20px;
+  width: auto;
+  padding: 6px 20px;
+  min-width: 100px;
+  text-align: center;
+  margin: 20px;
 }
 
 /* Actions section */
@@ -230,7 +274,6 @@ select.ct-input {
   border-top: 1px solid #e5e7eb;
 }
 
-/* Button styles - using the shared button classes */
 .btn {
   padding: 12px 24px;
   border-radius: 8px;
@@ -266,7 +309,6 @@ select.ct-input {
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
-/* Responsive design */
 @media (max-width: 1024px) {
   .cu-grid,
   .ct-grid {
@@ -347,7 +389,6 @@ select.ct-input {
   outline-offset: 2px;
 }
 
-/* Disabled states */
 .cu-input:disabled,
 .ct-input:disabled,
 .btn:disabled {
@@ -355,7 +396,6 @@ select.ct-input {
   cursor: not-allowed;
 }
 
-/* Error states */
 .cu-input.error,
 .ct-input.error {
   border-color: #dc2626;
@@ -367,7 +407,6 @@ select.ct-input {
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
-/* Team Management Specific Styles */
 .ct-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -392,25 +431,26 @@ select.ct-input {
 .ct-info-item > label {
   font-weight: 600;
   color: #1e40af;
-  font-size: 16px;
+  font-size: 14px;
+  margin-top: 10px;
   margin-bottom: 5px;
 }
 
 .ct-status {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 13px;
   padding: 8px 16px;
   border-radius: 20px;
   display: inline-block;
   width: fit-content;
 }
 
-.ct-status.available {
+.ct-info-item.ct-status-item .ct-status.available {
   background: #dcfce7;
-  color: #166534;
+  color: #23a956;
 }
 
-.ct-status.unavailable {
+.ct-info-item.ct-status-item .ct-status.unavailable {
   background: #fef2f2;
   color: #dc2626;
 }
@@ -542,7 +582,6 @@ select.ct-input {
   border-color: #cbd5e1;
 }
 
-/* Focus states for new interactive elements */
 .ct-checkbox:focus-visible,
 .ct-delete-btn:focus-visible,
 .ct-add-member-btn:focus-visible {
@@ -550,33 +589,30 @@ select.ct-input {
   outline-offset: 2px;
 }
 
-/* Add these compact styles for the team wrapper */
-
 .create-team-wrapper.compact {
-  max-width: 1000px;
-  margin-left: 100px;
-  margin-top: 40px;
+  max-width: auto;
+  margin-left: 10px;
+  margin-top: 20px;
   padding: 0;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Team wrapper with same styling as Create User */
 .ct-header {
   background: #1e40af;
   color: white;
-  padding: 15px 20px;
+  padding: 10px 15px;
   border-radius: 8px 8px 0 0;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 5px;
+  margin-bottom: 0px;
 }
 
 .ct-header-icon {
-  width: 35px;
-  height: 35px;
+  width: 25px;
+  height: 25px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: flex;
@@ -588,24 +624,9 @@ select.ct-input {
 
 .ct-header h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
-}
-
-/* Team content layout */
-.ct-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  padding: 0 20px 20px;
-  margin-bottom: 30px;
-}
-
-.ct-info-section,
-.ct-schedule-section {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
+  margin-left: 10px;
 }
 
 .ct-info-item {
@@ -628,16 +649,6 @@ select.ct-input {
   border-radius: 20px;
   display: inline-block;
   width: fit-content;
-}
-
-.ct-status.available {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.ct-status.unavailable {
-  background: #fef2f2;
-  color: #dc2626;
 }
 
 .ct-members-list {
@@ -736,7 +747,6 @@ select.ct-input {
   font-size: 14px;
 }
 
-/* Team actions - Same styling as Create User */
 .ct-actions {
   display: flex;
   justify-content: flex-end;
@@ -745,7 +755,6 @@ select.ct-input {
   border-top: 1px solid #e5e7eb;
 }
 
-/* Responsive adjustments for team layout */
 @media (max-width: 768px) {
   .ct-content {
     grid-template-columns: 1fr;
@@ -764,9 +773,6 @@ select.ct-input {
   }
 }
 
-/* Add these styles for the header with Edit button on the right */
-
-/* Header with Edit button layout */
 .ct-header-with-edit {
   background: #1e40af;
   color: white;
@@ -785,8 +791,8 @@ select.ct-input {
 }
 
 .cu-header-icon {
-  width: 35px;
-  height: 35px;
+  width: 25px;
+  height: 25px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: flex;
@@ -802,7 +808,6 @@ select.ct-input {
   font-weight: 600;
 }
 
-/* Edit button styling for top right */
 .edit-btn-top {
   padding: 8px 16px;
   font-size: 14px;
@@ -827,22 +832,6 @@ select.ct-input {
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
 }
 
-/* Team content layout */
-.ct-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  padding: 0 20px 20px;
-  margin-bottom: 30px;
-}
-
-.ct-info-section,
-.ct-schedule-section {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-}
-
 .ct-info-item {
   display: flex;
   flex-direction: column;
@@ -863,16 +852,6 @@ select.ct-input {
   border-radius: 20px;
   display: inline-block;
   width: fit-content;
-}
-
-.ct-status.available {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.ct-status.unavailable {
-  background: #fef2f2;
-  color: #dc2626;
 }
 
 .ct-members-list {
@@ -1005,40 +984,8 @@ select.ct-input {
   }
 }
 
-/* Update the header styling and add separated Edit button section */
-
-/* Header - Just the team name and icon */
-.ct-header {
-  background: #1e40af;
-  color: white;
-  padding: 15px 20px;
-  border-radius: 8px 8px 0 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 0;
-}
-
-.cu-header-icon {
-  width: 35px;
-  height: 35px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-.ct-header h2 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-/* Edit button section separated below header */
 .ct-edit-section {
+  margin-top: 0px;
   background: white;
   padding: 15px 20px;
   border-bottom: 1px solid #e5e7eb;
@@ -1071,22 +1018,6 @@ select.ct-input {
   box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.2);
 }
 
-/* Team content layout */
-.ct-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  padding: 20px;
-  margin-bottom: 30px;
-}
-
-.ct-info-section,
-.ct-schedule-section {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-}
-
 .ct-info-item {
   display: flex;
   flex-direction: column;
@@ -1107,16 +1038,6 @@ select.ct-input {
   border-radius: 20px;
   display: inline-block;
   width: fit-content;
-}
-
-.ct-status.available {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.ct-status.unavailable {
-  background: #fef2f2;
-  color: #dc2626;
 }
 
 .ct-members-list {
@@ -1364,7 +1285,6 @@ select.ct-input {
   background: #f9fafb;
 }
 
-/* Action Buttons - Wider spacing */
 .ud-actions {
   display: flex;
   justify-content: center;
