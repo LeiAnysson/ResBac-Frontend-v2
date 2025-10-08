@@ -18,7 +18,15 @@
 
 .header-left {
   flex: 1;
+  display: flex;
+  align-items: center;
 }
+
+.app-logo {
+  height: 50px;      /* adjust size as needed */
+  width: auto;
+}
+
 
 .app-title {
   font-size: 20px;
@@ -36,15 +44,21 @@
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  border: 2px solid #eee;
-  background: rgba(255, 255, 255, 0.2);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  overflow: hidden; 
+  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
 }
 
 /* Bottom Navigation */

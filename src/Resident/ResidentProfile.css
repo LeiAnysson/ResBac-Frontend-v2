@@ -1,8 +1,9 @@
-/* Resident Profile Styles - Converted from React Native StyleSheet */
 .profile-container {
   background-color: #f7f8fa;
   min-height: 100vh;
   position: relative;
+  padding-bottom: 70px;
+  padding-top: 15px;
 }
 
 /* Header */
@@ -99,17 +100,22 @@
   border: 1px solid #b3c6e0;
 }
 
-.profile-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 40px;
-  margin-bottom: 8px;
-  background: rgba(255, 255, 255, 0.2);
+.view-profile-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: none;
+  overflow: hidden; 
+  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
-  border: 2px solid #eee;
+}
+
+.view-profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
 }
 
 .profile-name {
@@ -170,10 +176,6 @@
   color: #fff;
   font-weight: bold;
   font-size: 15px;
-}
-
-.info-content {
-  /* Container for info rows */
 }
 
 .info-row {
@@ -272,11 +274,6 @@
   font-weight: bold;
   font-size: 17px;
   text-align: center;
-}
-
-/* Action Buttons */
-.action-buttons {
-  /* Container for action buttons */
 }
 
 .change-password-btn {

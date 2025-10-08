@@ -3,6 +3,8 @@
   background-color: #f7f8fa;
   min-height: 100vh;
   position: relative;
+  padding-bottom: 70px;
+  padding-top: 15px;
 }
 
 /* Header */
@@ -80,14 +82,19 @@
 .profile-avatar {
   width: 90px;
   height: 90px;
-  border-radius: 45px;
-  margin-bottom: 8px;
-  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  border: none;
+  overflow: hidden; 
+  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3.5rem;
-  border: 2px solid #eee;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
 }
 
 .profile-name {

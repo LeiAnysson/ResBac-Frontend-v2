@@ -33,7 +33,7 @@
   padding: 8px 16px;
   background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
   color: #fff;
-  font-weight: bold;
+  font-weight: 600;
   border-radius: 12px 12px 0 0;
   position: relative;
   font-size: 13px;
@@ -65,6 +65,13 @@
   font-weight: 600;
   margin-right: 8px;
   font-size: 17px;
+}
+
+.incident-type-container {
+  display: flex;
+  align-items: center;
+  gap: 8px; 
+  flex-wrap: wrap;
 }
 
 .incident-meta {
@@ -168,12 +175,21 @@
   font-size: 14px;
 }
 
-
-
 .emergency-reports-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 12px;
+}
+
+.emergency-reports-table td.location-type {
+  max-width: 130px;
+}
+
+.emergency-reports-table td.location-cell {
+  max-width: 350px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .emergency-reports-table th,
@@ -200,6 +216,21 @@
   cursor: default;
 }
 
+.report-type-badge {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 600;
+
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  max-width: 140px;
+  display: inline-block;
+  vertical-align: middle;
+  cursor: default;
+}
+
 .status-badge {
   padding: 4px 12px;
   border-radius: 8px;
@@ -207,27 +238,52 @@
   font-weight: 500;
 }
 
-.status-requesting-for-backup {
+.status-badge.status-invalid {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: red;
+}
+
+.status-badge.status-requesting-for-backup {
   background: #fef3c7;
   color: #b45309;
   border: 1px solid #fde68a;
 }
 
-.status-resolved {
+.status-badge.status-resolved {
   background: #bbf7d0;
   color: #15803d;
   border: 1px solid #86efac;
 }
 
-.view-btn {
+.reports-view-btn {
   background: #e0e7ff;
   color: #2563eb;
   border: none;
   border-radius: 6px;
-  padding: 6px 18px;
+  padding: 4px 12px;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.reports-delete-btn {
+  background: #ffe0e0;
+  color: #eb2525;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+td button:last-child {
+  margin-right: 0;
 }
 
 .view-btn:hover {
@@ -239,8 +295,21 @@
   display: flex;
   justify-content: space-between;
   color: #888;
-  font-size: 14px;
+  font-size: 13px;
   margin-top: 8px;
+}
+
+.pagination-btn {
+  background: #e0e7ff;
+  color: #2563eb;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
 }
 
 .reporter-label {

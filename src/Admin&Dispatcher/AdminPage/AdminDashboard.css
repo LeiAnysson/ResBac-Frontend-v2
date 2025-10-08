@@ -53,30 +53,39 @@ html, body {
 
 .dashboard-stats {
   display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  justify-content: flex-start; 
+  gap: 1rem;  
+  height: 60px;            
+  width: 100%;
 }
 
 .stat-card {
+  flex: 1;                   
+  max-width: 250px;         
+  min-width: 0;       
   background: #f4f5f9;
-  border-radius: 8px;
-  padding: 1rem 1.5rem;
-  min-width: 160px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: center; 
+  align-items: center;    
+  text-align: center;
+  padding: 0 0.8rem;
+  height: 100%;   
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border-radius: 8px;
 }
 
 .stat-label {
+  padding-top: 10px;
   color: #888;
   font-size: 13px;
+  line-height: 1.1; 
 }
 
 .stat-value {
   font-size: 15px;
   font-weight: bold;
-  margin-top: 0.5rem;
+  margin: 2px 0 0 0;
 }
 
 .stat-danger { color: #e74c3c; }
@@ -135,15 +144,6 @@ html, body {
   border-radius: 12px;
 }
 
-.recent-activity {
-  background: #fff;
-  border-radius: 12px;
-  flex: 1;
-  min-width: 220px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
-
 .activity-list {
   list-style: none;
   padding: 0;
@@ -170,6 +170,29 @@ html, body {
   flex-wrap: wrap;
 }
 
+.lower-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr; 
+  grid-template-rows: 1fr 1fr; 
+  gap: 20px;
+}
+
+.incident-heatmap {
+  grid-row: 1 / span 2;
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.recent-activity {
+  grid-row: 1 / 2;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  overflow-y: auto;
+}
+
 .incident-heatmap, .latest-emergency-report {
   background: #fff;
   border-radius: 12px;
@@ -180,7 +203,8 @@ html, body {
 }
 
 .heatmap-placeholder {
-  height: 220px;
+  height: auto;
+  min-height: 400px;
   background: #f0f2f7;
   border-radius: 8px;
   display: flex;

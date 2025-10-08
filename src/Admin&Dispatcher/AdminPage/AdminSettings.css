@@ -19,9 +19,36 @@
   position: relative;
 }
 
-/* Activity Log takes full width */
 .settings-card.full-width {
   grid-column: 1 / -1;
+}
+
+.activity-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  width: 100%;
+  gap: 16px;
+}
+
+.title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;  
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; 
+}
+
+.export-log-btn {
+  flex-shrink: 0; 
+  margin-left: auto;
+  margin-top: 0;
+  max-width: 20%;
+  padding: 6px 14px;
+  font-size: 14px;
 }
 
 .card-header {
@@ -79,7 +106,6 @@
   color: #6b7280;
 }
 
-/* Alternating row colors for tables */
 .settings-card tbody tr:nth-child(even) {
   background-color: #f9fafb;
 }
@@ -140,13 +166,7 @@
   font-size: 13px;
 }
 
-/* Import Buttons.css for button styling */
 @import url("../../Components/ComponentsButtons/Buttons.css");
-
-/* Override button positioning for specific cards */
-.settings-card .btn {
-  margin-top: 8px;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

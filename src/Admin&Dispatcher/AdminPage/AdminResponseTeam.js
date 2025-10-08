@@ -107,13 +107,13 @@ const TeamPage = () => {
               </table>
 
               <div className="response-team-pagination">
-                <button onClick={() => handlePageChange(pagination.current_page - 1)} disabled={pagination.current_page === 1}>
+                <button className="pagination-btn" onClick={() => handlePageChange(pagination.current_page - 1)} disabled={pagination.current_page === 1}>
                   &lt; Prev
                 </button>
                 <span>
                   Page <b>{pagination.current_page}</b> of {pagination.last_page}
                 </span>
-                <button onClick={() => handlePageChange(pagination.current_page + 1)} disabled={pagination.current_page === pagination.last_page}>
+                <button className="pagination-btn" onClick={() => handlePageChange(pagination.current_page + 1)} disabled={pagination.current_page === pagination.last_page}>
                   Next &gt;
                 </button>
               </div>

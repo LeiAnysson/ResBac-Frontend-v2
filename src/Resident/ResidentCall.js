@@ -41,7 +41,6 @@ const ResidentCall = () => {
       return;
     }
 
-    // make ID comparison robust (string/number)
     if (String(event.reporter_id) !== String(residentId)) {
       console.log("CallAccepted event not for this resident:", event.reporter_id, "!= ", residentId);
       return;
@@ -69,7 +68,6 @@ const ResidentCall = () => {
         console.log("Created new Agora client");
       }
 
-      // remove previous listeners to avoid duplicates
       clientRef.current.removeAllListeners();
 
       if (!audioCtxRef.current) {

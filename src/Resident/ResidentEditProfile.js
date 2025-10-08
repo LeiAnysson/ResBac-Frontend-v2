@@ -38,7 +38,10 @@ const ResidentEditProfile = () => {
         {/* Avatar Card */}
         <div className="avatar-card">
           <div className="profile-avatar">
-            <span>👤</span>
+            <img
+              src="https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg"
+              alt="Profile"
+            />
           </div>
           <p className="profile-name">{fullName || ' '}</p>
           <button className="change-photo-btn">

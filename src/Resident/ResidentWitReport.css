@@ -1,9 +1,10 @@
-/* Resident Witness Report Styles - Converted from React Native */
 .witness-report-container {
   flex: 1;
   background-color: #f7f8fa;
   min-height: 100vh;
   position: relative;
+  padding-bottom: 70px;
+  padding-top: 15px;
 }
 
 /* Header */

@@ -1,8 +1,8 @@
-/* Resident Dashboard Styles - Converted from React Native StyleSheet */
 .dashboard-container {
   background-color: #f7f8fa;
   min-height: 100vh;
   position: relative;
+  padding-bottom: 70px;
 }
 
 /* Header */

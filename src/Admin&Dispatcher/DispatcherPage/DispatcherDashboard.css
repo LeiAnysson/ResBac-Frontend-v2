@@ -31,6 +31,35 @@ html, body {
   padding-top: 0;
 }
 
+.dispatcher-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  padding: 2.5rem 1rem 1rem 1rem;
+  position: relative;   
+}
+
+.dispatcher-card-header {
+  position: absolute; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 12px 12px 0 0;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.dispatcher-card-content {
+  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .dispatcher-title {
   color: #23408e;
   font-size: 20px;
@@ -57,18 +86,16 @@ html, body {
   min-width: 340px;
 }
 
-.dispatcher-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 0 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-  margin-bottom: 0;
-}
-
-.incoming-reports, .active-reports, .incident-heatmap, .available-responders {
+.incoming-reports, .active-reports, .dispatcher-incident-heatmap, .available-responders {
   margin-bottom: 0;
   margin-top: 0;
   font-size: 15px;
+}
+
+.dispatcher-incident-heatmap {
+  height: 350px;
+  padding: 3.2rem 1rem 1rem 1rem; 
+  box-sizing: border-box;
 }
 
 .report-item, .responder-item {
@@ -109,8 +136,8 @@ html, body {
   background: #1a2d5a;
 }
 
-.heatmap-placeholder {
-  height: 180px;
+.dispatcher-heatmap-placeholder {
+  height: 280px;
   background: #f0f2f7;
   border-radius: 8px;
   display: flex;

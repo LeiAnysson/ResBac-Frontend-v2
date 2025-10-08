@@ -51,8 +51,11 @@ const ResidentProfile = () => {
       
         {/* First Container: Avatar, Name, Edit Profile */}
         <div className="top-container">
-          <div className="profile-avatar">
-            <span>👤</span>
+          <div className="view-profile-avatar">
+            <img
+              src="https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg"
+              alt="Profile"
+            />
           </div>
           <p className="profile-name">User Name</p>
           <button className="edit-profile-button" onClick={() => navigate('/resident/edit-profile')}>

@@ -122,43 +122,49 @@ const AdminSettings = () => {
           <div className="settings-grid">
 
             <div className="settings-card activity-log full-width">
-              <div className="card-header">
-                <span className="card-icon">🔄</span>
-                <h4>Activity Log</h4>
+              <div className="card-header activity-log-header">
+                <div className="title-wrapper">
+                  <span className="card-icon">🔄</span>
+                  <h4>Activity Log</h4>
+                </div>
+                <button className="btn btn-primary export-log-btn" onClick={handlePrintAll}>
+                  Export Log
+                </button>
               </div>
+
               <div className="settings-description">View Recent system activities and user actions.</div>
-              <table id="activity-log-table" className="activity-logs">
-                <thead>
-                  <tr>
-                    <th>User ID</th>
-                    <th>Action</th>
-                    <th>Entity</th>
-                    <th>Timestamp</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {activityLogs.length === 0 ? (
+              <div className="activity-log-table-wrapper">
+                <table id="activity-log-table" className="activity-logs">
+                  <thead>
                     <tr>
-                      <td colSpan="4">No activity logs available.</td>
+                      <th>User ID</th>
+                      <th>Action</th>
+                      <th>Entity</th>
+                      <th>Timestamp</th>
                     </tr>
-                  ) : (
-                    activityLogs.map((log, index) => (
-                      <tr key={index}>
-                        <td>{log.user_id}</td>
-                        <td>{log.action}</td>
-                        <td>{log.entity}</td>
-                        <td>{new Date(log.created_at).toLocaleString('en-PH', { hour12: true })}</td>
+                  </thead>
+                  <tbody>
+                    {activityLogs.length === 0 ? (
+                      <tr>
+                        <td colSpan="4">No activity logs available.</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      activityLogs.map((log, index) => (
+                        <tr key={index}>
+                          <td>{log.user_id}</td>
+                          <td>{log.action}</td>
+                          <td>{log.entity}</td>
+                          <td>{new Date(log.created_at).toLocaleString('en-PH', { hour12: true })}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
               
               <div className="table-footer">
-                <button className="btn btn-primary" onClick={handlePrintAll}>Export Log</button>
-
-                <div className="pagination">
-                  <button
+                <div className="emergency-reports-pagination">
+                  <button className="pagination-btn" 
                     disabled={pagination.current_page === 1}
                     onClick={() => fetchActivityLogs(pagination.current_page - 1)}
                   >
@@ -167,7 +173,7 @@ const AdminSettings = () => {
                   <span>
                     {pagination.current_page} / {pagination.last_page}
                   </span>
-                  <button
+                  <button className="pagination-btn" 
                     disabled={pagination.current_page === pagination.last_page}
                     onClick={() => fetchActivityLogs(pagination.current_page + 1)}
                   >
@@ -179,10 +185,14 @@ const AdminSettings = () => {
             
             {/* Lookup Tables - Left side of middle row */}
             <div className="settings-card lookup-tables">
-              <div className="card-header">
-                <span className="card-icon">🔍</span>
-                <h4>Lookup Tables</h4>
-                <button className="btn btn-primary edit-btn">Edit</button>
+              <div className="card-header activity-log-header">
+                <div className="title-wrapper">
+                  <span className="card-icon">🔍</span>
+                  <h4>Lookup Tables</h4>
+                </div>
+                <button className="btn btn-primary export-log-btn">
+                  Edit
+                </button>
               </div>
               <div className="settings-description">View reference table.</div>
               <table className="lookup-table">
@@ -203,8 +213,8 @@ const AdminSettings = () => {
               </table>
               
               <div className="table-footer">
-                <div className="pagination">
-                  <button
+                <div className="emergency-reports-pagination">
+                  <button className="pagination-btn"
                     disabled={incidentPagination.current_page === 1}
                     onClick={() => fetchIncidentTypes(incidentPagination.current_page - 1)}
                   >
@@ -215,7 +225,7 @@ const AdminSettings = () => {
                     {incidentPagination.current_page} / {incidentPagination.last_page}
                   </span>
 
-                  <button
+                  <button className="pagination-btn"
                     disabled={incidentPagination.current_page === incidentPagination.last_page}
                     onClick={() => fetchIncidentTypes(incidentPagination.current_page + 1)}
                   >

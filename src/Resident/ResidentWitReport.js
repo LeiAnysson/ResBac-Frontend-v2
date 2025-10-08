@@ -14,104 +14,123 @@ const ResidentWitReport = () => {
   const location = useLocation();
   const mapRef = useRef(null);
 
-  const [incidentType] = useState(location.state?.incidentType || "");
-  const [description, setDescription] = useState("");
-  const [locationText, setLocationText] = useState("");
   const [coordinates, setCoordinates] = useState({ lat: 14.7995, lng: 120.9267 }); 
-  const [incidentTypes, setIncidentTypes] = useState([]);
+  const [incidentType] = useState(location.state?.incidentType || "");
 
   useEffect(() => {
-    const loadHereMaps = () => {
-      if (window.H) return Promise.resolve();
-      if (hereMapsLoaded) return Promise.resolve();
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCoordinates({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+      },
+      (err) => {
+        console.warn("Geolocation failed, using default coordinates.", err);
+      },
+      { enableHighAccuracy: true }
+    );
+  }, []);
 
-      const scripts = [
-        "https://js.api.here.com/v3/3.1/mapsjs-core.js",
-        "https://js.api.here.com/v3/3.1/mapsjs-service.js",
-        "https://js.api.here.com/v3/3.1/mapsjs-ui.js",
-        "https://js.api.here.com/v3/3.1/mapsjs-mapevents.js",
-      ];
+  useEffect(() => {
+    if (!mapRef.current) return;
 
-      hereMapsLoaded = true;
-
-      return Promise.all(
-        scripts.map(
-          (src) =>
-            new Promise((resolve, reject) => {
-              const script = document.createElement("script");
-              script.src = src;
-              script.onload = resolve;
-              script.onerror = reject;
-              document.body.appendChild(script);
-            })
-        )
-      );
+    let map, marker;
+    const onDragStart = (ev) => {
+      if (ev.target instanceof window.H.map.Marker) {
+        map.getViewPort().capture(false);
+        ev.currentTarget.getEngine().disableEventHandling();
+      }
     };
+    const onDrag = (ev) => {
+      if (ev.target instanceof window.H.map.Marker) {
+        const pos = map.screenToGeo(
+          ev.currentPointer.viewportX,
+          ev.currentPointer.viewportY
+        );
+        ev.target.setGeometry(pos);
+      }
+    };
+    const onDragEnd = (ev) => {
+      if (ev.target instanceof window.H.map.Marker) {
+        ev.currentTarget.getEngine().enableEventHandling();
+        const pos = map.screenToGeo(
+          ev.currentPointer.viewportX,
+          ev.currentPointer.viewportY
+        );
+        setCoordinates({ lat: pos.lat, lng: pos.lng });
+      }
+    };
+    const onResize = () => map.getViewPort().resize();
 
-    loadHereMaps().then(() => {
-      if (!mapRef.current) return;
+    const loadHereMaps = async () => {
+      if (!window.H && !hereMapsLoaded) {
+        const scripts = [
+          "https://js.api.here.com/v3/3.1/mapsjs-core.js",
+          "https://js.api.here.com/v3/3.1/mapsjs-service.js",
+          "https://js.api.here.com/v3/3.1/mapsjs-ui.js",
+          "https://js.api.here.com/v3/3.1/mapsjs-mapevents.js",
+        ];
+        hereMapsLoaded = true;
+        await Promise.all(
+          scripts.map(
+            (src) =>
+              new Promise((resolve, reject) => {
+                const script = document.createElement("script");
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.body.appendChild(script);
+              })
+          )
+        );
+      }
 
       const platform = new window.H.service.Platform({
         apikey: process.env.REACT_APP_HERE_API_KEY,
       });
       const defaultLayers = platform.createDefaultLayers();
 
-      const map = new window.H.Map(mapRef.current, defaultLayers.vector.normal.map, {
+      map = new window.H.Map(mapRef.current, defaultLayers.vector.normal.map, {
         center: coordinates,
         zoom: 15,
       });
 
-      window.addEventListener("resize", () => map.getViewPort().resize());
       new window.H.mapevents.Behavior(new window.H.mapevents.MapEvents(map));
       window.H.ui.UI.createDefault(map, defaultLayers);
 
-      let marker = new window.H.map.Marker(coordinates, { volatility: true });
+      marker = new window.H.map.Marker(coordinates, { volatility: true });
       marker.draggable = true;
       map.addObject(marker);
 
-      map.addEventListener("dragstart", function (ev) {
-        let target = ev.target;
-        if (target instanceof window.H.map.Marker) {
-          map.getViewPort().capture(false);
-          ev.currentTarget.getEngine().disableEventHandling();
-        }
-      });
+      map.addEventListener("dragstart", onDragStart);
+      map.addEventListener("drag", onDrag);
+      map.addEventListener("dragend", onDragEnd);
+      window.addEventListener("resize", onResize);
+    };
 
-      map.addEventListener("dragend", function (ev) {
-        let target = ev.target;
-        if (target instanceof window.H.map.Marker) {
-          ev.currentTarget.getEngine().enableEventHandling();
-          let pos = map.screenToGeo(ev.currentPointer.viewportX, ev.currentPointer.viewportY);
-          setCoordinates({ lat: pos.lat, lng: pos.lng });
-        }
-      });
+    loadHereMaps();
 
-      map.addEventListener("drag", function (ev) {
-        let target = ev.target;
-        if (target instanceof window.H.map.Marker) {
-          let pos = map.screenToGeo(ev.currentPointer.viewportX, ev.currentPointer.viewportY);
-          target.setGeometry(pos);
-        }
-      });
-    });
+    return () => {
+      if (map) {
+        map.removeEventListener("dragstart", onDragStart);
+        map.removeEventListener("drag", onDrag);
+        map.removeEventListener("dragend", onDragEnd);
+        window.removeEventListener("resize", onResize);
+        map.dispose();
+      }
+    };
   }, []);
-
-  const mapIncidentLabelToId = (label) => {
-    const found = incidentTypes.find((type) => type.name === label);
-    return found ? found.id : null;
-  };
 
   const handleSubmitReport = async () => {
     try {
-      const incidentTypeId = mapIncidentLabelToId(incidentType); 
-
       const payload = {
-        incident_type_id: incidentTypeId,
+        incident_type_id: null,
         reporter_type: "witness",
         latitude: coordinates.lat,
         longitude: coordinates.lng,
-        landmark: locationText,
-        description: description || null,
+        landmark: null,
+        description: null,
       };
 
       const data = await apiFetch(`${process.env.REACT_APP_URL}/api/incidents/from-resident`, {
@@ -119,12 +138,9 @@ const ResidentWitReport = () => {
         body: JSON.stringify(payload),
       });
 
-      console.log("Witness incident created:", data);
-
       navigate("/resident/call", {
         state: {
           incidentType,
-          incidentTypeId,
           fromWitnessReport: true,
           incident: data.incident,
         },
@@ -134,9 +150,11 @@ const ResidentWitReport = () => {
       alert("Failed to submit witness report. Please try again.");
     }
   };
+
   return (
     <div className="witness-report-container">
       <Header />
+
       <div className="title-container">
         <button className="back-button" onClick={() => navigate(-1)}>
           <img className="back-button-icon" src={BackButton} />
@@ -145,42 +163,20 @@ const ResidentWitReport = () => {
       </div>
 
       <div className="form-section">
-        <label className="label">Incident Type:</label>
-        <div className="input-box">
-          <span className="input-text">{incidentType}</span>
-        </div>
-      </div>
-
-      <div className="form-section">
-        <label className="label">Description (optional):</label>
-        <textarea
-          className="input-field"
-          placeholder="Describe what you witnessed"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-      </div>
-
-      <div className="form-section">
-        <label className="label">Landmark / Address:</label>
-        <input
-          type="text"
-          className="input-field"
-          placeholder="Enter location details"
-          value={locationText}
-          onChange={(e) => setLocationText(e.target.value)}
-        />
-      </div>
-
-      <div className="form-section">
-        <label className="label">Pin Location:</label>
+        <label className="label">Pin Your Location:</label>
+        <p className="instruction-text">
+          Drag the marker to the exact location you witnessed the incident.
+        </p>
         <div className="map-box">
-          <div ref={mapRef} style={{ width: "100%", height: "300px", borderRadius: "8px" }} />
+          <div
+            ref={mapRef}
+            style={{ width: "100%", height: "300px", borderRadius: "8px" }}
+          />
         </div>
       </div>
 
       <button className="submit-button" onClick={handleSubmitReport}>
-        <span className="submit-button-text">Submit Report</span>
+        <span className="submit-button-text">Report</span>
       </button>
 
       <BottomNav />

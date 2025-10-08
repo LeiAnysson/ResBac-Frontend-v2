@@ -55,6 +55,15 @@ const ResidentReport = () => {
   };
 
   const handleIncidentClick = async (incidentType) => {
+    if (reporterType === "Witness") {
+      navigate("/resident/witness-report", {
+        state: {
+          incidentType: incidentType.name,
+          incidentTypeId: mapIncidentLabelToId(incidentType.name)
+        }
+      });
+      return;
+    }
     try {
       navigator.geolocation.getCurrentPosition(async (pos) => {
         const latitude = pos.coords.latitude;
@@ -86,15 +95,7 @@ const ResidentReport = () => {
           });
           return;
         }
-
-        if (reporterType === "Witness") {
-          navigate("/resident/witness-report", { 
-            state: { 
-              incidentType: incidentType.name, 
-              incident: data.incident 
-            } 
-          });
-        } else if (reporterType === "Victim") {
+        if (reporterType === "Victim") {
           navigate("/resident/call", { 
             state: { 
               incidentType: incidentType.name, 

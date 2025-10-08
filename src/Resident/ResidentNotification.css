@@ -1,8 +1,9 @@
-/* Resident Notification Styles - Converted from React Native StyleSheet */
 .notification-container {
   background-color: #f7f8fa;
   min-height: 100vh;
   position: relative;
+  padding-bottom: 70px;
+  padding-top: 15px;
 }
 
 /* Header */

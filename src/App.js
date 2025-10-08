@@ -78,7 +78,7 @@ function App() {
           <Route path="/dispatcher" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><DispatcherDashboard /></ProtectedRoute>} />
           <Route path="/dispatcher/emergency-reports" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminReportsPage /></ProtectedRoute>} />
           <Route path="/dispatcher/response-team" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminResponseTeam /></ProtectedRoute>} />
-          <Route path="/dispatcher/announcement" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminAnnouncement /></ProtectedRoute>} />
+          <Route path="/dispatcher/announcements" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminAnnouncement /></ProtectedRoute>} />
           <Route path="/dispatcher/emergency-reports/:id" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminReportsPageView /></ProtectedRoute>}/>
 
           {/* Resident */}

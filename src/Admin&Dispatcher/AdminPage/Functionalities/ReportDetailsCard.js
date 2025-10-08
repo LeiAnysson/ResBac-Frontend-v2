@@ -76,11 +76,16 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
   }, [report]);
 
   const sendUpdate = async () => {
-    if (!updateMessage.trim() && (!editable || !landmark?.trim())) return;
+    if (!updateMessage.trim() && !landmark?.trim()) {
+      alert("Please enter a description or landmark before sending.");
+      return;
+    }
 
     try {
-      const body = { update_message: updateMessage };
-      if (editable && landmark?.trim()) body.landmark = landmark;
+      const body = {
+        update_details: updateMessage,
+        landmark: landmark?.trim() || null,
+      };
 
       const data = await apiFetch(
         `${process.env.REACT_APP_URL}/api/incidents/${report.id}/updates`,
@@ -125,7 +130,16 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
     }
   };
 
-
+  const getPriorityColor = (report) => {
+    const level = Number(report.incident_type?.priority_id) || 0;
+    switch (level) {
+      case 4: return '#fd3d40ff'; 
+      case 3: return '#f96567ff';
+      case 2: return '#fa8789ff';
+      case 1: return '#fca8a9ff';
+      default: return '#ff6666'; 
+    }
+  };
 
   if (!report) return null;
 
@@ -133,9 +147,9 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
     <div className="emergency-report-card">
       <div className="emergency-report-header">
         <div className="incident-details">
-          <div>
+          <div className="incident-type-container">
             <span className="incident-type-label">Incident Type:</span>
-            <span className={`type-badge incident-type-${report.incident_type.name.toLowerCase().replace(/\s+/g, '-')}`}>
+            <span className={`report-type-badge incident-type-${report.incident_type.name.toLowerCase().replace(/\s+/g, '-')}`} style={{ color: getPriorityColor(report) }}>
               {report.incident_type?.name  || 'Unknown'}
             </span>
             {report.duplicates && (

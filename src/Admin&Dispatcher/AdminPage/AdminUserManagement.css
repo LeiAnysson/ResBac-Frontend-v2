@@ -228,11 +228,6 @@
   gap: 0.5rem;
 }
 
-.pagination-btn {
-  padding: 0.5rem 1rem;
-  font-size: 13px;
-}
-
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .user-management-content {

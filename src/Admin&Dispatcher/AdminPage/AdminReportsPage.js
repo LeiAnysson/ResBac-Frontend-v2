@@ -75,6 +75,22 @@ const AdminReportsPage = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this report?")) return;
+
+    try {
+      await apiFetch(`${process.env.REACT_APP_URL}/api/incidents/${id}`, {
+        method: "DELETE",
+      });
+
+      setReports(prev => prev.filter(r => r.id !== id));
+      alert("Report deleted!");
+    } catch (err) {
+      console.error("Failed to delete report:", err);
+      alert("Error deleting report. Check console.");
+    }
+  };
+
   return (
     <div className="admin-dashboard-container">
       <TopBar />
@@ -107,7 +123,7 @@ const AdminReportsPage = () => {
                   <tr key={report.id}>
                     <td>{report.id}</td>
 
-                    <td>
+                    <td className="location-type" >
                       <span
                         className="type-badge"
                         style={{ backgroundColor: getPriorityColor(report) }}
@@ -116,7 +132,7 @@ const AdminReportsPage = () => {
                       </span>
                     </td>
 
-                    <td>{report.location || '—'}</td>
+                    <td className="location-cell">{report.location || '—'}</td>
 
                     <td>{new Date(report.reported_at).toLocaleString()}</td>
 
@@ -127,24 +143,32 @@ const AdminReportsPage = () => {
                     </td>
 
                     <td>
-                      <button className="view-btn"
+                      <button className="reports-view-btn"
                         onClick={() => navigate(`${getBasePath()}/${report.id}`)}
                       >
                         View
                       </button>
+                      {JSON.parse(localStorage.getItem("user"))?.role?.name === "Admin" && (
+                        <button
+                          className="reports-delete-btn"
+                          onClick={() => handleDelete(report.id)}
+                        >
+                          Delete
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
             <div className="emergency-reports-pagination">
-                <button onClick={() => handlePageChange(pagination.current_page - 1)} disabled={pagination.current_page === 1}>
+                <button className="pagination-btn" onClick={() => handlePageChange(pagination.current_page - 1)} disabled={pagination.current_page === 1}>
                   &lt; Prev
                 </button>
                 <span>
                   Page <b>{pagination.current_page}</b> of {pagination.last_page}
                 </span>
-                <button onClick={() => handlePageChange(pagination.current_page + 1)} disabled={pagination.current_page === pagination.last_page}>
+                <button className="pagination-btn" onClick={() => handlePageChange(pagination.current_page + 1)} disabled={pagination.current_page === pagination.last_page}>
                   Next &gt;
                 </button>
             </div>
