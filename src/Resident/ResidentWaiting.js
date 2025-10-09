@@ -126,9 +126,9 @@ const ResidentWaiting = () => {
 
     const subscriber = (msg) => {
       const data = msg.data;
-      if (data.teamId !== assignedTeam) return;
+      if (data.team_id !== assignedTeam) return;
 
-      const newLocation = { lat: data.lat, lng: data.lng };
+      const newLocation = { lat: data.latitude, lng: data.longitude };
       setResponderLocation(newLocation);
 
       const map = mapInstanceRef.current;

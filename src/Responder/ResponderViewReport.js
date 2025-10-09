@@ -23,6 +23,7 @@ const ResponderViewReport = () => {
 	const [backupReason, setBackupReason] = useState('');
 	const [showRequestSent, setShowRequestSent] = useState(false);
 	const [responderLocation, setResponderLocation] = useState(null);
+	const [arrived, setArrived] = useState(false);
 
 	useEffect(() => {
 		const fetchReport = async () => {
@@ -40,40 +41,43 @@ const ResponderViewReport = () => {
 	}, [id]);
 
 	useEffect(() => {
-		if (!shareLocation || !report?.assignedTeam) return;
+		if (!report?.id) return;
 
 		if (!ablyRef.current) {
-		ablyRef.current = new Ably.Realtime({ key: process.env.REACT_APP_ABLY_KEY });
+			ablyRef.current = new Ably.Realtime({ key: process.env.REACT_APP_ABLY_KEY });
 		}
-		const channel = ablyRef.current.channels.get('responder-location');
-		let lastPublished = 0;
 
+		const locationChannel = ablyRef.current.channels.get('responder-location');
+
+		let lastPublished = 0;
 		const watchId = navigator.geolocation.watchPosition(
-		(position) => {
+			(position) => {
 			const now = Date.now();
 			if (now - lastPublished < 2000) return; 
 
 			const newLocation = {
-			lat: position.coords.latitude,
-			lng: position.coords.longitude,
+				lat: position.coords.latitude,
+				lng: position.coords.longitude,
 			};
 			setResponderLocation(newLocation);
 
-			channel.publish('update', {
-			teamId: report.assignedTeam,
-			lat: newLocation.lat,
-			lng: newLocation.lng,
-			timestamp: new Date().toISOString(),
+			locationChannel.publish('update', {
+				teamId: report.assignedTeam,
+				lat: newLocation.lat,
+				lng: newLocation.lng,
+				timestamp: new Date().toISOString(),
 			});
 
 			lastPublished = now;
-		},
-		(err) => console.error('Failed to get location:', err),
-		{ enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+			},
+			(err) => console.error('Failed to get location:', err),
+			{ enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
 		);
+		return () => {
+			navigator.geolocation.clearWatch(watchId);
+		};
+	}, [report?.assignedTeam, report?.id]);
 
-		return () => navigator.geolocation.clearWatch(watchId);
-	}, [shareLocation, report?.assignedTeam]);
 
 	useEffect(() => {
 		return () => {
@@ -196,6 +200,7 @@ const ResponderViewReport = () => {
 				});
 
 				updateRoute(newLocation);
+				checkIfArrived(newLocation.lat, newLocation.lng);
 				},
 				(err) => console.error('Failed to get location:', err),
 				{ enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
@@ -209,7 +214,25 @@ const ResponderViewReport = () => {
 			})
 			.catch((err) => console.error('Failed to load HERE Maps scripts:', err));
 		}, [report]);
+	
+	useEffect(() => {
+		const handleIncidentUpdated = (e) => {
+			const data = e.detail;
+			if (data.id === report?.id) {
+				console.log("Incident update via Echo:", data);
+				setReport((prev) => ({
+					...prev,
+					description: data.description,
+					landmark: data.landmark,
+					status:  data.status,
+				}));
+				setStatus(data.status);
+			}
+		};
 
+		window.addEventListener("incidentUpdated", handleIncidentUpdated);
+		return () => window.removeEventListener("incidentUpdated", handleIncidentUpdated);
+	}, [report?.id]);
 
 	const handleUpdateStatus = async () => {
 		try {
@@ -230,22 +253,50 @@ const ResponderViewReport = () => {
 		}
 	};
 
-	const handleRequestBackup = async () => {
-		try {
-		const res = await apiFetch(
-			`${process.env.REACT_APP_URL}/api/responder/report/${id}/request-backup`,
-			{
-			method: 'POST',
-			body: JSON.stringify({ backup_type: backupType, reason: backupReason }),
-			}
+	const checkIfArrived = async (currentLat, currentLng) => {
+		if (arrived || !report) return;
+
+		const distance = window.H.geo.Distance.measure(
+			{ lat: currentLat, lng: currentLng },
+			{ lat: report.latitude, lng: report.longitude }
 		);
-		if (res.success) {
-			setShowBackupModal(false);
-			setShowRequestSent(true);
+
+		if (distance <= 50 && report.status !== "On Scene") {
+			try {
+			await apiFetch(`${process.env.REACT_APP_URL}/api/responder/report/${report.id}/update-status`, {
+				method: "POST",
+				body: JSON.stringify({ status: "On Scene" }),
+			});
+			console.log("Incident marked as On Scene");
+			setArrived(true);
+			setStatus("On Scene");
+    		setReport(prev => ({ ...prev, status: "On Scene" }));
+			} catch (err) {
+			console.error("Failed to update On Scene:", err);
+			}
 		}
+	};
+
+	const handleRequestBackup = async () => {
+		setShowRequestSent(false);
+		try {
+			const res = await apiFetch(
+				`${process.env.REACT_APP_URL}/api/responder/report/${id}/request-backup`,
+				{
+					method: 'POST',
+					body: JSON.stringify({ backup_type: backupType, reason: backupReason }),
+				}
+			);
+			if (res.success) {
+				setShowBackupModal(false);
+				setShowRequestSent(true);
+
+				setStatus("Requesting Backup");
+				setReport(prev => ({ ...prev, status: "Requesting Backup" }));
+			}
 		} catch (err) {
-		console.error('Failed to request backup:', err);
-		alert('Failed to send backup request');
+			console.error('Failed to request backup:', err);
+			alert('Failed to send backup request');
 		}
 	};
 
@@ -287,10 +338,10 @@ const ResponderViewReport = () => {
 			<div className="form-group">
 			<label className="field-label">Current Report Status:</label>
 			<div className="select-wrap">
-				<select className="status-select" value={status} onChange={(e) => setStatus(e.target.value)}>
-				<option>En Route</option>
-				<option>On Scene</option>
-				<option>Resolved</option>
+				<select className="status-select" value={status} onChange={(e) => setStatus(e.target.value)} disabled={status === "Resolved"}>
+					<option>En Route</option>
+					<option>On Scene</option>
+					<option>Resolved</option>
 				</select>
 				<span className="chevron">▾</span>
 			</div>
@@ -309,22 +360,35 @@ const ResponderViewReport = () => {
 				<div className="modal-content">
 				<label className="modal-label">Select Backup Type</label>
 				<div className="modal-select-wrap">
-					<select className="modal-select" value={backupType} onChange={(e) => setBackupType(e.target.value)}>
-					<option value="" hidden>Select</option>
-					<option value="Medical Service">Emergency Medical Service</option>
-					<option value="LGU">LGU</option>
+					<select
+						className="modal-select"
+						value={backupType}
+						onChange={(e) => {
+							const type = e.target.value;
+							setBackupType(type);
+
+							if (type === "Medical Service") setBackupReason("Medical assistance required");
+							else if (type === "LGU") setBackupReason("Large-scale incident");
+						}}
+						>
+						<option value="" hidden>Select</option>
+						<option value="Medical Service">Emergency Medical Service</option>
+						<option value="LGU">LGU</option>
 					</select>
 					<span className="modal-chevron">▾</span>
 				</div>
 
 				<label className="modal-label">Reason for Backup:</label>
 				<div className="modal-select-wrap">
-					<select className="modal-select" value={backupReason} onChange={(e) => setBackupReason(e.target.value)}>
-					<option value="" hidden>Select</option>
-					<option value="overwhelmed">Insufficient manpower</option>
-					<option value="injury">Responder injury or fatigue</option>
-					<option value="escalation">Large-scale incident</option>
-					<option value="others">Others</option>
+					<select
+						className="modal-select"
+						value={backupReason}
+						onChange={(e) => setBackupReason(e.target.value)}
+						>
+						<option value="overwhelmed">Insufficient manpower</option>
+						<option value="injury">Responder injury or fatigue</option>
+						<option value="escalation">Large-scale incident</option>
+						<option value="medical">Medical assistance required</option>
 					</select>
 					<span className="modal-chevron">▾</span>
 				</div>
@@ -340,9 +404,9 @@ const ResponderViewReport = () => {
 			<div className="modal-backdrop" onClick={() => setShowRequestSent(false)}>
 			<div className="modal" onClick={(e) => e.stopPropagation()}>
 				<div className="success-icon" aria-hidden="true" />
-				<p className="success-text">Your request has been sent,<br/>Please wait for backup.</p>
-				<div className="modal-actions">
-				<button className="modal-request-btn" onClick={() => setShowRequestSent(false)}>Proceed</button>
+					<p className="success-text">Your request has been sent,<br/>Please wait for backup.</p>
+					<div className="modal-actions">
+					<button className="modal-request-btn" onClick={() => setShowRequestSent(false)}>Proceed</button>
 				</div>
 			</div>
 			</div>

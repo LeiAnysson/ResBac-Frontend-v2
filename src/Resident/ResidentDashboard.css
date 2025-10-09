@@ -202,14 +202,13 @@
 }
 
 /* Section Titles */
-.section-title {
+.resident-section-title {
   font-weight: bold;
   font-size: 15px;
   margin-top: 10px;
   margin-bottom: 4px;
   color: #222;
   margin-left: 16px;
-  margin: 10px 0 4px 16px;
 }
 
 /* Announcements */
@@ -250,34 +249,23 @@
 }
 
 /* Reports */
-.report-card {
+.resident-report-card {
   background-color: #fff;
   border-radius: 12px;
-  border: 1px solid #b3c6e0;
+  border: 1px solid #1041BC;
   display: flex;
   align-items: center;
   padding: 12px;
-  margin-left: 16px;
-  margin-right: 16px;
-  margin-bottom: 8px;
+  margin: 8px 16px;
 }
 
 .report-info {
   flex: 1;
 }
 
-.report-date {
-  color: #222;
-  font-size: 13px;
-  margin-bottom: 2px;
-  margin: 0 0 2px 0;
-}
-
 .report-type {
   color: #e53935;
   font-size: 13px;
-  margin-bottom: 2px;
-  margin: 0 0 2px 0;
 }
 
 .report-location {
@@ -286,23 +274,41 @@
   margin: 0;
 }
 
-.report-status-container {
-  background-color: #f7b84b;
-  border-radius: 8px;
-  padding-left: 14px;
-  padding-right: 14px;
-  padding-top: 6px;
-  padding-bottom: 6px;
-  margin-left: 10px;
-}
-
 .report-status {
   color: #fff;
   font-weight: bold;
   font-size: 13px;
 }
 
-/* Empty Cards */
+.resident-status-badge {
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: black;
+  margin-right: 10px;
+}
+
+.resident-status-badge.status-accepted {
+  background: #e0e0e0;
+  color: black;
+}
+
+.resident-status-badge.status-invalid {
+  background: #fee2e2;
+  color: black;
+}
+
+.resident-status-badge.status-requesting-for-backup {
+  background: #fef3c7;
+  color: black;
+}
+
+.resident-status-badge.status-resolved {
+  background: #bbf7d0;
+  color: black;
+}
+
 .empty-card {
   background-color: #fff;
   border-radius: 12px;

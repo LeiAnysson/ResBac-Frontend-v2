@@ -56,12 +56,33 @@ const ResidentReport = () => {
 
   const handleIncidentClick = async (incidentType) => {
     if (reporterType === "Witness") {
-      navigate("/resident/witness-report", {
-        state: {
-          incidentType: incidentType.name,
-          incidentTypeId: mapIncidentLabelToId(incidentType.name)
-        }
-      });
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const latitude = pos.coords.latitude;
+          const longitude = pos.coords.longitude;
+
+          navigate("/resident/witness-report", {
+            state: {
+              incidentType: incidentType.name,
+              incidentTypeId: mapIncidentLabelToId(incidentType.name),
+              latitude,
+              longitude
+            }
+          });
+        },
+        (err) => {
+          console.error("Geolocation error:", err);
+          alert("Failed to detect your location. The map will default to Bocaue.");
+          navigate("/resident/witness-report", {
+            state: {
+              incidentType: incidentType.name,
+              incidentTypeId: mapIncidentLabelToId(incidentType.name)
+            }
+          });
+        },
+        { enableHighAccuracy: true }
+      );
+
       return;
     }
     try {

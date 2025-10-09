@@ -87,6 +87,13 @@ export const setupNotifications = () => {
             new CustomEvent("responderLocationUpdate", { detail: event })
         );
     });
+    window.Echo.channel("resident").listen(".IncidentUpdated", (event) => {
+      console.log("Incident updated for resident:", event);
+
+      window.dispatchEvent(
+        new CustomEvent("incidentUpdated", { detail: event.incident })
+      );
+    });
 
     /*
     |
@@ -110,7 +117,13 @@ export const setupNotifications = () => {
         );
     });
 
+    window.Echo.channel("responder").listen(".IncidentUpdated", (event) => {
+      console.log("Incident updated:", event);
 
+      window.dispatchEvent(
+        new CustomEvent("incidentUpdated", { detail: event.incident })
+      );
+    });
 };
 
 const showNotification = (title, body) => {

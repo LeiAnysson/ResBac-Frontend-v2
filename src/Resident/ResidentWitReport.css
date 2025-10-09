@@ -117,25 +117,12 @@
   align-items: center;
 }
 
-.input-text {
+.instruction-text {
   font-size: 16px;
   color: #222;
+  margin: 8px 16px;
 }
 
-.input-field {
-  font-size: 16px;
-  color: #222;
-  border: none;
-  outline: none;
-  width: 100%;
-  background: transparent;
-}
-
-.input-field::placeholder {
-  color: #999;
-}
-
-/* Map Box */
 .map-box {
   margin-left: 16px;
   margin-right: 16px;
@@ -143,7 +130,7 @@
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #b3c6e0;
-  height: 220px;
+  height: 500px;
   background-color: #f8f9fa;
   display: flex;
   align-items: center;
@@ -156,15 +143,27 @@
   text-align: center;
 }
 
+.here-center-pin {
+  width: 32px;
+  height: 32px;
+  background-image: url("https://js.api.here.com/v3/3.1/mapsjs-ui-assets/markers/marker.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  position: absolute;
+}
+
 /* Action Button */
 .submit-button {
   background-color: #e53935;
   border-radius: 10px;
   border: none;
   display: block;
-  margin: 20px auto;
+  margin-left: 20px;
   height: 50px;
-  
+  padding: 8px 25px;
+  width: 90%;
 }
 
 .submit-button-text {
@@ -283,6 +282,6 @@
   }
 
   .map-box {
-    height: 180px;
+    height: 500px;
   }
 } 
