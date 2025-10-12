@@ -133,7 +133,7 @@ export const setupNotifications = () => {
     window.Echo.channel("resident").listen(".IncidentUpdated", (event) => {
         const incident = event.incident;
         if (incident.status && incident.status !== "pending") {
-            const message = `Your incident is now "${incident.status}".`;
+            const message = `The Response team is now "${incident.status}".`;
             showInAppNotification({
                 title: "Incident Status Updated",
                 message,

@@ -11,12 +11,15 @@ const ResponderReports = () => {
   	const [reports, setReports] = useState([]);
 	const [assignedIncidents, setAssignedIncidents] = useState([]);
 
-
 	useEffect(() => {
 		const fetchReports = async () => {
 		try {
 			const data = await apiFetch(`${process.env.REACT_APP_URL}/api/responder/reports`);
-			setReports(data);
+
+			const reportsArray = Array.isArray(data) ? data : Object.values(data);
+
+			setReports(reportsArray);
+			setAssignedIncidents(reportsArray);
 		} catch (err) {
 			console.error('Failed to load reports:', err);
 		}
@@ -44,55 +47,44 @@ const ResponderReports = () => {
 
 	return (
 		<div className="responder-reports">
-		<ResponderHeader />
+			<ResponderHeader />
 
-		<div className="title-container reports-title">
-			<button className="back-button" onClick={() => navigate(-1)}>
-			<img className="back-button-icon" src={BackButton} alt="Back" />
-			</button>
-			<h1>Assigned Reports</h1>
-		</div>
-
-		<div className="responder-notifications">
-			{assignedIncidents.map((inc) => (
-				<div key={inc.id} className="assigned-incident-popup">
-					<h4>{inc.type || "Unknown Type"}</h4>
-					<p>
-					Location: {inc.landmark || (inc.latitude && inc.longitude ? `${inc.latitude}, ${inc.longitude}` : "Unknown")}
-					</p>
-				</div>
-			))}
-		</div>
-
-		<div className="reports-card">
-			{reports.length > 0 ? (
-			<div className="reports-list">
-				{reports.map((report) => (
-				<div
-					key={report.id}
-					className="report-row"
-					onClick={() => navigate(`/responder/reports/view-report/${report.id}`)}
-					style={{ cursor: 'pointer' }}
-				>
-					<div className="report-info">
-					<p className="report-datetime">{report.date}</p>
-					<p className="report-incident">Incident Type: {report.type}</p>
-					<p className="report-location">{report.landmark || (report.latitude && report.longitude ? `${report.latitude}, ${report.longitude}` : "Unknown Location")}</p>
-					</div>
-					{report.status && (
-					<span className={`status-label status-${report.status.toLowerCase()}`}>
-						{report.status}
-					</span>
-					)}
-				</div>
-				))}
+			<div className="title-container reports-title">
+				<button className="back-button" onClick={() => navigate(-1)}>
+				<img className="back-button-icon" src={BackButton} alt="Back" />
+				</button>
+				<h1>Assigned Reports</h1>
 			</div>
-			) : (
-			<p className="empty-text reports-empty">No assigned reports</p>
-			)}
-		</div>
 
-		<ResponderBottomNav />
+			<div className="responder-reports-card">
+				{reports.length > 0 ? (
+				<div className="responder-reports-list">
+					{reports.map((report) => (
+					<div
+						key={report.id}
+						className="report-row"
+						onClick={() => navigate(`/responder/reports/view-report/${report.id}`)}
+						style={{ cursor: 'pointer' }}
+					>
+						<div className="report-info">
+						<p className="a-report-datetime">{report.date}</p>
+						<p className="a-report-incident">Incident Type: <span className="a-incident-type">{report.type}</span></p>
+						<p className="a-report-location">{report.landmark || (report.latitude && report.longitude ? `${report.latitude}, ${report.longitude}` : "Unknown Location")}</p>
+						</div>
+						{report.status && (
+							<span className={`a-status-label status-${report.status.toLowerCase().replace(/\s+/g, '-')}`}>
+								{report.status}
+							</span>
+						)}
+					</div>
+					))}
+				</div>
+				) : (
+				<p className="empty-text reports-empty">No assigned reports</p>
+				)}
+			</div>
+
+			<ResponderBottomNav />
 		</div>
 	);
 };

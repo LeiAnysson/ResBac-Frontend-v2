@@ -6,6 +6,7 @@ import ResponderHeader from '../Components/NewComponentsHeaderWebApp/ResponderHe
 import ResponderBottomNav from '../Components/NewComponentsBottomNavWebApp/ResponderBottomNav';
 import BackButton from '../assets/backbutton.png';
 import { apiFetch } from '../utils/apiFetch';
+import { reverseGeocode } from '../utils/hereApi';
 import Ably from 'ably';
 
 let hereMapsLoaded = false;
@@ -25,6 +26,7 @@ const ResponderViewReport = () => {
 	const [responderLocation, setResponderLocation] = useState(null);
 	const [arrived, setArrived] = useState(false);
 	const [mapReady, setMapReady] = useState(false);
+	const [resolvedAddress, setResolvedAddress] = useState('Loading...');
 	const ablyPublishRef = useRef(null);
 
 	useEffect(() => {
@@ -33,7 +35,14 @@ const ResponderViewReport = () => {
 				const data = await apiFetch(`${process.env.REACT_APP_URL}/api/responder/report/${id}`);
 				if (data.success) {
 					setReport(data.report);
-					setStatus(data.report.status);
+					 setStatus(data.report.status === "assigned" ? "En Route" : data.report.status);
+				
+					if (data.report.latitude && data.report.longitude) {
+						const address = await reverseGeocode(data.report.latitude, data.report.longitude);
+						setResolvedAddress(address || 'Unknown Location');
+					} else {
+						setResolvedAddress('—');
+					}
 				}
 			} catch (err) {
 				console.error('Failed to load report:', err);
@@ -207,7 +216,7 @@ const ResponderViewReport = () => {
 
 				updateRoute(newLocation);
 			},
-			(err) => console.error('Failed to get location:', err),
+			(err) => console.error('Failed to get location:', err), alert("Unable to get location. Please move near a window or go outdoors for better GPS signal."),
 			{ enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
 			);
 
@@ -241,22 +250,41 @@ const ResponderViewReport = () => {
 
 	const handleUpdateStatus = async () => {
 		try {
-		const res = await apiFetch(
+			const statusToSend = status === "assigned" ? "En Route" : status;
+			const token = localStorage.getItem("token");
+
+			const res = await fetch(
 			`${process.env.REACT_APP_URL}/api/responder/report/${id}/update-status`,
 			{
-			method: 'POST',
-			body: JSON.stringify({ status }),
+				method: "POST",
+				headers: {
+				"Content-Type": "application/json",
+				"Authorization": `Bearer ${token}`,
+				},
+				body: JSON.stringify({ status: statusToSend }), 
 			}
-		);
-		if (res.success) {
+			);
+
+			const data = await parseResponse(res);
+			if (!res.ok) {
+				console.error('Update status failed', res.status, data);
+				if (res.status === 401) {
+					alert('Session expired. Please login again.');
+				} else {
+					alert(data.message || data.__rawText || 'Failed to update status');
+				}
+				return;
+			}
+
+			const newStatus = data.status || statusToSend;
+			setReport(prev => ({ ...prev, status: newStatus }));
+			setStatus(newStatus);
 			alert('Status updated successfully!');
-			setReport((prev) => ({ ...prev, status: res.status }));
-		}
 		} catch (err) {
-		console.error('Failed to update status:', err);
-		alert('Failed to update status');
+			console.error('Failed to update status (network or parse error):', err);
+			alert('Failed to update status (network error)');
 		}
-	};
+		};
 
 	const checkIfArrived = async (currentLat, currentLng) => {
 		if (arrived || !report || !mapReady || !window.H) return;
@@ -285,23 +313,53 @@ const ResponderViewReport = () => {
 	const handleRequestBackup = async () => {
 		setShowRequestSent(false);
 		try {
-			const res = await apiFetch(
-				`${process.env.REACT_APP_URL}/api/responder/report/${id}/request-backup`,
-				{
-					method: 'POST',
-					body: JSON.stringify({ backup_type: backupType, reason: backupReason }),
-				}
-			);
-			if (res.success) {
-				setShowBackupModal(false);
-				setShowRequestSent(true);
+			const token = localStorage.getItem("token");
 
-				setStatus("Requesting Backup");
-				setReport(prev => ({ ...prev, status: "Requesting Backup" }));
+			let bpType = backupType;
+			if (backupType === 'Medical Service') bpType = 'medic';
+			else if (backupType === 'LGU') bpType = 'lgu';
+
+			const res = await fetch(
+			`${process.env.REACT_APP_URL}/api/responder/report/${id}/request-backup`, 
+			{
+				method: "POST",
+				headers: {
+				"Content-Type": "application/json",
+				"Authorization": `Bearer ${token}`,
+				},
+				body: JSON.stringify({ backup_type: bpType, reason: backupReason }),
 			}
+			);
+
+			const data = await parseResponse(res);
+			if (!res.ok) {
+			console.error('Request backup failed', res.status, data);
+			if (res.status === 401) {
+				alert('Session expired. Please login again.');
+			} else {
+				alert(data.message || data.__rawText || 'Failed to request backup');
+			}
+			return;
+			}
+
+			setShowBackupModal(false);
+			setShowRequestSent(true);
+			setStatus("Requesting Backup");
+			setReport(prev => ({ ...prev, status: "Requesting Backup" }));
+			alert(data.message || 'Backup request sent');
 		} catch (err) {
-			console.error('Failed to request backup:', err);
-			alert('Failed to send backup request');
+			console.error('Failed to request backup (network or parse error):', err);
+			alert('Failed to send backup request (network error)');
+		}
+	};
+
+	const parseResponse = async (res) => {
+		const contentType = res.headers.get('content-type') || '';
+		if (contentType.includes('application/json')) {
+			return await res.json();
+		} else {
+			const text = await res.text();
+			return { __rawText: text };
 		}
 	};
 
@@ -316,106 +374,127 @@ const ResponderViewReport = () => {
 			<h1>Report Details</h1>
 		</div>
 
-		<div className="map-section">
-			<div ref={mapRef} style={{ width: '100%', height: '300px', borderRadius: '8px' }} />
-		</div>
-
-		<div className="details-card">
-			<div className="details-row top-row">
-			<p className="report-datetime">{report?.dateTime || ''}</p>
-			<div className="toggle-wrap">
-				<label className="switch">
-				<input type="checkbox" checked={shareLocation} onChange={(e) => setShareLocation(e.target.checked)} />
-				<span className="slider" />
-				</label>
-				<span className="toggle-label">Location</span>
-			</div>
-			</div>
-
-			<div className="details-placeholder" aria-hidden="true" />
-
-			<div className="details-body">
-			<p className="report-name">{report?.reporterName || ''}</p>
-			<p className="report-address">{report?.address || ''}</p>
-			<p className="report-incident">Incident Type : <span className="incident-type">{report?.type || ''}</span></p>
-			</div>
-
-			<div className="form-group">
-			<label className="field-label">Current Report Status:</label>
-			<div className="select-wrap">
-				<select className="status-select" value={status} onChange={(e) => setStatus(e.target.value)} disabled={status === "Resolved"}>
-					<option>En Route</option>
-					<option>On Scene</option>
-					<option>Resolved</option>
-				</select>
-				<span className="chevron">▾</span>
-			</div>
-			</div>
-
-			<div className="actions">
-			<button className="btn btn-backup" onClick={() => setShowBackupModal(true)}>Request Backup</button>
-			<button className="btn btn-primary" onClick={handleUpdateStatus}>Update Status</button>
-			</div>
-		</div>
-
-		{showBackupModal && (
-			<div className="modal-backdrop" onClick={() => setShowBackupModal(false)}>
-			<div className="modal" onClick={(e) => e.stopPropagation()}>
-				<h3 className="modal-title">Backup Request</h3>
-				<div className="modal-content">
-				<label className="modal-label">Select Backup Type</label>
-				<div className="modal-select-wrap">
-					<select
-						className="modal-select"
-						value={backupType}
-						onChange={(e) => {
-							const type = e.target.value;
-							setBackupType(type);
-
-							if (type === "Medical Service") setBackupReason("Medical assistance required");
-							else if (type === "LGU") setBackupReason("Large-scale incident");
-						}}
-						>
-						<option value="" hidden>Select</option>
-						<option value="Medical Service">Emergency Medical Service</option>
-						<option value="LGU">LGU</option>
-					</select>
-					<span className="modal-chevron">▾</span>
+		<div className="responder-view-report">
+			<div className="map-section">
+				<div ref={mapRef} style={{ width: '100%', height: '800px', borderRadius: '8px', 
+					marginTop: "70px", position: 'relative', zIndex: 0, filter: shareLocation ? "none" : "blur(8px)", transition: "filter 0.3s ease",}} />
+					{!shareLocation && (
+						<div className="map-blur-overlay">
+						<p>Location Sharing Off</p>
+						</div>
+					)}
 				</div>
 
-				<label className="modal-label">Reason for Backup:</label>
-				<div className="modal-select-wrap">
-					<select
-						className="modal-select"
-						value={backupReason}
-						onChange={(e) => setBackupReason(e.target.value)}
-						>
-						<option value="overwhelmed">Insufficient manpower</option>
-						<option value="injury">Responder injury or fatigue</option>
-						<option value="escalation">Large-scale incident</option>
-						<option value="medical">Medical assistance required</option>
-					</select>
-					<span className="modal-chevron">▾</span>
+			<div className="details-card">
+				<div className="details-row top-row">
+				<p className="report-datetime">{report?.dateTime || ''}</p>
+				<div className="toggle-wrap">
+					<label className="switch">
+						<input type="checkbox" checked={shareLocation} onChange={(e) => setShareLocation(e.target.checked)} />
+						<span className="slider" />
+					</label>
+					<span className="toggle-label">Location</span>
 				</div>
 				</div>
-				<div className="modal-actions">
-				<button className="modal-request-btn" onClick={handleRequestBackup}>Request</button>
-				</div>
-			</div>
-			</div>
-		)}
 
-		{showRequestSent && (
-			<div className="modal-backdrop" onClick={() => setShowRequestSent(false)}>
-			<div className="modal" onClick={(e) => e.stopPropagation()}>
-				<div className="success-icon" aria-hidden="true" />
-					<p className="success-text">Your request has been sent,<br/>Please wait for backup.</p>
+				<div className="details-placeholder" aria-hidden="true" />
+
+				<div className="details-body">
+					<p className="report-location">{resolvedAddress}</p>
+					{report?.landmark && <p className="report-landmark">Landmark: {report.landmark}</p>}
+					<p className="report-name">{report?.reporterName || ''}</p>
+					<p className="report-incident">Incident Type : <span className="incident-type">{report?.type || ''}</span></p>
+					{report?.description && (<p className="report-incident">Description: <span className="report-description">{report.description}</span></p>)}
+				</div>
+
+				<div className="form-group">
+					<label className="field-label">Current Report Status:</label>
+					<div className="select-wrap">
+						<select className="status-select" value={status} onChange={(e) => setStatus(e.target.value)} disabled={status === "Resolved"}>
+							<option value="En Route">En Route</option>
+							<option value="On Scene">On Scene</option>
+							<option value="Resolved">Resolved</option>
+						</select>
+						<span className="chevron">▾</span>
+					</div>
+				</div>
+
+				<div className="actions">
+					<button className="btn btn-backup" onClick={() => setShowBackupModal(true)}>Request Backup</button>
+					<button className="btn btn-primary" onClick={handleUpdateStatus}>Update Status</button>
+				</div>
+			</div>
+
+			{showBackupModal && (
+				<div className="modal-backdrop" onClick={() => setShowBackupModal(false)}>
+				<div className="modal" onClick={(e) => e.stopPropagation()}>
+					<h3 className="modal-title">Backup Request</h3>
+					<div className="modal-content">
+					<label className="modal-label">Select Backup Type</label>
+					<div className="modal-select-wrap">
+						<select
+							className="modal-select"
+							value={backupType}
+							onChange={(e) => {
+								const type = e.target.value;
+								setBackupType(type);
+
+								if (type === "Medical Service") setBackupReason("medical");
+								else if (type === "LGU") setBackupReason("escalation");
+							}}
+							>
+							<option value="" hidden>Select</option>
+							<option value="Medical Service">Emergency Medical Service</option>
+							<option value="LGU">LGU</option>
+						</select>
+						<span className="modal-chevron">▾</span>
+					</div>
+
+					<label className="modal-label">Reason for Backup:</label>
+					<div className="modal-select-wrap">
+						<select
+							className="modal-select"
+							value={backupReason}
+							onChange={(e) => setBackupReason(e.target.value)}
+							>
+							<option value="overwhelmed">Insufficient manpower</option>
+							<option value="injury">Responder injury or fatigue</option>
+							<option value="escalation">Large-scale incident</option>
+							<option value="medical">Medical assistance required</option>
+						</select>
+						<span className="modal-chevron">▾</span>
+					</div>
+					</div>
 					<div className="modal-actions">
-					<button className="modal-request-btn" onClick={() => setShowRequestSent(false)}>Proceed</button>
+						<button className="modal-request-btn" onClick={handleRequestBackup}>Request</button>
+					</div>
 				</div>
-			</div>
-			</div>
-		)}
+				</div>
+			)}
+
+			{showRequestSent && (
+				<div className="modal-backdrop" onClick={() => setShowRequestSent(false)}>
+				<div className="modal" onClick={(e) => e.stopPropagation()}>
+					<div className="success-icon" aria-hidden="true" />
+						{backupType === "Medical Service" || backupType === "medic" ? (
+						<p className="success-text">
+						The <strong>Medical Team</strong> has been automatically assigned
+						to this incident. <br />
+						They are now preparing to assist your team.
+						</p>
+					) : (
+						<p className="success-text">
+						Your request has been sent. <br />
+						Please wait for backup.
+						</p>
+					)}
+						<div className="modal-actions">
+						<button className="modal-request-btn" onClick={() => setShowRequestSent(false)}>Proceed</button>
+					</div>
+				</div>
+				</div>
+			)}
+		</div>
 
 		<ResponderBottomNav />
 		</div>

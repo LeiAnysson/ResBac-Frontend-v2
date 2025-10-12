@@ -13,6 +13,20 @@
 	margin-right: 1rem;
 }
 
+.title-container.reports-title {
+	position: fixed;
+	top: 50px;
+	left: 0;
+	width: 100%;
+	background: #f7f8fa;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 18px 16px;
+	z-index: 999;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
 .back-button {
   background: white;
   border: none;
@@ -41,16 +55,17 @@
   object-fit: contain;
 }
 
-.reports-card {
+.responder-reports-card {
 	background: #fff;
 	border: 1px solid #b3c6e0;
 	border-radius: 10px;
-	margin: 12px 16px;
+	margin: 120px 16px;
 	padding: 8px 0;
 	min-height: 320px;
+	margin-top: 150px;
 }
 
-.reports-list {
+.responder-reports-list {
 	display: flex;
 	flex-direction: column;
 }
@@ -72,40 +87,55 @@
 	flex: 1;
 }
 
-.report-datetime {
+.a-report-datetime {
 	font-size: 12px;
 	color: #666;
 	margin: 0 0 6px 0;
 }
 
-.report-incident {
-	font-size: 14px;
+.a-report-incident {
+	font-size: 15px;
 	color: #222;
 	margin: 0 0 4px 0;
 	font-weight: 600;
 }
 
-.incident-type {
+.a-incident-type {
 	color: #e74c3c;
 	font-weight: 700;
 }
 
-.report-location {
+.a-report-location {
 	font-size: 12px;
 	color: #666;
 	margin: 0;
 }
 
-.status-label {
-	font-size: 12px;
-	font-weight: 600;
+.a-status-label {
+	font-size: 13px;
+	font-weight: 700;
 	white-space: nowrap;
 }
 
-.status-enroute { color: #f39c12; }
-.status-cancelled { color: #e74c3c; }
-.status-resolved { color: #27ae60; }
-.status-pending { color: #7f8c8d; }
+.a-status-label.status-en-route {
+  color: #f09a06;
+}
+
+.a-status-label.status-on-scene {
+  color: #1041BC;
+}
+
+.a-status-label.status-requesting-backup {
+  color: #f2790f !important;
+}
+
+.a-status-label.status-resolved {
+  color: #2ecc40;
+}
+
+.a-status-label.status-assigned {
+  color: #7f8c8d;
+}
 
 .empty-card {
 	background: #fff;
