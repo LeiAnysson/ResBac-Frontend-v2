@@ -27,16 +27,17 @@ const ResidentReport = () => {
         } while (page <= totalPages);
 
         const styledTypes = allTypes.map((type) => {
-          let color = '#ff6666'; 
+          let color = '#ff6666';
+          let fontColor = '#222';
           if (type.priority) {
             switch (type.priority.priority_level) {
-              case 4: color = '#fd3d40ff'; break; 
+              case 4: color = '#fd3d40ff'; fontColor = '#fff'; break; 
               case 3: color = '#f96567ff'; break; 
               case 2: color = '#fa8789ff'; break; 
               case 1: color = '#fca8a9ff'; break; 
             }
           }
-          return { ...type, color };
+          return { ...type, color, fontColor };
         });
 
         setIncidentTypes(styledTypes);
@@ -176,7 +177,7 @@ const ResidentReport = () => {
               style={{ backgroundColor: item.color }}
               onClick={() => handleIncidentClick(item)}
             >
-              <span className="incident-button-text">{item.name}</span>
+              <span className="incident-button-text" style={{ color: item.fontColor }} >{item.name}</span>
             </button>
           ))}
         </div>

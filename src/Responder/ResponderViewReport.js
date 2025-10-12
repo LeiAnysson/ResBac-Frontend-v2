@@ -24,18 +24,20 @@ const ResponderViewReport = () => {
 	const [showRequestSent, setShowRequestSent] = useState(false);
 	const [responderLocation, setResponderLocation] = useState(null);
 	const [arrived, setArrived] = useState(false);
+	const [mapReady, setMapReady] = useState(false);
+	const ablyPublishRef = useRef(null);
 
 	useEffect(() => {
 		const fetchReport = async () => {
-		try {
-			const data = await apiFetch(`${process.env.REACT_APP_URL}/api/responder/report/${id}`);
-			if (data.success) {
-			setReport(data.report);
-			setStatus(data.report.status);
+			try {
+				const data = await apiFetch(`${process.env.REACT_APP_URL}/api/responder/report/${id}`);
+				if (data.success) {
+					setReport(data.report);
+					setStatus(data.report.status);
+				}
+			} catch (err) {
+				console.error('Failed to load report:', err);
 			}
-		} catch (err) {
-			console.error('Failed to load report:', err);
-		}
 		};
 		fetchReport();
 	}, [id]);
@@ -43,45 +45,54 @@ const ResponderViewReport = () => {
 	useEffect(() => {
 		if (!report?.id) return;
 
-		if (!ablyRef.current) {
-			ablyRef.current = new Ably.Realtime({ key: process.env.REACT_APP_ABLY_KEY });
+		if (!ablyPublishRef.current) {
+			try {
+				ablyPublishRef.current = new Ably.Realtime({
+					key: process.env.REACT_APP_ABLY_PUBLISH_KEY
+				});
+			} catch (err) {
+				console.error('Failed to init Ably publisher:', err);
+				return;
+			}
 		}
 
-		const locationChannel = ablyRef.current.channels.get('responder-location');
+		const locationChannel = ablyPublishRef.current.channels.get('responder-location');
 
 		let lastPublished = 0;
 		const watchId = navigator.geolocation.watchPosition(
 			(position) => {
-			const now = Date.now();
-			if (now - lastPublished < 2000) return; 
+				const now = Date.now();
+				if (now - lastPublished < 2000) return;
 
-			const newLocation = {
-				lat: position.coords.latitude,
-				lng: position.coords.longitude,
-			};
-			setResponderLocation(newLocation);
+				const newLocation = {
+					lat: position.coords.latitude,
+					lng: position.coords.longitude,
+				};
+				setResponderLocation(newLocation);
 
-			locationChannel.publish('update', {
-				teamId: report.assignedTeam,
-				lat: newLocation.lat,
-				lng: newLocation.lng,
-				timestamp: new Date().toISOString(),
-			});
+				try {
+					locationChannel.publish('update', {
+						teamId: report.assignedTeam,
+						lat: newLocation.lat,
+						lng: newLocation.lng,
+						timestamp: new Date().toISOString(),
+					});
+				} catch (err) {
+					console.warn('Ably publish failed:', err);
+				}
 
-			lastPublished = now;
+				lastPublished = now;
 			},
 			(err) => console.error('Failed to get location:', err),
-			{ enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+			{ enableHighAccuracy: false, maximumAge: 5000, timeout: 30000 }
 		);
-		return () => {
-			navigator.geolocation.clearWatch(watchId);
-		};
-	}, [report?.assignedTeam, report?.id]);
 
+		return () => navigator.geolocation.clearWatch(watchId);
+	}, [report?.id, report?.assignedTeam]);
 
 	useEffect(() => {
 		return () => {
-		if (ablyRef.current) ablyRef.current.close();
+			if (ablyPublishRef.current) ablyPublishRef.current.close();
 		};
 	}, []);
 
@@ -89,47 +100,47 @@ const ResponderViewReport = () => {
 		if (!report?.latitude || !report?.longitude) return;
 
 		const loadHereMaps = () => {
-			if (window.H) return Promise.resolve();
-			if (hereMapsLoaded) return Promise.resolve();
+		if (window.H) return Promise.resolve();
+		if (hereMapsLoaded) return Promise.resolve();
 
-			const scripts = [
+		const scripts = [
 			'https://js.api.here.com/v3/3.1/mapsjs-core.js',
 			'https://js.api.here.com/v3/3.1/mapsjs-service.js',
 			'https://js.api.here.com/v3/3.1/mapsjs-ui.js',
 			'https://js.api.here.com/v3/3.1/mapsjs-mapevents.js',
-			];
+		];
 
-			hereMapsLoaded = true;
+		hereMapsLoaded = true;
 
-			return Promise.all(
+		return Promise.all(
 			scripts.map(
-				(src) =>
+			(src) =>
 				new Promise((resolve, reject) => {
-					const script = document.createElement('script');
-					script.src = src;
-					script.onload = resolve;
-					script.onerror = reject;
-					document.body.appendChild(script);
+				const script = document.createElement('script');
+				script.src = src;
+				script.onload = resolve;
+				script.onerror = reject;
+				document.body.appendChild(script);
 				})
 			)
-			);
+		);
 		};
 
 		let map, responderMarker, incidentMarker, routeLine, handleResize;
 
 		loadHereMaps()
-			.then(() => {
+		.then(() => {
 			if (!mapRef.current || mapRef.current.hasChildNodes()) return;
 
 			const platform = new window.H.service.Platform({
-				apikey: process.env.REACT_APP_HERE_API_KEY,
+			apikey: process.env.REACT_APP_HERE_API_KEY,
 			});
 			const defaultLayers = platform.createDefaultLayers();
 
 			map = new window.H.Map(mapRef.current, defaultLayers.vector.normal.map, {
-				center: { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
-				zoom: 14,
-				pixelRatio: window.devicePixelRatio || 1,
+			center: { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
+			zoom: 14,
+			pixelRatio: window.devicePixelRatio || 1,
 			});
 
 			handleResize = () => map.getViewPort().resize();
@@ -139,81 +150,75 @@ const ResponderViewReport = () => {
 			window.H.ui.UI.createDefault(map, defaultLayers);
 
 			incidentMarker = new window.H.map.Marker({
-				lat: parseFloat(report.latitude),
-				lng: parseFloat(report.longitude),
+			lat: parseFloat(report.latitude),
+			lng: parseFloat(report.longitude),
 			});
 			map.addObject(incidentMarker);
 
-			const carIcon = new window.H.map.Icon('https://cdn-icons-png.flaticon.com/512/8023/8023798.png', { size: { w: 32, h: 32 } });
+			const carIcon = new window.H.map.Icon(
+			'https://cdn-icons-png.flaticon.com/512/8023/8023798.png',
+			{ size: { w: 32, h: 32 } }
+			);
 
 			responderMarker = new window.H.map.Marker(
-				responderLocation || { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
-				{ icon: carIcon }
+			responderLocation || { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
+			{ icon: carIcon }
 			);
 			map.addObject(responderMarker);
 
-			if (!ablyRef.current) {
-				ablyRef.current = new Ably.Realtime({ key: process.env.REACT_APP_ABLY_KEY });
-			}
-			const channel = ablyRef.current.channels.get('responder-location');
+			setMapReady(true);
 
 			const updateRoute = async (start) => {
-				if (!start) return;
+			if (!start) return;
 
-				try {
+			try {
 				const url = `https://router.hereapi.com/v8/routes?apikey=${process.env.REACT_APP_HERE_API_KEY}&transportMode=car&origin=${start.lat},${start.lng}&destination=${report.latitude},${report.longitude}&return=polyline,summary`;
 				const res = await fetch(url);
 				const data = await res.json();
 
 				if (data.routes?.length) {
-					const encodedPolyline = data.routes[0].sections[0].polyline;
-					const lineString = window.H.geo.LineString.fromFlexiblePolyline(encodedPolyline);
+				const encodedPolyline = data.routes[0].sections[0].polyline;
+				const lineString = window.H.geo.LineString.fromFlexiblePolyline(encodedPolyline);
 
-					if (routeLine) map.removeObject(routeLine);
+				if (routeLine) map.removeObject(routeLine);
 
-					routeLine = new window.H.map.Polyline(lineString, {
+				routeLine = new window.H.map.Polyline(lineString, {
 					style: { strokeColor: 'blue', lineWidth: 4 },
-					});
-					map.addObject(routeLine);
+				});
+				map.addObject(routeLine);
 
-					map.getViewModel().setLookAtData({ bounds: routeLine.getBoundingBox() });
+				map.getViewModel().setLookAtData({ bounds: routeLine.getBoundingBox() });
 				}
-				} catch (err) {
+			} catch (err) {
 				console.error('Routing error (v8):', err);
-				}
+			}
 			};
 
 			const watchId = navigator.geolocation.watchPosition(
-				(position) => {
+			(position) => {
 				const newLocation = {
-					lat: position.coords.latitude,
-					lng: position.coords.longitude,
+				lat: position.coords.latitude,
+				lng: position.coords.longitude,
 				};
 				setResponderLocation(newLocation);
 				responderMarker.setGeometry(newLocation);
 
-				channel.publish('update', {
-					teamId: report.assignedTeam,
-					lat: newLocation.lat,
-					lng: newLocation.lng,
-					timestamp: new Date().toISOString(),
-				});
+				if (mapReady) checkIfArrived(newLocation.lat, newLocation.lng);
 
 				updateRoute(newLocation);
-				checkIfArrived(newLocation.lat, newLocation.lng);
-				},
-				(err) => console.error('Failed to get location:', err),
-				{ enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+			},
+			(err) => console.error('Failed to get location:', err),
+			{ enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
 			);
 
 			return () => {
-				navigator.geolocation.clearWatch(watchId);
-				if (map) map.dispose();
-				if (handleResize) window.removeEventListener('resize', handleResize);
+			navigator.geolocation.clearWatch(watchId);
+			if (map) map.dispose();
+			if (handleResize) window.removeEventListener('resize', handleResize);
 			};
-			})
-			.catch((err) => console.error('Failed to load HERE Maps scripts:', err));
-		}, [report]);
+		})
+		.catch((err) => console.error('Failed to load HERE Maps scripts:', err));
+	}, [report, responderLocation, mapReady]);
 	
 	useEffect(() => {
 		const handleIncidentUpdated = (e) => {
@@ -254,11 +259,11 @@ const ResponderViewReport = () => {
 	};
 
 	const checkIfArrived = async (currentLat, currentLng) => {
-		if (arrived || !report) return;
+		if (arrived || !report || !mapReady || !window.H) return;
 
 		const distance = window.H.geo.Distance.measure(
-			{ lat: currentLat, lng: currentLng },
-			{ lat: report.latitude, lng: report.longitude }
+			{ lat: parseFloat(currentLat), lng: parseFloat(currentLng) },
+			{ lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) }
 		);
 
 		if (distance <= 50 && report.status !== "On Scene") {

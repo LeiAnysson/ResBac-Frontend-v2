@@ -19,7 +19,8 @@ const AdminTeamPageView = () => {
     const fetchData = async () => {
       try {
         const team = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/${id}`);
-        const users = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/users?role=Responder&no_team=1`);
+
+        console.log("team:", team);
 
         setTeamData({
           id: team.id,
@@ -35,7 +36,6 @@ const AdminTeamPageView = () => {
             })) || [],
         });
 
-        setAvailableUsers(users.data || []);
       } catch (err) {
         console.error("Failed to fetch team data:", err);
       } finally {
@@ -103,19 +103,6 @@ const AdminTeamPageView = () => {
     }
   };
 
-  const handleDateChange = async (e) => {
-    const newDate = e.target.value;
-    setTeamData(prev => ({ ...prev, startDate: newDate }));
-    try {
-      await apiFetch(`${process.env.REACT_APP_URL}/admin/teams/rotation/start-date`, {
-        method: "PUT",
-        body: JSON.stringify({ rotation_start_date: newDate }),
-      });
-    } catch (err) {
-      console.error("Failed to update rotation date:", err);
-    }
-  };
-
   const formatDateForDisplay = (dateString) =>
     new Date(dateString).toLocaleDateString("en-US", {
       month: "2-digit",
@@ -135,16 +122,8 @@ const AdminTeamPageView = () => {
               <h2>Team {teamData.teamName}</h2>
             </div>
 
-            {!isEditing && (
-              <div className="ct-edit-section">
-                <button className="btn btn-primary edit-btn-separated" onClick={() => navigate(`/admin/response-teams/${teamData.id}/edit`)}>
-                  Edit
-                </button>
-              </div>
-            )}
-
             <div className="ct-content">
-              <div className="ct-info-section">
+              <div className="ct-info-section ct-top-row">
                 <div className="ct-info-item ct-status-item">
                   <label>Availability:</label>
                   <span
@@ -154,71 +133,74 @@ const AdminTeamPageView = () => {
                         : "unavailable"
                     }`}
                   >
-                    {teamData.availability.charAt(0).toUpperCase() + teamData.availability.slice(1)}
+                    {teamData.availability.charAt(0).toUpperCase() +
+                      teamData.availability.slice(1)}
                   </span>
                 </div>
 
                 <div className="ct-info-item">
-                  <label>Members:</label>
-                  <div className="ct-members-list">
-                    {teamData.members.map((member) => (
-                      <div key={member.id} className="ct-member-item">
-                        <span className="ct-member-name">{member.name}</span>
-                        {isEditing && (
-                          <button
-                            onClick={() => handleDeleteMember(member.id)}
-                            className="ct-delete-btn"
-                          >
-                            🗑️
-                          </button>
-                        )}
-                      </div>
-                    ))}
-
-                    {isEditing && (
-                      <div className="ct-add-member-wrapper">
-                        <button
-                          onClick={() => setShowAddDropdown(!showAddDropdown)}
-                          className="ct-add-member-btn"
-                        >
-                          +
-                        </button>
-                        {showAddDropdown && (
-                          <select
-                            onChange={(e) => handleAddMember(e.target.value)}
-                            defaultValue=""
-                          >
-                            <option value="">Select responder...</option>
-                            {availableUsers.map((u) => (
-                              <option key={u.id} value={u.id}>
-                                {u.first_name} {u.last_name}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <label>Start Date:</label>
+                  <span>{formatDateForDisplay(teamData.startDate)}</span>
                 </div>
+
+                {!isEditing && (
+                  <button
+                    className="btn btn-primary edit-btn-inline"
+                    onClick={() =>
+                      navigate(`/admin/response-teams/${teamData.id}/edit`)
+                    }
+                  >
+                    Edit
+                  </button>
+                )}
               </div>
 
-              <div className="ct-schedule-section">
-                <div className="ct-info-item">
-                  <label>Start Date:</label>
-                  {isEditing ? (
-                    <input
-                      type="date"
-                      value={teamData.startDate}
-                      onChange={handleDateChange}
-                      className="cu-input"
-                    />
-                  ) : (
-                    <span>{formatDateForDisplay(teamData.startDate)}</span>
+              {/* Members section */}
+              <div className="ct-info-item">
+                <label>Members:</label>
+                <div className="ct-members-list">
+                  {teamData.members.map((member) => (
+                    <div key={member.id} className="ct-member-item">
+                      <span className="ct-member-name">{member.name}</span>
+                      {isEditing && (
+                        <button
+                          onClick={() => handleDeleteMember(member.id)}
+                          className="ct-delete-btn"
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  {isEditing && (
+                    <div className="ct-add-member-wrapper">
+                      <button
+                        onClick={() => setShowAddDropdown(!showAddDropdown)}
+                        className="ct-add-member-btn"
+                      >
+                        +
+                      </button>
+                      {showAddDropdown && (
+                        <select
+                          onChange={(e) => handleAddMember(e.target.value)}
+                          defaultValue=""
+                        >
+                          <option value="">Select responder...</option>
+                          {availableUsers.map((u) => (
+                            <option key={u.id} value={u.id}>
+                              {u.first_name} {u.last_name}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
             </div>
 
+            {/* Editing actions */}
             {isEditing && (
               <div className="ct-actions">
                 <button className="btn btn-primary" onClick={handleSave}>

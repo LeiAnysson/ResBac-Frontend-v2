@@ -74,7 +74,7 @@ const ResidentDashboard = () => {
         <div className="sos-section">
           <p className="sos-title">Are you in an Emergency?</p>
           <p className="sos-subtitle">Press the button to report an emergency.</p>
-          <button className="sos-button" onClick={handleSOSClick}>
+          <button className="sos-button" onClick={() => navigate("/resident/report")}>
             <div className="sos-outer-circle">
               <div className="sos-inner-circle">
                 <span className="sos-text">SOS</span>

@@ -249,21 +249,41 @@ const ResidentWitReport = () => {
   const handleSubmitReport = async () => {
     if (!mapReady) return alert("Map not ready.");
     try {
+      const payload = {
+        incident_type_id: incidentTypeId,
+        reporter_type: "witness",
+        latitude: selectedCoords.lat,
+        longitude: selectedCoords.lng,
+        landmark: null,
+        description: null,
+      };
+
       const data = await apiFetch(`${process.env.REACT_APP_URL}/api/incidents/from-resident`, {
         method: "POST",
-        body: JSON.stringify({
-          incident_type_id: incidentTypeId,
-          reporter_type: "witness",
-          latitude: selectedCoords.lat,
-          longitude: selectedCoords.lng,
-          landmark: null,
-          description: null,
-        }),
+        body: JSON.stringify(payload),
       });
 
+      console.log("Witness report response:", data);
+
+      if (data.duplicate_of) {
+        alert("This incident was already reported. We've added you as a duplicate reporter.");
+        navigate("/resident/waiting", {
+          state: { 
+            duplicateOf: data.duplicate_of,
+            duplicates: data.duplicates
+          }
+        });
+        return;
+      }
+
       navigate("/resident/call", {
-        state: { incidentType, fromWitnessReport: true, incident: data.incident },
+        state: { 
+          incidentType, 
+          fromWitnessReport: true, 
+          incident: data.incident 
+        },
       });
+
     } catch (err) {
       console.error(err);
       alert("Submit failed — try again.");
@@ -308,9 +328,6 @@ const ResidentWitReport = () => {
               visibility: mapReady ? "visible" : "hidden"
             }}
           />
-          <div className="map-center-coords">
-            {selectedCoords ? `${selectedCoords.lat.toFixed(6)}, ${selectedCoords.lng.toFixed(6)}` : "Loading..."}
-          </div>
         </div>
       </div>
 

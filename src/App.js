@@ -8,6 +8,8 @@ import LoginPage from './LoginPage/LoginPage';
 import SignInPage from './SignInPage/SignInPage';
 import RegistrationPending from  './RegistrationLoading/RegistrationPending';
 
+import InAppNotificationContainer from "./Components/InAppNotificationContainer";
+
 import DispatcherDashboard from './Admin&Dispatcher/DispatcherPage/DispatcherDashboard';
 import DispatcherNotifications from './Admin&Dispatcher/DispatcherPage/DispatcherNotifications';
 
@@ -50,6 +52,7 @@ function App() {
     <Router>
       <AuthProvider>
         <DispatcherNotifications />
+        <InAppNotificationContainer />
         <Routes>
           {/* Public */}
           <Route path="/" element={<LandingPage />} />

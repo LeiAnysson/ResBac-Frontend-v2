@@ -1,0 +1,62 @@
+.in-app-notification {
+  position: fixed;  
+  top: 20px;           
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  padding: 16px;
+  border: #1746a2;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1000;        
+  animation: slideIn 0.5s ease-out;
+  font-family: Arial, sans-serif;
+  animation: slideIn 0.5s ease-out, fadeOut 0.5s ease-in forwards;
+  animation-delay: 0s, 4.5s;
+}
+
+.in-app-notification-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.in-app-notification button {
+  margin-top: 6px;
+  background-color: #1746a2;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.in-app-notification button:hover {
+  background-color: #143b89;
+}
+
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}

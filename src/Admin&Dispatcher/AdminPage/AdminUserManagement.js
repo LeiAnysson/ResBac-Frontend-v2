@@ -47,6 +47,20 @@ const UserPage = () => {
     const handleFilterChange = (e) => {
       setFilters({ ...filters, [e.target.name]: e.target.value });
     };
+
+    const handleDeleteUser = async (id) => {
+      if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+      try {
+        await apiFetch(`${process.env.REACT_APP_URL}/api/admin/users/${id}`, {
+          method: "DELETE",
+        });
+
+        fetchUsers(pagination.current_page);
+      } catch (err) {
+        console.error("Failed to delete user:", err);
+      }
+    };
     
     return (
       <div className="admin-dashboard-container">
@@ -118,6 +132,7 @@ const UserPage = () => {
                         <td>
                           <button className="view-btn" onClick={() => navigate(`/admin/users/${user.id}`)}>View</button>
                           <button className="view-btn" onClick={() => navigate(`/admin/users/${user.id}/edit`)}>Edit</button>
+                          <button className="delete-btn" onClick={() => handleDeleteUser(user.id)}>Delete</button>
                         </td>
                       </tr>
                     ))}

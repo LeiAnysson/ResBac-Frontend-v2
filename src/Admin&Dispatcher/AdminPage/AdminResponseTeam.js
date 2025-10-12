@@ -9,15 +9,9 @@ const TeamPage = () => {
     const [teams, setTeams] = useState([]);
     const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
     const navigate = useNavigate();
-    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [selectedTeam, setSelectedTeam] = useState(null);
     const [search, setSearch] = useState("");
-    const [editForm, setEditForm] = useState({
-      team_name: "",
-      status: "",
-      schedules: [],
-    });
+    const [rotationStartDate, setRotationStartDate] = useState("");
+    const [loadingRotation, setLoadingRotation] = useState(true);
     
     const fetchTeams = async (page = 1, filters = {}, searchQuery = "") => {
       const params = new URLSearchParams({
@@ -43,6 +37,37 @@ const TeamPage = () => {
 
       return () => clearTimeout(delayDebounce);
     }, [search]);
+
+    useEffect(() => {
+      const fetchRotationDate = async () => {
+        try {
+          const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/rotation/start-date`);
+          setRotationStartDate(data.rotation_start_date);
+        } catch (err) {
+          console.error("Failed to fetch rotation start date:", err);
+        } finally {
+          setLoadingRotation(false);
+        }
+      };
+
+      fetchRotationDate();
+    }, []);
+
+    const handleRotationDateChange = async (e) => {
+      const newDate = e.target.value;
+      setRotationStartDate(newDate);
+
+      try {
+        await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/rotation/start-date`, {
+          method: "PUT",
+          body: JSON.stringify({ rotation_start_date: newDate }),
+        });
+        alert("Rotation start date updated!");
+      } catch (err) {
+        console.error("Failed to update rotation start date:", err);
+        alert("Failed to update rotation start date. Try again.");
+      }
+    };
 
 
     const handlePageChange = (newPage) => {
@@ -79,6 +104,13 @@ const TeamPage = () => {
                   placeholder="Search..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                />
+                <input
+                  type="date"
+                  className="cu-input"
+                  value={rotationStartDate}
+                  onChange={handleRotationDateChange}
+                  disabled={loadingRotation}
                 />
                 <button className="create-team-btn" onClick={() => navigate('/admin/response-teams/create')}>Create Team</button>
               </div>

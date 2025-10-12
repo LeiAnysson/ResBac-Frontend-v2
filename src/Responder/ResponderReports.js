@@ -56,8 +56,10 @@ const ResponderReports = () => {
 		<div className="responder-notifications">
 			{assignedIncidents.map((inc) => (
 				<div key={inc.id} className="assigned-incident-popup">
-				<h4>{inc.incident_type?.name || "Unknown Type"}</h4>
-				<p>Location: {inc.landmark || `${inc.latitude}, ${inc.longitude}`}</p>
+					<h4>{inc.type || "Unknown Type"}</h4>
+					<p>
+					Location: {inc.landmark || (inc.latitude && inc.longitude ? `${inc.latitude}, ${inc.longitude}` : "Unknown")}
+					</p>
 				</div>
 			))}
 		</div>
@@ -75,7 +77,7 @@ const ResponderReports = () => {
 					<div className="report-info">
 					<p className="report-datetime">{report.date}</p>
 					<p className="report-incident">Incident Type: {report.type}</p>
-					<p className="report-location">{report.landmark}</p>
+					<p className="report-location">{report.landmark || (report.latitude && report.longitude ? `${report.latitude}, ${report.longitude}` : "Unknown Location")}</p>
 					</div>
 					{report.status && (
 					<span className={`status-label status-${report.status.toLowerCase()}`}>
