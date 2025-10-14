@@ -965,6 +965,13 @@ select.ct-input {
   width: 300px;
 }
 
+.a-edit-btn-inline {
+  max-height: 30px;
+  margin-top: 140px;
+  margin-left: 90px;
+  width: 300px;
+}
+
 .ct-actions {
   display: flex;
   justify-content: flex-end;

@@ -25,8 +25,8 @@ const AdminUserPageView = () => {
 
         setUserData({
             id: user.id,
-            firstName: isResident ? user.name.split(" ")[0] : user.first_name,
-            lastName: isResident ? user.name.split(" ").slice(1).join(" ") : user.last_name,
+            firstName: isResident ? user.first_name : user.first_name,
+            lastName: isResident ? user.last_name : user.last_name,
             contact: user.contact || "",
             dateOfBirth: user.birthdate || "",
             address: user.address || "",

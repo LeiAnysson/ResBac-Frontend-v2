@@ -1,36 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Resident/ResidentProfile.css';
 import '../Components/Shared/SharedComponents.css';
 import BackButton from '../assets/backbutton.png';
 import ResponderHeader from '../Components/NewComponentsHeaderWebApp/ResponderHeader';
 import ResponderBottomNav from '../Components/NewComponentsBottomNavWebApp/ResponderBottomNav';
+import { AuthContext } from '../context/AuthContext';
 
 const ResponderProfile = () => {
 	const navigate = useNavigate();
-
-	// State for toggling password form
+	const { logout } = useContext(AuthContext);
 	const [showPasswordForm, setShowPasswordForm] = useState(false);
 	const [currentPassword, setCurrentPassword] = useState('');
 	const [newPassword, setNewPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
 
-	const handleLogout = () => {
-		if (window.confirm('Are you sure you want to log out?')) {
-			// Clear localStorage
-			localStorage.removeItem('token');
-			localStorage.removeItem('user');
-			navigate('/login');
+	const handleLogout = async () => {
+		if (!window.confirm('Are you sure you want to log out?')) return;
+
+		const token = localStorage.getItem('token');
+		try {
+		const res = await fetch(`${process.env.REACT_APP_URL}/api/logout`, {
+			method: 'POST',
+			headers: {
+			'Authorization': `Bearer ${token}`,
+			'Content-Type': 'application/json',
+			},
+		});
+
+		if (!res.ok) {
+			console.warn('Backend logout failed, clearing locally anyway');
 		}
+		} catch (err) {
+		console.error('Logout request failed:', err);
+		}
+
+		logout();
 	};
 
-	// Placeholder handler for password update (backend ready)
 	const handlePasswordUpdate = () => {
 		if (newPassword !== confirmPassword) {
 			alert('Passwords do not match');
 			return;
 		}
-		// TODO: Integrate with backend
 		alert('Password updated!');
 		setShowPasswordForm(false);
 		setCurrentPassword('');

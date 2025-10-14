@@ -182,7 +182,7 @@
 }
 
 .emergency-reports-table td.location-type {
-  max-width: 130px;
+  max-width: 140px;
 }
 
 .emergency-reports-table td.location-cell {
@@ -231,31 +231,65 @@
   cursor: default;
 }
 
-.status-badge {
+.a-status-badge {
   padding: 4px 12px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
 }
 
-.status-badge.status-invalid {
+.a-status-badge.a-status-pending {
   padding: 4px 12px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
+  background: #e9e9e9;
+  color: gray;
+  border: 1px solid #cbcbcb;
+}
+
+.a-status-badge.a-status-accepted {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #e2ffb9;
+  color: green;
+  border: 1px solid #9fde92;
+}
+
+.a-status-badge.a-status-en-route,
+.a-status-badge.a-status-on-scene {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #c6e0ff;
+  color: #1041BC;
+  border: 1px solid #8aa5fd;
+}
+
+.a-status-badge.a-status-invalid,
+.a-status-badge.a-status-unanswered {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #ffc6c6;
   color: red;
+  border: 1px solid #fd8a8a;
 }
 
-.status-badge.status-requesting-for-backup {
-  background: #fef3c7;
+.a-status-badge.a-status-requesting-backup {
+  background: #fee9c7;
   color: #b45309;
-  border: 1px solid #fde68a;
+  border: 1px solid #fdcf8a;
 }
 
-.status-badge.status-resolved {
-  background: #bbf7d0;
-  color: #15803d;
-  border: 1px solid #86efac;
+.a-status-badge.a-status-resolved {
+  background: #15803d;
+  color: white;
+  border: 1px solid #11622f;
 }
 
 .reports-view-btn {

@@ -91,16 +91,6 @@
   min-height: 400px;
 }
 
-/* Notification Item Styles */
-.notification-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 16px;
-  border-bottom: 1px solid #e8e8e8;
-  transition: background-color 0.2s ease;
-}
-
 .notification-item:last-child {
   border-bottom: none;
 }
@@ -109,25 +99,6 @@
   background-color: #f8f9fa;
 }
 
-.notification-text {
-  flex: 1;
-  font-size: 14px;
-  color: #2c3e50;
-  line-height: 1.4;
-  margin-right: 12px;
-  font-weight: 500;
-}
-
-.notification-time {
-  font-size: 12px;
-  color: #7f8c8d;
-  font-weight: 500;
-  white-space: nowrap;
-  min-width: 80px;
-  text-align: right;
-}
-
-/* Loading State */
 .loading-state {
   display: flex;
   justify-content: center;
@@ -137,7 +108,6 @@
   font-size: 16px;
 }
 
-/* Empty State */
 .empty-state {
   display: flex;
   justify-content: center;

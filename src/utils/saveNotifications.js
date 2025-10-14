@@ -1,4 +1,4 @@
-export const saveNotification = async (user_id, message) => {
+export const saveNotification = async ({ user_id, team_id, message }) => {
   try {
     await fetch(`${process.env.REACT_APP_URL}/api/notifications`, {
       method: "POST",
@@ -6,7 +6,7 @@ export const saveNotification = async (user_id, message) => {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${localStorage.getItem("token")}`,
       },
-      body: JSON.stringify({ user_id, message }),
+      body: JSON.stringify({ user_id, team_id, message }),
     });
   } catch (err) {
     console.error("Failed to save notification:", err);

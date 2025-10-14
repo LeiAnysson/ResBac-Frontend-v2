@@ -5,9 +5,11 @@ import {
 } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
 
 const NavBar = () => {
+  const { logout } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState(() => {
@@ -29,12 +31,10 @@ const NavBar = () => {
         },
       });
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.warn('Logout API failed, clearing locally anyway');
     }
 
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');  
+    logout();
   };
   
   useEffect(() => {

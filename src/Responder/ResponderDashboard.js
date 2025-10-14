@@ -5,10 +5,12 @@ import ResponderHeader from '../Components/NewComponentsHeaderWebApp/ResponderHe
 import ResponderBottomNav from '../Components/NewComponentsBottomNavWebApp/ResponderBottomNav';
 import { apiFetch } from '../utils/apiFetch';
 import { reverseGeocode } from '../utils/hereApi';
+import BocaueHeatmap from '../Components/Heatmap';
 
 const ResponderDashboard = () => {
   const navigate = useNavigate();
-  
+
+  const [incidents, setIncidents] = useState([]);
   const [latestReport, setLatestReport] = useState(null);
   const [locationName, setLocationName] = useState('Loading...');
 
@@ -43,6 +45,22 @@ const ResponderDashboard = () => {
   const handleViewReport = (report) => {
     navigate(`/responder/reports/view-report/${report.id}`, { state: { report } });
   };
+
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_URL}/api/heatmap/incidents`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+      })
+      .then(res => res.json())
+      .then(data => {
+        setIncidents(data);
+      })
+        .catch(error => console.error("Error fetching heatmap incidents:", error));
+  }, []);
 
   return (
     <div className="responder-dashboard">
@@ -85,20 +103,19 @@ const ResponderDashboard = () => {
 
         <div className="heatmap-section">
           <h3 className="section-title">Incident Heatmap</h3>
-          <div className="map-container">
-            <div className="map-placeholder">
-              <div className="map-content">
-                <div className="map-overlay">
-                  <div className="map-pins">
-                  </div>
-                  <div className="map-roads">
-                  </div>
-                  <div className="map-labels">
-                  </div>
-                </div>
-                <div className="map-footer">
-                  <span className="google-text"></span>
-                </div>
+          <div className="responder-map-container">
+            <div className="responder-map-placeholder">
+              <div className="heatmap-legend">
+                  <span className="legend-label">Least</span>
+                  <div className="legend-bar"></div>
+                  <span className="legend-label">Most</span>
+              </div>
+              <div className="responder-map-content">
+                <BocaueHeatmap
+                  apiKey={process.env.REACT_APP_HERE_API_KEY}
+                  incidents={incidents}
+                  mapOptions={{ center: { lat: 14.7968, lng: 121.0410 }, zoom: 12 }}
+                />
               </div>
             </div>
           </div>

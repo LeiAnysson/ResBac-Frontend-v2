@@ -13,20 +13,33 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
     if (token) {
       fetch(`${process.env.REACT_APP_URL}/api/me`, {
         headers: {
-          "Authorization": `Bearer ${token}`,
-          "Accept": "application/json"
-        }
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
       })
-        .then(res => {
+        .then((res) => {
           if (!res.ok) throw new Error("Unauthorized");
           return res.json();
         })
-        .then(data => {
-          setUser(data);
-          localStorage.setItem("user", JSON.stringify(data)); 
+        .then((fetchedUser) => {
+          if (
+            !storedUser ||
+            storedUser.id !== fetchedUser.id ||
+            storedUser.role_id !== fetchedUser.role_id
+          ) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            setUser(null);
+            navigate("/login");
+          } else {
+            setUser(fetchedUser);
+            localStorage.setItem("user", JSON.stringify(fetchedUser));
+          }
           setTimeout(() => setLoading(false), 1000);
         })
         .catch(() => {

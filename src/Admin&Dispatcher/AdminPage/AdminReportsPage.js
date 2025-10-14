@@ -137,7 +137,7 @@ const AdminReportsPage = () => {
                     <td>{new Date(report.reported_at).toLocaleString()}</td>
 
                     <td>
-                      <span className={`status-badge status-${report.status.replace(/\s+/g, '-').toLowerCase()}`}>
+                      <span className={`a-status-badge a-status-${report.status.replace(/\s+/g, '-').toLowerCase()}`}>
                         {report.status}
                       </span>
                     </td>

@@ -28,7 +28,7 @@ export const setupNotifications = () => {
             console.log("Incoming incident for dispatcher:", event);
 
             showNotification("New Incident Reported", message);
-            saveNotification(currentUser.id, message);
+            saveNotification({ user_id: currentUser.id, message });
 
             window.dispatchEvent(new CustomEvent("incidentCallCreated", { detail: event }));
         }
@@ -44,7 +44,7 @@ export const setupNotifications = () => {
 
         showNotification("Duplicate Report Detected", message);
         showInAppNotification({ title: "Duplicate Report Detected", message });
-        saveNotification(currentUser.id, message);
+        saveNotification({ user_id: currentUser.id, message });
 
         window.dispatchEvent(new CustomEvent("duplicateReportCreated", { detail: event.duplicate }));
     });
@@ -57,7 +57,7 @@ export const setupNotifications = () => {
             message,
             onClick: () => window.location.href = `/dispatcher/emergency-reports/${event.incident.id}`,
         });
-        saveNotification(currentUser.id, message);
+        saveNotification({ user_id: currentUser.id, message });
 
         window.dispatchEvent(new CustomEvent("incidentUpdated", { detail: event.incident }));
     });
@@ -88,7 +88,7 @@ export const setupNotifications = () => {
         }
 
         showInAppNotification({ title: "Backup Request", message, actions });
-        saveNotification(currentUser.id, message);
+        saveNotification({ user_id: currentUser.id, message });
 
         window.dispatchEvent(new CustomEvent("backupRequestCreated", { detail: event }));
     });
@@ -102,7 +102,7 @@ export const setupNotifications = () => {
             message,
             onClick: () => window.location.href = `/dispatcher/emergency-reports/${event.incident.id}`,
         });
-        saveNotification(currentUser.id, message);
+        saveNotification({ user_id: currentUser.id, message });
 
         window.dispatchEvent(new CustomEvent("backupAutomaticallyAssigned", { detail: event }));
     });
@@ -117,7 +117,7 @@ export const setupNotifications = () => {
             console.log("Dispatcher accepted your call:", event);
 
             showNotification("Call Accepted", message);
-            saveNotification(currentUser.id, message);
+            saveNotification({ user_id: currentUser.id, message });
         }
     });
 
@@ -139,7 +139,8 @@ export const setupNotifications = () => {
                 message,
                 onClick: () => window.location.href = `/incidents/${incident.id}`,
             });
-            saveNotification(currentUser.id, message);
+            const reporterId = incident.reported_by;
+            saveNotification(reporterId, message);
         }
         window.dispatchEvent(new CustomEvent("incidentUpdated", { detail: incident }));
     });
@@ -159,7 +160,7 @@ export const setupNotifications = () => {
             message,
             onClick: () => window.location.href = `/incidents/${event.incident.id}`,
         });
-        saveNotification(currentUser.id, message);
+        saveNotification({ team_id: event.team.id, message });
 
         window.dispatchEvent(new CustomEvent("incidentAssigned", { detail: event.incident }));
     });
@@ -180,7 +181,7 @@ export const setupNotifications = () => {
             message,
             onClick: () => window.location.href = `/incidents/${event.incident.id}`,
         });
-        saveNotification(currentUser.id, message);
+        saveNotification({ team_id: event.team.id, message });
 
         window.dispatchEvent(new CustomEvent("backupAcknowledged", { detail: event }));
     });
@@ -196,7 +197,7 @@ export const setupNotifications = () => {
             message,
             onClick: () => window.location.href = `/incidents/${event.incident.id}`,
         });
-        saveNotification(currentUser.id, message);
+        saveNotification({ team_id: event.assigned_team.id, message });
 
         window.dispatchEvent(new CustomEvent("backupAutomaticallyAssigned", { detail: event }));
     });

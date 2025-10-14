@@ -26,7 +26,7 @@
   cursor: pointer;
 }
 
-.title-container {
+.r-title-container {
   z-index: 10 !important;
   background: white;
   position: fixed;
@@ -78,10 +78,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
 }
 
-.report-datetime {
+.r-report-datetime {
   margin: 0;
   font-weight: 600;
   color: #2c3e50;
@@ -100,12 +99,12 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 .details-body { margin-bottom: 16px; }
 .details-placeholder { height: 12px; visibility: hidden; margin-bottom: 8px; }
-.report-name { margin: 15px 0 4px 0; font-weight: 600; font-size: 16px; }
-.report-location { margin: 0 0 6px 0; color: #2c3e50; font-size: 19px; font-weight: 700; }
-.report-landmark { margin: 0 0 6px 0; color: #6b7280; font-size: 15px; }
-.report-incident { margin: 0; color: #2c3e50; }
+.r-report-name { margin: 15px 0 4px 0; font-weight: 600; font-size: 16px; }
+.r-report-location { margin: 0 0 6px 0; color: #2c3e50; font-size: 19px; font-weight: 700; }
+.r-report-landmark { margin: 0 0 6px 0; color: #6b7280; font-size: 15px; }
+.r-report-incident { margin: 0; color: #2c3e50; }
 .incident-type { color: #e11d48; font-weight: 700; }
-.report-description { color: #2c3e50; font-weight: 700; font-size: 15px;}
+.r-report-description { color: #2c3e50; font-weight: 700; font-size: 15px;}
 
 .field-label { font-weight: 600; margin: 12px 0 8px; display: block; }
 

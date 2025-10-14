@@ -1,9 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import TopBar from '../../Components/ComponentsTopBar/TopBar';
 import NavBar from '../../Components/ComponentsNavBar/NavBar';
 import './DispatcherDashboard.css'; 
+import BocaueHeatmap from '../../Components/Heatmap';
+import { useNavigate } from 'react-router-dom';
 
 const DispatcherDashboard = () => {
+  const [incidents, setIncidents] = useState([]);
+
+  useEffect(() => {
+      fetch(`${process.env.REACT_APP_URL}/api/heatmap/incidents`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+      })
+        .then(res => res.json())
+        .then(data => {
+          setIncidents(data);
+        })
+        .catch(error => console.error("Error fetching heatmap incidents:", error));
+  }, []);
+
   return (
     <div className="dispatcher-dashboard-container">
       <TopBar />
@@ -51,7 +71,16 @@ const DispatcherDashboard = () => {
             <div className="dispatcher-column">
               <div className="dispatcher-card dispatcher-incident-heatmap">
                 <div className="dispatcher-card-header">Incident Heatmap</div>
-                <div className="dispatcher-heatmap-placeholder">[Map Placeholder]</div>
+                  <div className="heatmap-legend">
+                    <span className="legend-label">Least</span>
+                    <div className="legend-bar"></div>
+                    <span className="legend-label">Most</span>
+                  </div>
+                  <BocaueHeatmap
+                    apiKey={process.env.REACT_APP_HERE_API_KEY}
+                    incidents={incidents}
+                    mapOptions={{ center: { lat: 14.7968, lng: 121.0410 }, zoom: 12 }}
+                  />
               </div>
               <div className="dispatcher-card available-responders">
                 <div className="dispatcher-card-header">Available Response Team</div>

@@ -49,7 +49,7 @@ const ResponderReports = () => {
 		<div className="responder-reports">
 			<ResponderHeader />
 
-			<div className="title-container reports-title">
+			<div className="title-container">
 				<button className="back-button" onClick={() => navigate(-1)}>
 				<img className="back-button-icon" src={BackButton} alt="Back" />
 				</button>

@@ -11,6 +11,7 @@ const ResidentCall = () => {
   const [incidentType] = useState(location.state?.incidentType || "");
   const [callStatus, setCallStatus] = useState("calling");
   const [callDuration, setCallDuration] = useState(0);
+  const [callAccepted, setCallAccepted] = useState(false);
 
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const residentId = currentUser?.id;
@@ -47,6 +48,7 @@ const ResidentCall = () => {
     }
 
     console.log("Call accepted by dispatcher (for me):", event);
+    setCallAccepted(true);
 
     if (event.incident) {
       setActiveCall(event.incident);
@@ -264,6 +266,29 @@ const ResidentCall = () => {
       console.error("Failed to notify backend about call end:", err);
     }
 
+    if (!callAccepted) {
+      alert(
+        "The dispatcher failed to accept the call. Your incident will be marked as unanswered."
+      );
+
+      try {
+        await apiFetch(
+          `${process.env.REACT_APP_URL}/api/incidents/${idToEnd}/update-status`,
+          {
+            method: "PATCH",
+          }
+        );
+        console.log("Incident marked as unanswered successfully");
+      } catch (err) {
+        console.error(
+          "Failed to mark incident as unanswered:",
+          err
+        );
+      }
+
+      await endCallCleanup();
+      return;
+    }
     await endCallCleanup();
   };
 

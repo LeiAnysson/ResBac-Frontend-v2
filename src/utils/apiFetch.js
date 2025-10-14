@@ -1,5 +1,10 @@
 export const apiFetch = async (url, options = {}) => {
-  const token = localStorage.getItem('token'); 
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    console.warn("No token found — user may need to log in again.");
+    throw new Error("Unauthorized: No token");
+  }
   try {
     const response = await fetch(url, {
       ...options,
@@ -13,7 +18,12 @@ export const apiFetch = async (url, options = {}) => {
     const data = await response.json(); 
 
     if (!response.ok) {
-      throw new Error(data.message || 'API request failed');
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        throw new Error("Session expired. Please log in again.");
+      }
+      throw new Error(data.message || "API request failed");
     }
 
     return data; 

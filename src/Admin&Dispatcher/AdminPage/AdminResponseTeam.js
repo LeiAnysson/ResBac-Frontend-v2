@@ -12,6 +12,7 @@ const TeamPage = () => {
     const [search, setSearch] = useState("");
     const [rotationStartDate, setRotationStartDate] = useState("");
     const [loadingRotation, setLoadingRotation] = useState(true);
+    const user = JSON.parse(localStorage.getItem("user"));
     
     const fetchTeams = async (page = 1, filters = {}, searchQuery = "") => {
       const params = new URLSearchParams({
@@ -105,14 +106,18 @@ const TeamPage = () => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-                <input
-                  type="date"
-                  className="cu-input"
-                  value={rotationStartDate}
-                  onChange={handleRotationDateChange}
-                  disabled={loadingRotation}
-                />
-                <button className="create-team-btn" onClick={() => navigate('/admin/response-teams/create')}>Create Team</button>
+                {user?.role?.name === 'Admin' && (
+                  <>
+                    <input
+                      type="date"
+                      className="cu-input"
+                      value={rotationStartDate}
+                      onChange={handleRotationDateChange}
+                      disabled={loadingRotation}
+                    />
+                    <button className="create-team-btn" onClick={() => navigate('/admin/response-teams/create')}>Create Team</button>
+                  </>
+                )}
               </div>
               <table className="response-team-table">
                 <thead>
@@ -130,8 +135,15 @@ const TeamPage = () => {
                         {team.status.charAt(0).toUpperCase() + team.status.slice(1)}
                       </td>
                       <td>
-                        <button className="view-btn" onClick={() => navigate(`/admin/response-teams/${team.id}`)}>View</button>
-                        <button className="delete-btn" onClick={() => handleDelete(team.id)}>Delete</button>
+                        <button className="view-btn" onClick={() => {if (user?.role?.name === "Admin") {
+                            navigate(`/admin/response-teams/${team.id}`);
+                          } else if (user?.role?.name === "MDRRMO") {
+                            navigate(`/dispatcher/response-teams/${team.id}`);
+                          }
+                        }}>View</button>
+                        {user?.role?.name === 'Admin' && (
+                          <button className="delete-btn" onClick={() => handleDelete(team.id)}>Delete</button>
+                        )}
                       </td>
                     </tr>
                   ))}

@@ -31,8 +31,39 @@ const LoginPage = () => {
       e.preventDefault();
       setError('');
 
-      const { encryptedPassword, secretKeyName } = encryptPasswordData(password);
+      const savedUser = JSON.parse(localStorage.getItem("user"));
+      const savedToken = localStorage.getItem("token");
 
+      if (savedUser && savedToken && savedUser.email === email) {
+        try {
+          const verifyRes = await fetch(`${process.env.REACT_APP_URL}/api/me`, {
+            headers: {
+              Authorization: `Bearer ${savedToken}`,
+              Accept: "application/json",
+            },
+          });
+
+          if (verifyRes.ok) {
+            console.log("Reusing existing session...");
+
+            if (savedUser.role_id === 1) navigate("/admin");
+            else if (savedUser.role_id === 2) navigate("/dispatcher");
+            else if (savedUser.role_id === 3) navigate("/responder");
+            else if (savedUser.role_id === 4) navigate("/resident");
+            return; 
+          } else {
+            console.log("Old token expired, doing fresh login...");
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+          }
+        } catch (error) {
+          console.log("Error verifying token:", error);
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+        }
+      }
+
+      const { encryptedPassword, secretKeyName } = encryptPasswordData(password);
       const blendedLogin = `${email}|${secretKeyName}${encryptedPassword}`;
 
       try {
@@ -50,6 +81,8 @@ const LoginPage = () => {
         const data = await response.json();
 
         if (response.ok) {
+          // clear any old data first to avoid cross-role reuse
+          localStorage.clear();
           login(data.user, data.token);
 
           if (data.user.role_id === 4 && data.user.residency_status === 'pending') {
@@ -57,17 +90,11 @@ const LoginPage = () => {
             return; 
           }
 
-          if (data.user.role_id === 1) {
-            navigate('/admin');
-          } else if (data.user.role_id === 2) {
-            navigate('/dispatcher');
-          } else if (data.user.role_id === 4) {
-            navigate('/resident'); 
-          } else if (data.user.role_id === 3) {
-            navigate('/responder');
-          }else {
-            navigate('/');
-          }
+          if (data.user.role_id === 1) navigate('/admin');
+          else if (data.user.role_id === 2) navigate('/dispatcher');
+          else if (data.user.role_id === 3) navigate('/responder');
+          else if (data.user.role_id === 4) navigate('/resident');
+          else navigate('/');
         } else {
           setError(data.message || 'Invalid login');
         }
@@ -76,6 +103,7 @@ const LoginPage = () => {
         setError('Something went wrong');
       }
     };
+
 
   return (
     <div className="login-root">

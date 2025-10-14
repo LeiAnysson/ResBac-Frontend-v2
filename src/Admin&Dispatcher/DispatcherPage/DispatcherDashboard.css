@@ -93,8 +93,8 @@ html, body {
 }
 
 .dispatcher-incident-heatmap {
-  height: 350px;
-  padding: 3.2rem 1rem 1rem 1rem; 
+  height: 420px;
+  padding: 3.2rem 1rem 4.5rem 1rem; 
   box-sizing: border-box;
 }
 

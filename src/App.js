@@ -26,6 +26,7 @@ import AdminResidencyApproval from './Admin&Dispatcher/AdminPage/Functionalities
 import AdminCreateUser from './Admin&Dispatcher/AdminPage/Functionalities/AdminCreateUser';
 import AdminUserPageView from './Admin&Dispatcher/AdminPage/AdminUserPageView';
 import AdminCreateAnnouncement from './Admin&Dispatcher/AdminPage/Functionalities/AdminCreateAnnouncement';
+import AdminNotifications from './Admin&Dispatcher/AdminPage/AdminNotifications';
 
 import ResidentDashboard from './Resident/ResidentDashboard';
 import ResidentAnnouncement from './Resident/ResidentAnnouncement';
@@ -77,10 +78,13 @@ function App() {
           <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminSettings /></ProtectedRoute>} />
           <Route path="/admin/residency-approval/:id" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminResidencyApproval /></ProtectedRoute>} />\
 
+          <Route path="/notifications" element={<ProtectedRoute allowedRoles={["Admin","MDRRMO"]}><AdminNotifications /></ProtectedRoute>} />
+
           {/* Dispatcher */}
           <Route path="/dispatcher" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><DispatcherDashboard /></ProtectedRoute>} />
           <Route path="/dispatcher/emergency-reports" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminReportsPage /></ProtectedRoute>} />
           <Route path="/dispatcher/response-team" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminResponseTeam /></ProtectedRoute>} />
+          <Route path="/dispatcher/response-teams/:id" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminTeamPageView /></ProtectedRoute>} />
           <Route path="/dispatcher/announcements" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminAnnouncement /></ProtectedRoute>} />
           <Route path="/dispatcher/emergency-reports/:id" element={<ProtectedRoute allowedRoles={["MDRRMO"]}><AdminReportsPageView /></ProtectedRoute>}/>
 

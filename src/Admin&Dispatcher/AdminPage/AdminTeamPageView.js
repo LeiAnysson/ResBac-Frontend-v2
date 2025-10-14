@@ -15,18 +15,16 @@ const AdminTeamPageView = () => {
   const [showAddDropdown, setShowAddDropdown] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const user = JSON.parse(localStorage.getItem("user")); // current logged-in user
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const team = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/${id}`);
-
-        console.log("team:", team);
-
         setTeamData({
           id: team.id,
           teamName: team.team_name || team.name || "Unnamed Team",
           availability: team.status || "unavailable",
-          startDate: team.start_date || new Date().toISOString().split("T")[0],
           members:
             team.members?.map((m) => ({
               id: m.user?.id || m.id,
@@ -35,7 +33,6 @@ const AdminTeamPageView = () => {
                 : m.name || "Unknown",
             })) || [],
         });
-
       } catch (err) {
         console.error("Failed to fetch team data:", err);
       } finally {
@@ -103,13 +100,6 @@ const AdminTeamPageView = () => {
     }
   };
 
-  const formatDateForDisplay = (dateString) =>
-    new Date(dateString).toLocaleDateString("en-US", {
-      month: "2-digit",
-      day: "2-digit",
-      year: "numeric",
-    });
-
   return (
     <div className="admin-dashboard-container">
       <TopBar />
@@ -138,14 +128,10 @@ const AdminTeamPageView = () => {
                   </span>
                 </div>
 
-                <div className="ct-info-item">
-                  <label>Start Date:</label>
-                  <span>{formatDateForDisplay(teamData.startDate)}</span>
-                </div>
-
-                {!isEditing && (
+                {/* Edit button only for Admin */}
+                {!isEditing && user?.role?.name === 'Admin' && (
                   <button
-                    className="btn btn-primary edit-btn-inline"
+                    className="btn btn-primary a-edit-btn-inline"
                     onClick={() =>
                       navigate(`/admin/response-teams/${teamData.id}/edit`)
                     }
