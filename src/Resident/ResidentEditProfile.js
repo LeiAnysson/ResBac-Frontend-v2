@@ -1,41 +1,97 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import './ResidentEditProfile.css';
-import Header from '../Components/ComponentsHeaderWebApp/header.jsx'; 
+import Header from '../Components/ComponentsHeaderWebApp/header.jsx';
 import '../Components/Shared/SharedComponents.css';
-import BackButton from '../assets/backbutton.png'
+import BackButton from '../assets/backbutton.png';
 import BottomNav from '../Components/ComponentsBottomNavWebApp/BottomNav.jsx';
 
 const ResidentEditProfile = () => {
   const navigate = useNavigate();
 
-  // State for form fields (empty, backend-ready)
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [address, setAddress] = useState('');
-  const [userId] = useState(''); // User ID is disabled and empty
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [age, setAge] = useState('');
+  const [birthdate, setBirthdate] = useState('');
+  const storedUser = localStorage.getItem("user");
+  const id = storedUser ? JSON.parse(storedUser).id : null;
 
-  // Placeholder save handler (backend logic to be added)
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_URL}/api/residents/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          setFirstName(data.first_name || '');
+          setLastName(data.last_name || '');
+          setAddress(data.address || '');
+          setEmail(data.email || '');
+          setPhone(data.contact_num || '');
+          setAge(data.age || '');
+          setBirthdate(data.birthdate || '');
+        }
+      })
+      .catch((err) => console.error('Failed to fetch profile:', err));
+  }, [id]);
+
   const handleSave = () => {
-    // TODO: Integrate with backend
-    navigate(-1);
+    const updatedData = {
+      first_name: firstName,
+      last_name: lastName,
+      address,
+      email,
+      contact_num: phone,
+      age,
+      birthdate,
+    };
+
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      const updatedUser = { ...user, ...updatedData };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    }
+
+    fetch(`${process.env.REACT_APP_URL}/api/residents/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify(updatedData),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to update backend');
+        return res.json();
+      })
+      .then(() => {
+        alert('Profile updated successfully!');
+        navigate(-1);
+      })
+      .catch((err) => {
+        console.warn('Backend update failed, but local data saved:', err);
+        alert('Profile saved locally! (Backend update unavailable)');
+        navigate(-1);
+      });
   };
 
   return (
-  <>
-    <div className="edit-profile-container">
-      {/* Header */}
-      <Header />
-      <div className='title-container'>
-            <button className="back-button" onClick={() => navigate(-1)}>
-            <img className='back-button-icon' src={BackButton}/>
+    <>
+      <div className="edit-profile-container">
+        <Header />
+        <div className="title-container">
+          <button className="back-button" onClick={() => navigate(-1)}>
+            <img className="back-button-icon" src={BackButton} />
           </button>
           <h1>Edit Profile</h1>
-      </div>
-        
-        {/* Avatar Card */}
+        </div>
+
         <div className="avatar-card">
           <div className="profile-avatar">
             <img
@@ -43,21 +99,31 @@ const ResidentEditProfile = () => {
               alt="Profile"
             />
           </div>
-          <p className="profile-name">{fullName || ' '}</p>
+          <p className="profile-name">
+            {firstName} {lastName}
+          </p>
           <button className="change-photo-btn">
             <span className="change-photo-text">Change Photo</span>
           </button>
         </div>
-        
-        {/* Form Fields */}
+
         <div className="form-group">
-          <label className="label">Full Name:</label>
+          <label className="label">First Name:</label>
           <input
             type="text"
             className="input"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="Enter full name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="Enter first name"
+          />
+
+          <label className="label">Last Name:</label>
+          <input
+            type="text"
+            className="input"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            placeholder="Enter last name"
           />
 
           <label className="label">Address:</label>
@@ -69,15 +135,14 @@ const ResidentEditProfile = () => {
             placeholder="Enter address"
           />
 
-          <label className="label">User ID:</label>
-          <input
-            type="text"
-            className="input-disabled"
-            value={userId}
-            disabled
-            placeholder="User ID"
-          />
-          <p className="input-note">User ID cannot be changed</p>
+          <label className="label">Phone:</label>
+              <input
+                type="tel"
+                className="input"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Enter phone number"
+              />
 
           <label className="label">Email:</label>
           <input
@@ -90,13 +155,12 @@ const ResidentEditProfile = () => {
 
           <div className="phone-age-row">
             <div className="phone-field">
-              <label className="label">Phone:</label>
+              <label className="label">Birthdate:</label>
               <input
-                type="tel"
+                type="date"
                 className="input"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Enter phone number"
+                value={birthdate}
+                onChange={(e) => setBirthdate(e.target.value)}
               />
             </div>
             <div className="age-field">
@@ -111,8 +175,7 @@ const ResidentEditProfile = () => {
             </div>
           </div>
         </div>
-        
-        {/* Buttons */}
+
         <div className="button-row">
           <button className="btn cancel" onClick={() => navigate(-1)}>
             <span className="btn-text">Cancel</span>
@@ -121,14 +184,10 @@ const ResidentEditProfile = () => {
             <span className="btn-text">Save</span>
           </button>
         </div>
-      
-      
-      {/* Bottom Navigation */}
-      
-    </div>
-    <BottomNav/>
+      </div>
+      <BottomNav />
     </>
   );
 };
 
-export default ResidentEditProfile; 
+export default ResidentEditProfile;

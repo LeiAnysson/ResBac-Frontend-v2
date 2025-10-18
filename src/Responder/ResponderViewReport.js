@@ -654,7 +654,6 @@ const ResponderViewReport = () => {
       setShowRequestSent(true);
       setStatus('Requesting Backup');
       setReport((prev) => ({ ...prev, status: 'Requesting Backup' }));
-      alert(data.message || 'Backup request sent');
     } catch (err) {
       console.error('Failed to request backup (network or parse error):', err);
       alert('Failed to send backup request (network error)');
@@ -823,7 +822,7 @@ const ResponderViewReport = () => {
         )}
 
         <ResponderBottomNav />
-
+        {/*
         <div
           style={{
             position: 'fixed',
@@ -861,6 +860,7 @@ const ResponderViewReport = () => {
             </div>
           </div>
         </div>
+        */}
       </div>
     </div>
   );

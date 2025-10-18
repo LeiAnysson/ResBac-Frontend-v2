@@ -5,8 +5,12 @@ let hereMapsLoaded = false;
 
 const ReportDetailsCard = ({ report, editable, setReport }) => {
   const mapRef = useRef(null);
+  
   const [updateMessage, setUpdateMessage] = useState(report.description ?? "");
   const [landmark, setLandmark] = useState(report.landmark ?? "");
+
+  const firstTeam = report.first_team_assignment?.team?.team_name;
+  const latestTeam = report.latest_team_assignment?.team?.team_name;
 
   useEffect(() => {
     setUpdateMessage(report.description ?? "");
@@ -154,7 +158,7 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
             </span>
             {report.duplicates && (
               <span className="duplicate-badge">
-                {JSON.parse(report.duplicates).length} duplicates
+                {JSON.parse(report.duplicates).length} duplicate(s)
               </span>
             )}
           </div>
@@ -172,7 +176,18 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
           <div className="incident-reporter">
             <span className="reporter-label"><b>Reported By: </b></span>
             <span className="reporter-name">
-              {report.user ? `${report.user.first_name} ${report.user.last_name}` : 'N/A'}
+              {report.user ? `${report.user.first_name} ${report.user.last_name}` : 'N/A'} 
+              {report.reporter_type && (
+                <span className="reporter-type"> ({report.reporter_type})</span>
+              )}
+            </span>
+          </div>
+          <div>
+            <span className="reporter-label"><b>Assigned Team: </b></span>
+            <span className="reporter-name"> 
+              Team {firstTeam 
+                ? `${firstTeam}${latestTeam && latestTeam !== firstTeam ? ` (+ ${latestTeam})` : ''}`
+                : (latestTeam || 'N/A')}
             </span>
           </div>
           <div className="incident-location-detail">

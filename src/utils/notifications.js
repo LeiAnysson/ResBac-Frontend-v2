@@ -2,6 +2,7 @@ import Echo from "@ably/laravel-echo";
 import Ably from "ably";
 import LogoB from "../assets/LogoB.png";
 import { saveNotification } from "./saveNotifications";
+import { apiFetch } from "./apiFetch";
 
 export const setupNotifications = () => {
     const currentUser = JSON.parse(localStorage.getItem("user"));
@@ -18,9 +19,7 @@ export const setupNotifications = () => {
         client: ablyClient,
     });
 
-
     /* ---------------- DISPATCHER NOTIFICATIONS ---------------- */
-
 
     window.Echo.channel("dispatcher").listen(".IncidentCallCreated", (event) => {
         if (event.target_role === 2 && currentUser.role_id === 2) {
@@ -39,77 +38,97 @@ export const setupNotifications = () => {
     });
 
     window.Echo.channel("dispatcher").listen(".DuplicateReportCreated", (event) => {
-        const message = `Incident #${event.duplicate.incident_id} (${event.duplicate.incident_type?.name || "Unknown"}) has duplicate reports. Total: ${event.duplicate.duplicate_count}`;
-        console.log("Duplicate report detected for dispatcher:", event);
+        if (event.target_role === 2 && currentUser.role_id === 2) {
+            const message = `Incident #${event.duplicate.incident_id} has duplicate reports. Total: ${event.duplicate.duplicate_count}`;
+            console.log("Duplicate report detected for dispatcher:", event);
 
-        showNotification("Duplicate Report Detected", message);
-        showInAppNotification({ title: "Duplicate Report Detected", message });
-        saveNotification({ user_id: currentUser.id, message });
+            showNotification("Duplicate Report Detected", message);
+            showInAppNotification({ title: "Duplicate Report Detected", message });
+            saveNotification({ user_id: currentUser.id, message });
 
-        window.dispatchEvent(new CustomEvent("duplicateReportCreated", { detail: event.duplicate }));
+            window.dispatchEvent(new CustomEvent("duplicateReportCreated", { detail: event.duplicate }));
+        }
     });
 
-    window.Echo.channel("dispatcher").listen(".IncidentUpdated", (event) => {
-        const message = `Incident #${event.incident.id} is now "${event.incident.status}"`;
+    window.Echo.channel("dispatcher").listen(".IncidentStatusUpdated", (event) => {
+        //if (currentUser.role_id !== 2) return;
+        console.log("[dispatcher] IncidentStatusUpdated received:", event);
+        const { incident } = event;
+        if (!event.target_roles.includes(currentUser.role_id)) return;
 
         showInAppNotification({
             title: "Incident Status Updated",
-            message,
-            onClick: () => window.location.href = `/dispatcher/emergency-reports/${event.incident.id}`,
+            message: `Incident #${incident.id} is now "${incident.status}".`,
+            actions: [
+                { label: "View Incident", path: `/dispatcher/emergency-reports/${incident.id}` }
+            ]
         });
-        saveNotification({ user_id: currentUser.id, message });
-
-        window.dispatchEvent(new CustomEvent("incidentUpdated", { detail: event.incident }));
     });
 
-    window.Echo.channel("dispatcher").listen(".BackupRequestCreated", (event) => {
-        const message = `${event.backup_type === "LGU" ? "LGU backup requested." : "Medical backup handled automatically."} for Incident #${event.incident_id}`;
-        console.log("%c[DISPATCHER] BackupRequestCreated event received:", "color: #1E90FF; font-weight: bold;", event);
+    window.Echo.channel("dispatcher").listen(".BackupRequestCreated", async (event) => {
+        if (event.target_role !== 2 || currentUser.role_id !== 2) return;
+
+        console.log("[dispatcher] BackupRequestCreated:", event);
+
+        const incidentId = event.incident_id ?? event.incident?.id ?? null;
+        const backupId = event.backup_id ?? event.backup?.id ?? null;
+        const backupType = event.backup_type ?? event.backup?.backup_type ?? "lgu";
+
+        const message = `LGU backup requested for Incident #${incidentId}.`;
 
         const actions = [];
-        if (event.backup_type === "LGU") {
+
+        if (backupType === "lgu" && backupId) {
             actions.push({
                 label: "Acknowledge",
                 onClick: async () => {
                     try {
-                        const response = await fetch(`/api/incidents/backups/${event.backup_id}/acknowledge`, { method: "POST" });
-                        const data = await response.json();
+                        const data = await apiFetch(`${process.env.REACT_APP_URL}/api/incidents/backups/${backupId}/acknowledge`, {
+                            method: "POST",
+                        });
+
                         if (data.success) {
                             showInAppNotification({
                                 title: "Backup Acknowledged",
-                                message: `You have acknowledged the LGU backup request for Incident #${event.incident_id}.`,
+                                message: `You have acknowledged the LGU backup request for Incident #${incidentId}.`,
                             });
                         }
                     } catch (err) {
-                        console.error("Failed to acknowledge backup:", err);
+                        console.error("Acknowledge failed:", err);
                     }
                 },
             });
         }
 
-        showInAppNotification({ title: "Backup Request", message, actions });
-        saveNotification({ user_id: currentUser.id, message });
+        showInAppNotification({
+            title: "Backup Request",
+            message,
+            persistent: true,
+            actions,
+        });
 
+        saveNotification({ user_id: currentUser.id, message });
         window.dispatchEvent(new CustomEvent("backupRequestCreated", { detail: event }));
     });
 
     window.Echo.channel("dispatcher").listen(".BackupAutomaticallyAssigned", (event) => {
+        if (!event.target_roles?.includes(currentUser.role_id)) return;
         const message = `A medical team has been automatically assigned to Incident #${event.incident.id} (${event.incident.incident_type}).`;
         console.log("Medical backup automatically assigned:", event);
 
         showInAppNotification({
             title: "Medic Backup Automatically Assigned",
             message,
-            onClick: () => window.location.href = `/dispatcher/emergency-reports/${event.incident.id}`,
+            actions: [
+                { label: "View Incident", path: `/dispatcher/emergency-reports/${event.incident.id}` }
+            ]
         });
         saveNotification({ user_id: currentUser.id, message });
 
-        window.dispatchEvent(new CustomEvent("backupAutomaticallyAssigned", { detail: event }));
+        window.dispatchEvent(new CustomEvent("backupAutomaticallyAssigned", { detail: event })); 
     });
 
-
     /* ---------------- RESIDENT NOTIFICATIONS ---------------- */
-
 
     window.Echo.channel("resident").listen(".CallAccepted", (event) => {
         if (event.target_role === 4 && event.reporter_id === currentUser.id) {
@@ -130,48 +149,81 @@ export const setupNotifications = () => {
         window.dispatchEvent(new CustomEvent("responderLocationUpdate", { detail: event }));
     });
 
-    window.Echo.channel("resident").listen(".IncidentUpdated", (event) => {
-        const incident = event.incident;
-        if (incident.status && incident.status !== "pending") {
-            const message = `The Response team is now "${incident.status}".`;
-            showInAppNotification({
-                title: "Incident Status Updated",
-                message,
-                onClick: () => window.location.href = `/incidents/${incident.id}`,
-            });
-            const reporterId = incident.reported_by;
-            saveNotification(reporterId, message);
-        }
-        window.dispatchEvent(new CustomEvent("incidentUpdated", { detail: incident }));
+    window.Echo.channel("resident").listen(".IncidentStatusUpdated", (event) => {
+        //if (currentUser.role_id !== 4) return;
+        console.log("[resident] IncidentStatusUpdated received:", event);
+
+        const { incident } = event;
+        if (!event.target_roles.includes(currentUser.role_id)) return;
+
+        showInAppNotification({
+            title: "Incident Status Updated",
+            message: `The response team updated your incident status to "${incident.status}".`,
+            actions: [
+                { label: "View Incident", path: `/resident/waiting` }
+            ]
+        });
+    });
+
+    window.Echo.channel("resident").listen(".IncidentDetailsUpdated", (event) => {
+        if (currentUser.role_id !== 4) return;
+        console.log("[resident] IncidentDetailsUpdated received:", event);
+
+        const { incident } = event;
+        if (!event.target_roles.includes(currentUser.role_id)) return;
+
+        showInAppNotification({
+            title: "Incident Updated",
+            message: `Your incident report has been updated by the dispatcher.`,
+            actions: [
+                { label: "View Details", path: `/resident/waiting` }
+            ]
+        });
     });
 
 
     /* ---------------- RESPONDER NOTIFICATIONS ---------------- */
 
-
     window.Echo.channel("responder").listen(".IncidentAssigned", (event) => {
-        if (event.team.id !== currentUser.team_id) return;
+        console.log("IncidentAssigned received:", event);
 
-        const message = `${event.incident.incident_type?.name || "Unknown"} reported at ${event.incident.landmark || `${event.incident.latitude}, ${event.incident.longitude}`}`;
-        console.log("New incident assigned to your team:", event);
+        if (event.target_role !== 3) return;
+
+        const incidentTypeName = event.incident.incident_type?.name || "Unknown Incident";
+        const landmarkOrCoords = event.incident.landmark || `${event.incident.latitude}, ${event.incident.longitude}`;
+        const message = `${incidentTypeName} reported at ${landmarkOrCoords}`;
 
         showInAppNotification({
             title: "New Incident Assigned",
             message,
-            onClick: () => window.location.href = `/incidents/${event.incident.id}`,
+            actions: [
+                { label: "View Incident", path: `/responder/reports/view-report/${event.incident.id}` }
+            ],
         });
-        saveNotification({ team_id: event.team.id, message });
+
+        saveNotification({ team_id: event.team_id, message });
 
         window.dispatchEvent(new CustomEvent("incidentAssigned", { detail: event.incident }));
     });
 
-    window.Echo.channel("responder").listen(".IncidentUpdated", (event) => {
-        console.log("Incident updated:", event);
-        window.dispatchEvent(new CustomEvent("incidentUpdated", { detail: event.incident }));
+    window.Echo.channel("responder").listen(".IncidentDetailsUpdated", (event) => {
+        if (currentUser.role_id !== 3) return;
+        console.log("[responder] IncidentDetailsUpdated received:", event);
+
+        const { incident } = event;
+        if (!event.target_roles.includes(currentUser.role_id)) return;
+
+        showInAppNotification({
+            title: "Incident Details Updated",
+            message: `Incident #${incident.id} has updated information.`,
+            actions: [
+                { label: "View Incident", path: `/responder/reports/view-report/${incident.id}` }
+            ]
+        });
     });
 
     window.Echo.channel("responder").listen(".BackupAcknowledged", (event) => {
-        if (event.team.id !== currentUser.team_id) return;
+        if (event.target_role !== currentUser.role_id) return;
 
         const message = `Dispatcher confirmed your ${event.backup_type} backup request for Incident #${event.incident.id}.`;
         console.log("Backup acknowledged:", event);
@@ -179,37 +231,54 @@ export const setupNotifications = () => {
         showInAppNotification({
             title: "Backup Request Acknowledged",
             message,
-            onClick: () => window.location.href = `/incidents/${event.incident.id}`,
+            actions: [
+                { label: "View Incident", path: `/responder/reports/view-report/${event.incident.id}` }
+            ]
         });
-        saveNotification({ team_id: event.team.id, message });
+        saveNotification({ user_id: currentUser.id, message });
 
         window.dispatchEvent(new CustomEvent("backupAcknowledged", { detail: event }));
     });
 
     window.Echo.channel("responder").listen(".BackupAutomaticallyAssigned", (event) => {
-        if (event.assigned_team.id !== currentUser.team_id) return;
+        const teamId = event.team_id;
+        if (!teamId || teamId !== currentUser.team_id) return;
 
-        const message = `A ${event.backup.type} backup has been assigned to Incident #${event.incident.id}.`;
+        const backupType = event.backup?.backup_type ?? "medic";
+        const message = `A ${backupType} backup has been assigned to Incident #${event.incident.id}.`;
         console.log("Medical backup automatically assigned to your team:", event);
 
         showInAppNotification({
             title: "Medical Backup Assigned",
             message,
-            onClick: () => window.location.href = `/incidents/${event.incident.id}`,
+            actions: [
+                { label: "View Incident", path: `/responder/reports/view-report/${event.incident.id}` }
+            ]
         });
-        saveNotification({ team_id: event.assigned_team.id, message });
+        saveNotification({ team_id: teamId, message });
 
         window.dispatchEvent(new CustomEvent("backupAutomaticallyAssigned", { detail: event }));
     });
 };
 
+/* ---------------- FUNCTIONS ---------------- */
 
-/*---------------------FUNCTIONS---------------------*/
+export const showInAppNotification = ({ title, message, actions = [] }) => {
+    if (!title && !message) return;
 
+    const wrappedActions = actions.map(action => ({
+        ...action,
+        onClick: (...args) => {
+            if (action.path) {
+                window.dispatchEvent(new CustomEvent("navigateTo", { detail: { path: action.path } }));
+            } else if (action.onClick) {
+                action.onClick(...args);
+            }
+        }
+    }));
 
-export const showInAppNotification = ({ title, message, actions }) => {
     window.dispatchEvent(
-        new CustomEvent("inAppNotification", { detail: { title, message, actions } })
+        new CustomEvent("inAppNotification", { detail: { title, message, actions: wrappedActions } })
     );
 };
 

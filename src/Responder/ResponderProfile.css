@@ -172,13 +172,8 @@
   font-size: 15px;
 }
 
-.info-content {
-  /* Container for info rows */
-}
-
 .info-row {
   display: flex;
-  margin-bottom: 8px;
 }
 
 .info-label {
@@ -272,11 +267,6 @@
   font-weight: bold;
   font-size: 17px;
   text-align: center;
-}
-
-/* Action Buttons */
-.action-buttons {
-  /* Container for action buttons */
 }
 
 .change-password-btn {

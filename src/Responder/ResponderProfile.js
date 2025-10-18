@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Resident/ResidentProfile.css';
 import '../Components/Shared/SharedComponents.css';
@@ -10,10 +10,30 @@ import { AuthContext } from '../context/AuthContext';
 const ResponderProfile = () => {
 	const navigate = useNavigate();
 	const { logout } = useContext(AuthContext);
+
+	const [responder, setResponder] = useState(null);
 	const [showPasswordForm, setShowPasswordForm] = useState(false);
 	const [currentPassword, setCurrentPassword] = useState('');
 	const [newPassword, setNewPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
+
+	const storedUser = localStorage.getItem('user');
+	const id = storedUser ? JSON.parse(storedUser).id : null;
+
+	useEffect(() => {
+		if (!id) return;
+
+		fetch(`${process.env.REACT_APP_URL}/api/responders/${id}`, {
+		headers: {
+			Authorization: `Bearer ${localStorage.getItem('token')}`,
+		},
+		})
+		.then((res) => res.json())
+		.then((data) => {
+			setResponder(data);
+		})
+		.catch((err) => console.error('Failed to fetch responder profile:', err));
+	}, [id]);
 
 	const handleLogout = async () => {
 		if (!window.confirm('Are you sure you want to log out?')) return;
@@ -23,7 +43,7 @@ const ResponderProfile = () => {
 		const res = await fetch(`${process.env.REACT_APP_URL}/api/logout`, {
 			method: 'POST',
 			headers: {
-			'Authorization': `Bearer ${token}`,
+			Authorization: `Bearer ${token}`,
 			'Content-Type': 'application/json',
 			},
 		});
@@ -40,8 +60,8 @@ const ResponderProfile = () => {
 
 	const handlePasswordUpdate = () => {
 		if (newPassword !== confirmPassword) {
-			alert('Passwords do not match');
-			return;
+		alert('Passwords do not match');
+		return;
 		}
 		alert('Password updated!');
 		setShowPasswordForm(false);
@@ -52,111 +72,116 @@ const ResponderProfile = () => {
 
 	return (
 		<div className="profile-container">
-			{/* Header */}
-			<ResponderHeader />
-			<div className='title-container'>
-					<button className="back-button" onClick={() => navigate(-1)}>
-					<img className='back-button-icon' src={BackButton}/>
-				</button>
-				<h1>Profile</h1>
+		<ResponderHeader />
+		<div className="title-container">
+			<button className="back-button" onClick={() => navigate(-1)}>
+			<img className="back-button-icon" src={BackButton} />
+			</button>
+			<h1>Profile</h1>
+		</div>
+
+		<div className="top-container">
+			<div className="profile-avatar">
+				<img
+					src="https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg"
+					alt="Profile"
+				/>
 			</div>
-			
-			{/* First Container: Avatar, Name, Edit Profile */}
-			<div className="top-container">
-				<div className="profile-avatar">
-					<span>👤</span>
-				</div>
-				<p className="profile-name">User Name</p>
-				<button className="edit-profile-button" onClick={() => navigate('/responder/edit-profile')}>
-					<span className="edit-profile-text">Edit Profile</span>
-				</button>
+			<p className="profile-name">
+			{responder ? `${responder.first_name} ${responder.last_name}` : 'Loading...'}
+			</p>
+			<button
+			className="edit-profile-button"
+			onClick={() => navigate('/responder/edit-profile')}
+			>
+			<span className="edit-profile-text">Edit Profile</span>
+			</button>
+		</div>
+
+		<div className="info-container">
+			<div className="info-header">
+			<span className="info-header-icon">i</span>
+			<span className="info-header-text"> Basic Information</span>
 			</div>
-			
-			{/* Second Container: Basic Information or Password Form */}
-			<div className="info-container">
-				<div className="info-header">
-					<span className="info-header-icon">i</span>
-					<span className="info-header-text"> Basic Information</span>
+
+			{!showPasswordForm ? (
+			<div className="info-content">
+				<div className="info-row">
+				<span className="info-label">Full Name:</span>
+				<span className="info-value">
+					{responder ? `${responder.first_name} ${responder.last_name}` : '-'}
+				</span>
 				</div>
-				
-						 {!showPasswordForm ? (
-			 <div className="info-content">
-			   <div className="info-row">
-			     <span className="info-label">Full Name:</span>
-			     <span className="info-value">-</span>
-			   </div>
-			   <div className="info-row">
-			     <span className="info-label">Role:</span>
-			     <span className="info-value">-</span>
-			   </div>
-			   <div className="info-row">
-			     <span className="info-label">Team:</span>
-			     <span className="info-value">-</span>
-			   </div>
-			   <div className="info-row">
-			     <span className="info-label">Emp ID:</span>
-			     <span className="info-value">-</span>
-			   </div>
-			   <div className="info-row">
-			     <span className="info-label">Email:</span>
-			     <span className="info-value">-</span>
-			   </div>
-			   <div className="info-row">
-			     <span className="info-label">Phone:</span>
-			     <span className="info-value">-</span>
-			   </div>
-			 </div>
-		  ) : (
+				<div className="info-row">
+				<span className="info-label">Role:</span>
+				<span className="info-value">{responder?.role_name || '-'}</span>
+				</div>
+				<div className="info-row">
+				<span className="info-label">Team:</span>
+				<span className="info-value">Team {responder?.team || '-'}</span>
+				</div>
+				<div className="info-row">
+				<span className="info-label">Address:</span>
+				<span className="info-value">{responder?.address || '-'}</span>
+				</div>
+				<div className="info-row">
+				<span className="info-label">Email:</span>
+				<span className="info-value">{responder?.email || '-'}</span>
+				</div>
+				<div className="info-row">
+				<span className="info-label">Phone:</span>
+				<span className="info-value">{responder?.contact_num || '-'}</span>
+				</div>
+			</div>
+			) : (
 			<div className="password-form-container">
-			  <h2 className="reset-password-title">Reset Password</h2>
-			  <label className="label">Current Password:</label>
-			  <input
+				<h2 className="reset-password-title">Reset Password</h2>
+				<label className="label">Current Password:</label>
+				<input
 				type="password"
 				className="input"
 				value={currentPassword}
 				onChange={(e) => setCurrentPassword(e.target.value)}
 				placeholder="Current Password"
-			  />
-			  <label className="label">New Password:</label>
-			  <input
+				/>
+				<label className="label">New Password:</label>
+				<input
 				type="password"
 				className="input"
 				value={newPassword}
 				onChange={(e) => setNewPassword(e.target.value)}
 				placeholder="New Password"
-			  />
-			  <label className="label">Confirm Password:</label>
-			  <input
+				/>
+				<label className="label">Confirm Password:</label>
+				<input
 				type="password"
 				className="input"
 				value={confirmPassword}
 				onChange={(e) => setConfirmPassword(e.target.value)}
 				placeholder="Confirm Password"
-			  />
-			  <button className="save-btn" onClick={handlePasswordUpdate}>
+				/>
+				<button className="save-btn" onClick={handlePasswordUpdate}>
 				<span className="save-btn-text">Confirm</span>
-			  </button>
-			  <button className="cancel-btn" onClick={() => setShowPasswordForm(false)}>
+				</button>
+				<button className="cancel-btn" onClick={() => setShowPasswordForm(false)}>
 				<span className="cancel-btn-text">Cancel</span>
-			  </button>
-			</div>
-		  )}
-			</div>
-			
-			{/* Show Change Password and Logout buttons only when not in password form */}
-			{!showPasswordForm && (
-			  <div className="action-buttons">
-				<button className="change-password-btn" onClick={() => setShowPasswordForm(true)}>
-				  <span className="change-password-text">Change Password</span>
 				</button>
-				<button className="logout-btn" onClick={handleLogout}>
-				  <span className="logout-text">Log out</span>
-				</button>
-			  </div>
+			</div>
 			)}
-			
-			{/* Bottom Navigation */}
-			<ResponderBottomNav />
+		</div>
+
+		{!showPasswordForm && (
+			<div className="action-buttons">
+			<button className="change-password-btn" onClick={() => setShowPasswordForm(true)}>
+				<span className="change-password-text">Change Password</span>
+			</button>
+			<button className="logout-btn" onClick={handleLogout}>
+				<span className="logout-text">Log out</span>
+			</button>
+			</div>
+		)}
+
+		<ResponderBottomNav />
 		</div>
 	);
 };

@@ -98,7 +98,7 @@ html, body {
   box-sizing: border-box;
 }
 
-.report-item, .responder-item {
+.report-item {
   background: #f8f9fb;
   border-radius: 8px;
   padding: 1rem;
@@ -109,14 +109,92 @@ html, body {
   gap: 0.5rem;
 }
 
-.report-badge.new { background: #e74c3c; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 13px; margin-right: 0.7em; }
-.report-badge.assigned { background: #f39c12; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 13px; margin-right: 0.7em; }
-.report-badge.enroute { background: #3498db; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 13px; margin-right: 0.7em; }
-.report-badge.onsite { background: #27ae60; color: #fff; border-radius: 6px; padding: 0.2em 0.7em; font-size: 13px; margin-right: 0.7em; }
+.responder-item {
+  background: #f8f9fb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: row; 
+  justify-content: space-between; 
+  align-items: center; 
+}
 
-.report-title { font-weight: 600; color: #23408e; font-size: 15px; margin-right: 0.7em; }
-.report-time { color: #aaa; font-size: 13px; }
-.report-desc { color: #444; font-size: 13px; margin-top: 0.3em; }
+.responder-details .status {
+  font-weight: 500;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: rgb(45, 166, 55);
+}
+
+.report-badge.pending,
+.report-badge.assigned {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #e9e9e9;
+  color: gray;
+  border: 1px solid #cbcbcb;
+}
+
+.report-badge.accepted {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #e2ffb9;
+  color: green;
+  border: 1px solid #9fde92;
+}
+
+.report-badge.en-route,
+.report-badge.on-scene {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #c6e0ff;
+  color: #1041BC;
+  border: 1px solid #8aa5fd;
+}
+
+.report-badge.invalid,
+.report-badge.unanswered {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #ffc6c6;
+  color: red;
+  border: 1px solid #fd8a8a;
+}
+
+.report-badge.requesting-backup,
+.report-badge.backup-assigned {
+  background: #fee9c7;
+  color: #b45309;
+  border: 1px solid #fdcf8a;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.report-badge.resolved {
+  background: #15803d;
+  color: white;
+  border: 1px solid #11622f;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dispatcher-report-title { font-weight: 600; color: #23408e; font-size: 16px; margin-right: 0.7em; padding-left: 5px; }
+.dispatcher-report-time { color: #aaa; font-size: 13px; }
+.dispatcher-report-desc { color: #444; font-size: 13px; margin-top: 0.3em; }
 .responder-name { color: #23408e; font-weight: 500; }
 .responder-details { color: #444; font-size: 13px; margin-bottom: 0.3em; }
 .status.onroute { color: #27ae60; font-weight: 600; }

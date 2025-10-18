@@ -1,15 +1,12 @@
-/* Responder Edit Profile Styles */
 .responder-edit-profile {
   min-height: 100vh;
   background: #f7f8fa;
 }
 
-/* Title row uses shared .title-container spacing */
 .title-container h1 {
   margin: 0;
 }
 
-/* Profile card with avatar */
 .profile-card {
   background: #fff;
   border: 1px solid #b3c6e0;
@@ -19,18 +16,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.avatar-circle {
-  width: 96px;
-  height: 96px;
-  border-radius: 48px;
-  background: #e9eef9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  margin-bottom: 12px;
 }
 
 .change-photo-btn {
@@ -43,13 +28,13 @@
   cursor: pointer;
 }
 
-/* Form card */
 .form-card {
   background: #fff;
   border: 1px solid #b3c6e0;
   border-radius: 10px;
-  margin: 12px 16px 90px; /* leave room for bottom nav */
+  margin: 12px 16px 90px; 
   padding: 16px;
+  padding-bottom: 30px;
 }
 
 .field-label {

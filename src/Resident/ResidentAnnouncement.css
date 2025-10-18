@@ -93,6 +93,21 @@
   margin: 30px 0;
 }
 
+.announcement-image {
+  flex-shrink: 0;
+}
+
+.announcement-image img {
+  max-width: 140px;
+  max-height: 120px;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 15px;
+  margin-left: 15px;
+  object-fit: cover; 
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .header {

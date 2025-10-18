@@ -15,6 +15,7 @@ const ResidentDashboard = () => {
     recentReports: [],
   });
   const [locationName, setLocationName] = useState('Loading...');
+  const [latestAnnouncement, setLatestAnnouncement] = useState(null);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -35,8 +36,19 @@ const ResidentDashboard = () => {
         console.error('Failed to fetch reports:', err);
       }
     };
+    const fetchLatestAnnouncement = async () => {
+      try {
+        const announcements = await apiFetch(`${process.env.REACT_APP_URL}/api/resident/announcements`);
+        if (announcements.length > 0) {
+          setLatestAnnouncement(announcements[0]); 
+        }
+      } catch (err) {
+        console.error('Failed to fetch announcements:', err);
+      }
+    };
 
     fetchReports();
+    fetchLatestAnnouncement();
   }, []);
 
   const handleSOSClick = () => {
@@ -84,17 +96,11 @@ const ResidentDashboard = () => {
         </div>
 
         {/* Public Announcements */}
-        <p className="resident-section-title">Public Announcement</p>
-        {data.publicAnnouncements.length > 0 ? (
-          <div className="announcements-list">
-            {data.publicAnnouncements.map((item) => (
-              <div className="announcement-card" key={item.id}>
-                <p className="announcement-text">{item.message}</p>
-                <button className="announcement-button">
-                  <span className="announcement-button-text">{item.button}</span>
-                </button>
-              </div>
-            ))}
+        <p className="resident-section-title">Latest Announcement</p>
+        {latestAnnouncement ? (
+          <div className="announcement-card">
+            <h3 className="announcement-title">{latestAnnouncement.title}</h3>
+            <p className="announcement-date">{new Date(latestAnnouncement.posted_at).toLocaleString()}</p>
           </div>
         ) : (
           <div className="empty-card">

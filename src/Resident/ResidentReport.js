@@ -55,6 +55,18 @@ const ResidentReport = () => {
     return found ? found.id : null;
   };
 
+  const requestMicPermission = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log("Mic permission granted");
+      return true;
+    } catch (err) {
+      console.error("Mic permission denied:", err);
+      alert("You need to allow microphone access to make a call.");
+      return false;
+    }
+  };
+
   const handleIncidentClick = async (incidentType) => {
     if (reporterType === "Witness") {
       navigator.geolocation.getCurrentPosition(
@@ -122,6 +134,9 @@ const ResidentReport = () => {
           return;
         }
         if (reporterType === "Victim") {
+          /*const micAllowed = await requestMicPermission();
+          if (!micAllowed) return;*/
+          
           navigate("/resident/call", { 
             state: { 
               incidentType: incidentType.name, 

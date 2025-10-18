@@ -2,8 +2,9 @@ import NavBar from "../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminSettings.css";
 import React, { useEffect, useState, useRef } from "react";
-import { apiFetch } from '../../utils/apiFetch';
+import { apiFetch } from "../../utils/apiFetch";
 import { printTable } from "../../utils/printTable";
+import IncidentTypeEditor from "./Functionalities/IncidentTypeEditor";
 
 console.log(printTable);
 
@@ -17,6 +18,7 @@ const AdminSettings = () => {
   const [incidentTypes, setIncidentTypes] = useState([]);
   const [incidentPagination, setIncidentPagination] = useState({ current_page: 1, last_page: 1 });
   const [loading, setLoading] = useState(true);
+  const [isIncidentEditorOpen, setIsIncidentEditorOpen] = useState(false);
 
   const fetchActivityLogs = async (page = 1, filters = {}) => {
       try {
@@ -60,36 +62,45 @@ const AdminSettings = () => {
     }
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setMessage(`Selected file: ${file.name}`);
-    }
-  };
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const handleRestore = async () => {
-    if (!selectedFile) {
-      setMessage("No file selected for restore.");
-      return;
-    }
+    const formData = new FormData();
+    formData.append("backupFile", file);
 
     try {
-      const formData = new FormData();
-      formData.append("backupFile", selectedFile);
-
-      const response = await fetch("/api/restore", {
+      const response = await fetch(`${process.env.REACT_APP_URL}/api/restore`, {
         method: "POST",
         body: formData,
       });
+
+      const result = await response.json();
+
       if (response.ok) {
-        setMessage("Restore completed successfully!");
+        alert("Database restored successfully!");
       } else {
-        setMessage("Restore failed. Please try again.");
+        alert(`Restore failed: ${result.error || result.message}`);
       }
     } catch (error) {
-      console.error("Restore error:", error);
-      setMessage("An error occurred during restore.");
+      console.error("Error during restore:", error);
+      alert("Restore failed. Please try again.");
+    }
+  };
+
+  const handleScheduledBackup = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_URL}/api/backup/scheduled`);
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(`Scheduled backup saved: ${data.file}`);
+      } else {
+        alert(`Backup failed: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Scheduled backup error:", error);
+      alert("Error while creating scheduled backup.");
     }
   };
   
@@ -190,7 +201,7 @@ const AdminSettings = () => {
                   <span className="card-icon">🔍</span>
                   <h4>Lookup Tables</h4>
                 </div>
-                <button className="btn btn-primary export-log-btn">
+                <button className="btn btn-primary export-log-btn" onClick={() => setIsIncidentEditorOpen(true)}>
                   Edit
                 </button>
               </div>
@@ -255,6 +266,9 @@ const AdminSettings = () => {
                 <input type="time" />
               </div>
               <button className="btn btn-primary">Save Schedule</button>
+              <button className="btn btn-secondary" onClick={handleScheduledBackup}>
+                Run Scheduled Backup Now
+              </button>
             </div>
             
             {/* Export Data - Left side of bottom row */}
@@ -265,7 +279,7 @@ const AdminSettings = () => {
               </div>
               <div className="settings-description">Download a copy of your system data.</div>
               <button
-                onClick={() => window.open('http://127.0.0.1:8000/backup-database', '_blank')}
+                onClick={() => window.open(`${process.env.REACT_APP_URL}/api/backup/download`, '_blank')}
                 className="btn btn-primary"
               >
                 Export
@@ -282,32 +296,16 @@ const AdminSettings = () => {
               <button
                 className="btn btn-primary"
                 onClick={handleImportClick}
-                disabled={!isMaintenanceMode}
-                title={
-                  !isMaintenanceMode
-                    ? "Enable Maintenance Mode to restore data."
-                    : "Import backup file"
-                }
               >
                 Import
               </button>
-
-              {selectedFile && (
-                <button className="restore-btn" onClick={handleRestore}>
-                  Confirm Restore
-                </button>
-              )}
-
-              {message && <div className="restore-message">{message}</div>}
-
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                accept=".sql,.json,.zip"
-                onChange={handleFileChange}
-              />
             </div>
+
+            <IncidentTypeEditor
+              isOpen={isIncidentEditorOpen}
+              onClose={() => setIsIncidentEditorOpen(false)}
+              refreshList={() => fetchIncidentTypes(incidentPagination.current_page)}
+            />
           </div>
         </main>
       </div>

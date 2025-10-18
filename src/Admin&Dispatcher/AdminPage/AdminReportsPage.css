@@ -81,9 +81,7 @@
 }
 
 .incident-reporter {
-  color: #e11d48;
   font-size: 13px;
-  margin-bottom: 5px;
 }
 
 .incident-location h4,
@@ -238,7 +236,8 @@
   font-weight: 500;
 }
 
-.a-status-badge.a-status-pending {
+.a-status-badge.a-status-pending,
+.a-status-badge.a-status-assigned {
   padding: 4px 12px;
   border-radius: 8px;
   font-size: 13px;
@@ -280,7 +279,8 @@
   border: 1px solid #fd8a8a;
 }
 
-.a-status-badge.a-status-requesting-backup {
+.a-status-badge.a-status-requesting-backup,
+.a-status-badge.a-status-backup-assigned {
   background: #fee9c7;
   color: #b45309;
   border: 1px solid #fdcf8a;
@@ -347,7 +347,8 @@ td button:last-child {
 }
 
 .reporter-label {
-  color: red;
+  color: #ee4166;
+  font-size: 13px;
 }
 
 .reporter-name, .incident-meta {
@@ -371,5 +372,6 @@ td button:last-child {
   font-weight: bold;
   margin-left: 8px;
 }
+
 
 

@@ -1,28 +1,73 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ResponderEditProfile.css';
 import '../Components/Shared/SharedComponents.css';
 import ResponderHeader from '../Components/NewComponentsHeaderWebApp/ResponderHeader';
 import ResponderBottomNav from '../Components/NewComponentsBottomNavWebApp/ResponderBottomNav';
 import BackButton from '../assets/backbutton.png';
+import { AuthContext } from '../context/AuthContext';
 
 const ResponderEditProfile = () => {
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
 
-  // Backend-ready form state (no API wiring here)
+  const storedUser = localStorage.getItem('user');
+  const id = storedUser ? JSON.parse(storedUser).id : null;
+
+  const [responder, setResponder] = useState(null);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
 
-  // These are read-only in UI per layout
-  const [employeeId] = useState('');
   const [role] = useState('Responder');
-  const [team] = useState('');
+  const [team, setTeam] = useState(''); 
 
-  const handleSave = () => {
-    // TODO: integrate with backend update
-    alert('Profile saved');
-    navigate(-1);
+  useEffect(() => {
+    if (!id) return;
+
+    fetch(`${process.env.REACT_APP_URL}/api/responders/${id}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setResponder(data);
+        setFullName(`${data.first_name} ${data.last_name}`);
+        setEmail(data.email);
+        setPhone(data.contact_num);
+        setAddress(data.address);
+        setTeam(data.team || '-');
+      })
+      .catch((err) => console.error('Failed to fetch responder profile:', err));
+  }, [id]);
+
+  const handleSave = async () => {
+    if (!responder) return;
+
+    const nameParts = fullName.trim().split(' ');
+    const first_name = nameParts[0];
+    const last_name = nameParts.slice(1).join(' ');
+
+    try {
+      const res = await fetch(`${process.env.REACT_APP_URL}/api/responders/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ first_name, last_name, email, contact_num: phone, address }),
+      });
+
+      if (!res.ok) throw new Error('Failed to update profile');
+
+      const updatedData = await res.json();
+      alert('Profile updated successfully!');
+      setResponder(updatedData.data);
+      navigate(-1);
+    } catch (err) {
+      console.error(err);
+      alert('Error updating profile');
+    }
   };
 
   const handleCancel = () => navigate(-1);
@@ -31,7 +76,6 @@ const ResponderEditProfile = () => {
     <div className="responder-edit-profile">
       <ResponderHeader />
 
-      {/* Title aligned like other screens */}
       <div className="title-container">
         <button className="back-button" onClick={() => navigate(-1)}>
           <img className="back-button-icon" src={BackButton} alt="Back" />
@@ -39,13 +83,16 @@ const ResponderEditProfile = () => {
         <h1>Edit Profile</h1>
       </div>
 
-      {/* Card: avatar + change photo */}
       <div className="profile-card">
-        <div className="avatar-circle">👤</div>
+        <div className="profile-avatar">
+          <img
+            src="https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg"
+            alt="Profile"
+          />
+        </div>
         <button className="change-photo-btn">Change Photo</button>
       </div>
 
-      {/* Form */}
       <div className="form-card">
         <label className="field-label">Full Name:</label>
         <input
@@ -58,9 +105,14 @@ const ResponderEditProfile = () => {
 
         <div className="row-2col">
           <div className="col">
-            <label className="field-label">Employee ID:</label>
-            <div className="readonly-chip">{employeeId || '—'}</div>
-            <div className="subtext">Employee ID cannot be changed</div>
+            <label className="field-label">Address:</label>
+            <input
+              className="text-input"
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Address"
+            />
           </div>
           <div className="col">
             <label className="field-label">Role:</label>
@@ -71,7 +123,7 @@ const ResponderEditProfile = () => {
 
         <div className="col">
           <label className="field-label">Team:</label>
-          <div className="readonly-chip">{team || '—'}</div>
+          <div className="readonly-chip">{team}</div>
           <div className="subtext">Team cannot be changed</div>
         </div>
 

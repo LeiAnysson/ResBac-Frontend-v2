@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from "./utils/ProtectedRoute";
 import { AuthProvider } from './context/AuthContext';
+import NavigationListener from "./utils/NavigationListener";
 
 import LandingPage from './Components/LandingPage';
 import LoginPage from './LoginPage/LoginPage';
@@ -54,6 +55,7 @@ function App() {
       <AuthProvider>
         <DispatcherNotifications />
         <InAppNotificationContainer />
+        <NavigationListener />
         <Routes>
           {/* Public */}
           <Route path="/" element={<LandingPage />} />
