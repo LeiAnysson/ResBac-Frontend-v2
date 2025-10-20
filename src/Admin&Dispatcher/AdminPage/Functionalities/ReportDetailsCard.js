@@ -240,11 +240,14 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
           onChange={(e) => setUpdateMessage(e.target.value)}
         />
       </div>
-      <div className="incident-actions">
-        <button className="send-btn" onClick={sendUpdate}>
-          Send To Responder
-        </button>
-      </div>
+      
+      {editable && (
+        <div className="incident-actions">
+          <button className="send-btn" onClick={sendUpdate}>
+            Send To Responder
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./ResidentWitReport.css";
 import "../Components/Shared/SharedComponents.css";
-import BackButton from "../assets/backbutton.png";
+import { MdOutlineArrowCircleLeft } from 'react-icons/md';
 import Header from "../Components/ComponentsHeaderWebApp/header.jsx";
 import BottomNav from "../Components/ComponentsBottomNavWebApp/BottomNav.jsx";
 import { apiFetch } from "../utils/apiFetch";
@@ -309,9 +309,7 @@ const ResidentWitReport = () => {
     <div className="witness-report-container">
       <Header />
       <div className="title-container">
-        <button className="back-button" onClick={() => navigate(-1)}>
-          <img className="back-button-icon" src={BackButton} />
-        </button>
+        <MdOutlineArrowCircleLeft className="back-button" onClick={() => navigate(-1)}/>
         <h1>Witness Report</h1>
       </div>
 

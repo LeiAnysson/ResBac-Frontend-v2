@@ -1,32 +1,40 @@
 import React, {useState} from "react";
-import { useNavigate } from 'react-router-dom';
-//import Shared from '../Shared/SharedComponents.css';
-import homeIcon from '../../assets/home.png';
-import historyIcon from '../../assets/history.png';
-import announcementIcon from '../../assets/announcement.png';
-import reportIcon from '../../assets/report.png';
-import notificationIcon from '../../assets/notification.png';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { MdHome, MdAssignment, MdNotifications } from 'react-icons/md';
+import { PiSirenFill } from "react-icons/pi";
+import { FaBullhorn } from "react-icons/fa";
 
 function BottomNav(){
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const isActive = (path) => {
+        return location.pathname === path;
+    };
+
     return(
         <>
             <div className="bottom-nav">
-                    <button className="nav-icon" onClick={() => navigate('/resident/history')}>
-                      <img src={historyIcon} alt="History" className="nav-img" />
-                    </button>
-                    <button className="nav-icon" onClick={() => navigate('/resident/announcement')}>
-                      <img src={announcementIcon} alt="Announcement" className="nav-img" />
-                    </button>
-                    <button className="nav-icon" onClick={() => navigate('/resident')}>
-                      <img src={homeIcon} alt="Home" className="nav-img" />
-                    </button>
-                    <button className="nav-icon" onClick={() => navigate('/resident/report')}>
-                      <img src={reportIcon} alt="Report" className="nav-img" />
-                    </button>
-                    <button className="nav-icon" onClick={() => navigate('/resident/notification')}>
-                      <img src={notificationIcon} alt="Notification" className="nav-img" />
-                    </button>
+              <MdAssignment
+                className={`nav-icon smaller-icon ${isActive('/resident/history') ? 'active' : ''}`}
+                onClick={() => navigate('/resident/history')}
+              />
+              <FaBullhorn
+                className={`nav-icon even-smaller-icon ${isActive('/resident/announcement') ? 'active' : ''}`}
+                onClick={() => navigate('/resident/announcement')}
+              />
+              <MdHome
+                className={`nav-icon ${isActive('/resident') ? 'active' : ''}`}
+                onClick={() => navigate('/resident')}
+              />
+              <PiSirenFill
+                className={`nav-icon ${isActive('/resident/report') ? 'active' : ''}`}
+                onClick={() => navigate('/resident/report')}
+              />
+              <MdNotifications
+                className={`nav-icon ${isActive('/resident/notification') ? 'active' : ''}`}
+                onClick={() => navigate('/resident/notification')}
+              />
             </div>
         </>
     )

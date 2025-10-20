@@ -60,7 +60,7 @@
 }
 
 .section-action-btn {
-  background-color: #27ae60;
+  background-color: #25597c;
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -79,7 +79,7 @@
 
 .report-card {
   background-color: white;
-  border: 2px solid #3498db;
+  border: 2px solid #25597c;
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -107,7 +107,7 @@
 }
 
 .report-type strong {
-  color: #e74c3c;
+  color: #c94c4c;
   font-weight: 600;
 }
 
@@ -136,7 +136,7 @@
 /* Empty State */
 .empty-card {
   background-color: white;
-  border: 2px solid #3498db;
+  border: 2px solid #25597c;
   border-radius: 12px;
   padding: 24px;
   text-align: center;

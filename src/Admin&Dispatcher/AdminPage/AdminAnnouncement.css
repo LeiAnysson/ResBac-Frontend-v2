@@ -77,14 +77,14 @@
   position: absolute;
   bottom: 10px;
   right: 10px;
-  background: #dc2626;
+  background: #c94c4c;
   color: white;
   border: none;
   border-radius: 20%;
   width: 40px;
   height: 40px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,6 +93,6 @@
 }
 
 .announcement-delete-btn:hover {
-  background: #b91c1c;
+  background: #b84646;
 }
 

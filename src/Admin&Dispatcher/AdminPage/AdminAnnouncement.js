@@ -4,6 +4,7 @@ import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import "./AdminAnnouncement.css";
 import { apiFetch } from "../../utils/apiFetch";
 import { useNavigate } from "react-router-dom";
+import { MdDelete } from "react-icons/md";
 
 const AdminAnnouncement = () => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -90,7 +91,7 @@ const AdminAnnouncement = () => {
                       onClick={() => handleDelete(a.id)}
                       title="Delete announcement"
                     >
-                      🗑️
+                      <MdDelete />
                     </button>
                   )}
 

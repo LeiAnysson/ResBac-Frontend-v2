@@ -8,6 +8,7 @@ import LandingPage from './Components/LandingPage';
 import LoginPage from './LoginPage/LoginPage';
 import SignInPage from './SignInPage/SignInPage';
 import RegistrationPending from  './RegistrationLoading/RegistrationPending';
+import ResetPasswordPage from './LoginPage/ResetPasswordPage';
 
 import InAppNotificationContainer from "./Components/InAppNotificationContainer";
 
@@ -41,6 +42,7 @@ import ResidentWaiting from './Resident/ResidentWaiting';
 import ResidentArrived from './Resident/ResidentArrived';
 import ResidentComplete from './Resident/ResidentComplete';
 import ResidentWitReport from './Resident/ResidentWitReport';
+import ResidentEmergencyTips from './Resident/ResidentEmergencyTips';
 
 import ResponderDashboard from './Responder/ResponderDashboard';
 import ResponderProfile from './Responder/ResponderProfile';
@@ -62,6 +64,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignInPage />} />
           <Route path="/register" element={<RegistrationPending />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* Admin */}
           <Route path="/admin" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminDashboard /></ProtectedRoute>} />
@@ -103,6 +106,7 @@ function App() {
           <Route path="/resident/arrived" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentArrived /></ProtectedRoute>} />
           <Route path="/resident/complete" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentComplete /></ProtectedRoute>} />
           <Route path="/resident/witness-report" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentWitReport /></ProtectedRoute>} />
+          <Route path="/resident/tips" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentEmergencyTips /></ProtectedRoute>} />
 
           {/* Responder */}
           <Route path="/responder" element={<ProtectedRoute allowedRoles={["Responder"]}><ResponderDashboard /></ProtectedRoute>} />

@@ -1,7 +1,7 @@
 import './NavBar.css';
 import {
   MdHome, MdPeople, MdAssessment, MdNotificationsActive,
-  MdCampaign, MdSettings, MdLogout
+  MdCampaign, MdSettings, MdLogout, MdAssignment
 } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -82,7 +82,7 @@ const NavBar = () => {
         <hr className="navbar-divider"/>
         <div className="navbar-menu">
           {/* Dashboard */}
-          {isAdmin && <Link to="/admin" className={`navbar-menu-item${location.pathname === "/admin" ? " active" : ""}`}><MdHome className="navbar-menu-icon" /><span>Dashboard</span></Link>}
+          {isAdmin && <Link to="/admin" className={`navbar-menu-item${location.pathname === "/admin" ? " active" : ""}`}><MdAssessment className="navbar-menu-icon" /><span>Dashboard</span></Link>}
           {isDispatcher && <Link to="/dispatcher" className={`navbar-menu-item${location.pathname === "/dispatcher" ? " active" : ""}`}><MdHome className="navbar-menu-icon" /><span>Dashboard</span></Link>}
 
           {/* Admin-only */}
@@ -90,7 +90,7 @@ const NavBar = () => {
 
           {/* Shared links */}
           {(isAdmin || isDispatcher) && <>
-            <Link to={isAdmin ? "/admin/emergency-reports" : "/dispatcher/emergency-reports"} className={`navbar-menu-item${location.pathname.includes("emergency-reports") ? " active" : ""}`}><MdAssessment className="navbar-menu-icon" /><span>Emergency Reports</span></Link>
+            <Link to={isAdmin ? "/admin/emergency-reports" : "/dispatcher/emergency-reports"} className={`navbar-menu-item${location.pathname.includes("emergency-reports") ? " active" : ""}`}><MdAssignment className="navbar-menu-icon" /><span>Emergency Reports</span></Link>
             <Link to={isAdmin ? "/admin/response-team" : "/dispatcher/response-team"} className={`navbar-menu-item${location.pathname.includes("response-team") ? " active" : ""}`}><MdNotificationsActive className="navbar-menu-icon" /><span>Response Team</span></Link>
             <Link to={isAdmin ? "/admin/announcements" : "/dispatcher/announcements"} className={`navbar-menu-item${location.pathname.includes("announcement") ? " active" : ""}`}><MdCampaign className="navbar-menu-icon" /><span>Announcement</span></Link>
           </>}

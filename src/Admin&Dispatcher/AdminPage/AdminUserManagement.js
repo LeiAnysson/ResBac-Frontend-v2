@@ -4,6 +4,7 @@ import "./AdminUserManagement.css";
 import React, { useState, useEffect } from "react";
 import { apiFetch } from '../../utils/apiFetch';
 import { useNavigate } from "react-router-dom";
+import { MdDelete, MdEdit, MdVisibility } from "react-icons/md";
 
 const UserPage = () => {
     const [users, setUsers] = useState([]);
@@ -122,17 +123,29 @@ const UserPage = () => {
                         <td>
                           <span
                             className={`user-status 
-                              ${user.residency_status === "approved" ? "active" : ""} 
+                              ${
+                                user.residency_status === "approved" ||
+                                user.residency_status?.toLowerCase() === "n/a" ||
+                                !user.residency_status
+                                  ? "active"
+                                  : ""
+                              }
                               ${user.residency_status === "pending" ? "pending" : ""} 
-                              ${user.residency_status === "rejected" ? "rejected" : ""}`}
+                              ${user.residency_status === "rejected" ? "rejected" : ""}
+                            `}
                           >
-                            {user.residency_status === "approved" ? "Active" : user.residency_status || "N/A"}
+                            {user.residency_status === "approved" ||
+                            user.residency_status?.toLowerCase() === "n/a" ||
+                            !user.residency_status
+                              ? "Active"
+                              : user.residency_status}
                           </span>
                         </td>
+
                         <td>
-                          <button className="view-btn" onClick={() => navigate(`/admin/users/${user.id}`)}>View</button>
-                          <button className="view-btn" onClick={() => navigate(`/admin/users/${user.id}/edit`)}>Edit</button>
-                          <button className="delete-btn" onClick={() => handleDeleteUser(user.id)}>Delete</button>
+                          <MdVisibility className="view-btn" onClick={() => navigate(`/admin/users/${user.id}`)}/>
+                          <MdEdit className="view-btn" onClick={() => navigate(`/admin/users/${user.id}/edit`)}/>
+                          <MdDelete className="delete-btn" onClick={() => handleDeleteUser(user.id)}/>
                         </td>
                       </tr>
                     ))}

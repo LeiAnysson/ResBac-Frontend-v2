@@ -1,28 +1,56 @@
-//import React, {useState}  from 'react'
 import { useNavigate } from 'react-router-dom';
-import '../Shared/SharedComponents.css'
+import { useState, useEffect } from 'react';
 import LogoB from '../../assets/LogoB.png';
 
-function Header(){
-    const navigate = useNavigate();
+const DEFAULT_PROFILE = "https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg";
 
-    return(
-        <>
-        <div className="header">
+function Header() {
+    const navigate = useNavigate();
+    const [profileImage, setProfileImage] = useState('');
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (!storedUser) return;
+
+        const user = JSON.parse(storedUser);
+        const id = user.id;
+        const token = localStorage.getItem("token");
+
+        fetch(`${process.env.REACT_APP_URL}/api/residents/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        .then(res => res.json())
+        .then(data => {
+            setProfileImage(data.profile_image_url || '');
+        })
+        .catch(err => console.error('Failed to fetch resident image:', err));
+    }, []);
+
+    const profileImageUrl = profileImage
+        ? profileImage.startsWith('http') || profileImage.startsWith('data:') || profileImage.startsWith('blob:')
+            ? profileImage
+            : `${process.env.REACT_APP_URL}${profileImage}`
+        : DEFAULT_PROFILE;
+
+    return (
+      <div className="header">
         <div className="header-left">
           <img src={LogoB} alt="ResBac" className="app-logo" />
         </div>
+        
         <button className="account-button" onClick={() => navigate('/resident/profile')}>
           <div className="avatar">
             <img
-              src="https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg"
+              src={profileImageUrl}
               alt="Profile"
+              onError={(e) => { e.currentTarget.src = DEFAULT_PROFILE; }}
             />
           </div>
         </button>
       </div>
-        </>
-    )
+    );
 }
 
 export default Header;

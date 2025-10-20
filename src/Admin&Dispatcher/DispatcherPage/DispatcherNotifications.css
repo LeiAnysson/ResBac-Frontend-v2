@@ -46,7 +46,7 @@
 .incoming-call-popup h4 {
   margin: 0 0 8px 0;
   font-size: 18px;
-  color: #007bff;
+  color: #25597c;
 }
 
 .incoming-call-popup p {
@@ -65,12 +65,12 @@
 }
 
 .incoming-call-popup button:first-of-type {
-  background-color: #28a745;
+  background-color: #25597c;
   color: #fff;
 }
 
 .incoming-call-popup button:last-of-type {
-  background-color: #dc3545;
+  background-color: #c94c4c;
   color: #fff;
 }
 
@@ -84,7 +84,7 @@
     opacity: 1;
   }
 }
-
+/*
 .duplicate-popup {
   position: fixed;
   top: 80px;
@@ -110,6 +110,7 @@
   margin: 2px 0;
   font-size: 12px;
 }
+*/
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }

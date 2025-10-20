@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Resident/ResidentNotification.css';
 import '../Components/Shared/SharedComponents.css';
-import BackButton from '../assets/backbutton.png';
+import { MdOutlineArrowCircleLeft } from 'react-icons/md';
 import ResponderHeader from  '../Components/NewComponentsHeaderWebApp/ResponderHeader';
 import ResponderBottomNav from '../Components/NewComponentsBottomNavWebApp/ResponderBottomNav';
 import { apiFetch } from '../utils/apiFetch';
@@ -54,9 +54,7 @@ const ResponderNotification = () => {
     <div className="notification-container">
       <ResponderHeader />
       <div className='title-container'>
-        <button className="back-button" onClick={() => navigate(-1)}>
-          <img className='back-button-icon' src={BackButton}/>
-        </button>
+        <MdOutlineArrowCircleLeft className="back-button" onClick={() => navigate(-1)}/>
         <h1>Notifications</h1>
       </div>
 

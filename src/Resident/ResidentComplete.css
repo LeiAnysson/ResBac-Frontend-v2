@@ -167,14 +167,14 @@
 }
 
 .error-message {
-  color: #d32f2f;
+  color: #c94c4c;
   margin: 0 0 20px 0;
   font-size: 16px;
   font-weight: 500;
 }
 
 .retry-button {
-  background: #1041BC;
+  background: #25597c;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -186,7 +186,7 @@
 }
 
 .retry-button:hover {
-  background: #0d2f8a;
+  background: #225170;
   transform: translateY(-1px);
 }
 

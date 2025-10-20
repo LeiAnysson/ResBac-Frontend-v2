@@ -76,7 +76,7 @@ const ResidentDashboard = () => {
             <button className="tips-button">
               <span className="tips-button-text">Emergency Tips</span>
               <div className="tips-show-button">
-                <span className="tips-show-button-text">{data.emergencyTips}</span>
+                <span className="tips-show-button-text" onClick={() => navigate("/resident/tips")}>{data.emergencyTips}</span>
               </div>
             </button>
           </div>

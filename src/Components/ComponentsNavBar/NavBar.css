@@ -74,7 +74,7 @@
 .navbar-menu-item.active,
 .navbar-menu-item:hover {
   background: #eaf0fb;
-  color: #23408e;
+  color: #25597c;
   transform: translateX(6px) scale(.97);
   box-shadow: 0 2px 8px rgba(35, 64, 142, 0.06);
 }

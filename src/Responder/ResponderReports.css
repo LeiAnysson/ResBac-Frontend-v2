@@ -27,34 +27,6 @@
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.back-button {
-  background: white;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.back-button:hover {
-  transform: scale(1.05);
-}
-
-.back-button:active {
-  transform: scale(0.95);
-}
-
-.back-icon {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-}
-
 .responder-reports-card {
 	background: #fff;
 	border: 1px solid #b3c6e0;
@@ -100,7 +72,7 @@
 }
 
 .a-incident-type {
-	color: #e74c3c;
+	color: #25597c;
 	font-weight: 700;
 }
 
@@ -121,7 +93,7 @@
 }
 
 .a-status-label.status-on-scene {
-  color: #1041BC;
+  color: #25597c;
 }
 
 .a-status-label.status-requesting-backup {

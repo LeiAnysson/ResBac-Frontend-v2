@@ -17,29 +17,6 @@
   padding-top: 20px;
 }
 
-.back-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-right: 8px;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.3s ease;
-}
-
-.back-button:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.back-button-icon {
-  font-size: 28px;
-  color: #222;
-  font-weight: bold;
-}
-
 .title {
   font-size: 20px;
   font-weight: bold;
@@ -80,11 +57,11 @@
 }
 
 .toggle-button-active-victim {
-  background-color: #e53935;
+  background-color: #c94c4c;
 }
 
 .toggle-button-active-witness {
-  background-color: #e53935;
+  background-color: #c94c4c;
 }
 
 .toggle-button-text {

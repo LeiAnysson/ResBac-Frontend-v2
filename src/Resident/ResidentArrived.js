@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './ResidentArrived.css';
 import Header from '../Components/ComponentsHeaderWebApp/header.jsx';
 import  BottomNav from '../Components/ComponentsBottomNavWebApp/BottomNav.jsx'
+import { MdLocationPin } from 'react-icons/md';
 
 function ResidentArrived() {
 return (
@@ -22,7 +23,9 @@ return (
       <div className="status-card" style={{width: '95%', borderRadius: '30px'}}>
         <div className="status-content">
           <div className="location-info">
-            <div className="location-icon">📍</div>
+            <div className="location-icon">
+              <MdLocationPin />
+            </div>
             <div className="location-text">
               <span className="location-address">Location</span>
             </div>

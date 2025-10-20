@@ -19,17 +19,25 @@ export default function BocaueHeatmap({
 
     function colorForCount(count, maxCount) {
         const p = maxCount > 0 ? Math.min(count / maxCount, 1) : 0;
+
+        const mutedColors = {
+            green: { r: 120, g: 200, b: 120 }, 
+            yellow: { r: 255, g: 210, b: 120 }, 
+            red: { r: 201, g: 76, b: 76 }  
+        };
+
         if (p <= 0.5) {
-        const t = p / 0.5;
-        const r = Math.round(0 + (255 - 0) * t);
-        const g = 200;
-        const b = Math.round(0 + (0 - 0) * t);
-        return `rgb(${r},${g},${b})`;
+            const t = p / 0.5;
+            const r = Math.round(mutedColors.green.r + (mutedColors.yellow.r - mutedColors.green.r) * t);
+            const g = Math.round(mutedColors.green.g + (mutedColors.yellow.g - mutedColors.green.g) * t);
+            const b = Math.round(mutedColors.green.b + (mutedColors.yellow.b - mutedColors.green.b) * t);
+            return `rgb(${r},${g},${b})`;
         } else {
-        const t = (p - 0.5) / 0.5;
-        const r = 255;
-        const g = Math.round(200 - (200 * t));
-        return `rgb(${r},${g},0)`;
+            const t = (p - 0.5) / 0.5;
+            const r = Math.round(mutedColors.yellow.r + (mutedColors.red.r - mutedColors.yellow.r) * t);
+            const g = Math.round(mutedColors.yellow.g + (mutedColors.red.g - mutedColors.yellow.g) * t);
+            const b = Math.round(mutedColors.yellow.b + (mutedColors.red.b - mutedColors.yellow.b) * t);
+            return `rgb(${r},${g},${b})`;
         }
     }
 
@@ -85,7 +93,11 @@ export default function BocaueHeatmap({
         }
         const color = colorForCount(i.count || 0, maxCount);
         const size = 18;
-        const svg = `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg"><circle cx="${size/2}" cy="${size/2}" r="${size/2-1}" fill="${color}" stroke="#222" stroke-width="1"/></svg>`;
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size * 1.4}" viewBox="0 0 24 34">
+        <path d="M12 0C5.4 0 0 5.2 0 11.6c0 7.9 10.6 20.7 11.1 21.3a1 1 0 0 0 1.7 0C13.4 32.3 24 19.5 24 11.6 24 5.2 18.6 0 12 0z" fill="${color}" stroke="#222" stroke-width="1"/>
+        <circle cx="12" cy="11" r="4" fill="#fff" stroke="#222" stroke-width="1"/>
+        </svg>`;
+
         const icon = new window.H.map.Icon(svg);
         const marker = new window.H.map.Marker({ lat: i.lat, lng: i.lng }, { icon });
         marker.setData({ barangay: i.barangay, count: i.count });

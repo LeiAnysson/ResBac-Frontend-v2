@@ -5,6 +5,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { apiFetch } from "../../utils/apiFetch";
 import { printTable } from "../../utils/printTable";
 import IncidentTypeEditor from "./Functionalities/IncidentTypeEditor";
+import {
+  MdHistory, MdUploadFile, MdDownload, MdEvent, MdTableChart
+} from 'react-icons/md';
 
 console.log(printTable);
 
@@ -12,13 +15,13 @@ const AdminSettings = () => {
   const [activityLogs, setActivityLogs] = useState([]);
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
   const fileInputRef = useRef(null);
-  const [isMaintenanceMode, setIsMaintenanceMode] = useState(false); //NOT FUNCTIONAL YET!!!
-  const [selectedFile, setSelectedFile] = useState(null);
   const [message, setMessage] = useState('');
   const [incidentTypes, setIncidentTypes] = useState([]);
   const [incidentPagination, setIncidentPagination] = useState({ current_page: 1, last_page: 1 });
   const [loading, setLoading] = useState(true);
   const [isIncidentEditorOpen, setIsIncidentEditorOpen] = useState(false);
+  const [frequency, setFrequency] = useState(localStorage.getItem("backupFrequency") || "Daily");
+  const [time, setTime] = useState(localStorage.getItem("backupTime") || "00:00");
 
   const fetchActivityLogs = async (page = 1, filters = {}) => {
       try {
@@ -51,8 +54,6 @@ const AdminSettings = () => {
   };
 
   const handleImportClick = () => {
-    if (!isMaintenanceMode) return;
-
     const confirmRestore = window.confirm(
       "Restoring will overwrite current system data. Do you want to continue?"
     );
@@ -66,25 +67,42 @@ const AdminSettings = () => {
     const file = e.target.files[0];
     if (!file) return;
 
+    const token = localStorage.getItem('token');
     const formData = new FormData();
-    formData.append("backupFile", file);
+    formData.append('backupFile', file);
 
     try {
       const response = await fetch(`${process.env.REACT_APP_URL}/api/restore`, {
-        method: "POST",
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData,
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        alert("Database restored successfully!");
-      } else {
-        alert(`Restore failed: ${result.error || result.message}`);
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error("Unexpected response from server.");
       }
-    } catch (error) {
-      console.error("Error during restore:", error);
-      alert("Restore failed. Please try again.");
+
+      if (!response.ok) {
+        if (data.code === "TABLE_EXISTS") {
+          alert("Restore failed: Tables already exist. Please drop existing tables before restoring.");
+        } else {
+          alert(`Restore failed: ${data.message}`);
+        }
+        console.error('Restore failed:', data);
+        return;
+      }
+
+      alert("Database restored successfully!");
+      console.log('Restore success:', data);
+    } catch (err) {
+      console.error('Error during restore:', err);
+      alert(`Error during restore: ${err.message}`);
     }
   };
 
@@ -103,6 +121,37 @@ const AdminSettings = () => {
       alert("Error while creating scheduled backup.");
     }
   };
+
+  const handleSaveSchedule = async () => {
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_URL}/api/backup/schedule`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          frequency: frequency.toLowerCase(),
+          time,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("backupFrequency", frequency);
+        localStorage.setItem("backupTime", time);
+        alert(`✅ Backup schedule saved!\n${frequency} at ${time}`);
+      } else {
+        alert(`❌ Failed: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error saving schedule:", error);
+      alert("⚠️ Failed to connect to the server.");
+    }
+  };
+
   
   const fetchIncidentTypes = async (page = 1) => {
     try {
@@ -135,7 +184,7 @@ const AdminSettings = () => {
             <div className="settings-card activity-log full-width">
               <div className="card-header activity-log-header">
                 <div className="title-wrapper">
-                  <span className="card-icon">🔄</span>
+                  <MdHistory className="card-icon" />
                   <h4>Activity Log</h4>
                 </div>
                 <button className="btn btn-primary export-log-btn" onClick={handlePrintAll}>
@@ -198,7 +247,7 @@ const AdminSettings = () => {
             <div className="settings-card lookup-tables">
               <div className="card-header activity-log-header">
                 <div className="title-wrapper">
-                  <span className="card-icon">🔍</span>
+                  <MdTableChart className="card-icon" />
                   <h4>Lookup Tables</h4>
                 </div>
                 <button className="btn btn-primary export-log-btn" onClick={() => setIsIncidentEditorOpen(true)}>
@@ -249,13 +298,13 @@ const AdminSettings = () => {
             {/* Schedule Backup - Right side of middle row */}
             <div className="settings-card schedule-backup">
               <div className="card-header">
-                <span className="card-icon">⏰</span>
+                <MdEvent className="card-icon" />
                 <h4>Schedule Backup</h4>
               </div>
               <div className="settings-description">Configure automatic data backups.</div>
               <div className="form-group">
                 <label>Frequency:</label>
-                <select>
+                <select value={frequency} onChange={(e) => setFrequency(e.target.value)}>
                   <option>Daily</option>
                   <option>Weekly</option>
                   <option>Monthly</option>
@@ -263,18 +312,22 @@ const AdminSettings = () => {
               </div>
               <div className="form-group">
                 <label>Time:</label>
-                <input type="time" />
+                <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
               </div>
-              <button className="btn btn-primary">Save Schedule</button>
-              <button className="btn btn-secondary" onClick={handleScheduledBackup}>
-                Run Scheduled Backup Now
-              </button>
+              <div className="button-group">
+                <button className="btn btn-primary" onClick={handleSaveSchedule}>
+                  Save Schedule
+                </button>
+                <button className="btn btn-secondary" onClick={handleScheduledBackup}>
+                  Run Scheduled Backup Now
+                </button>
+              </div>
             </div>
             
             {/* Export Data - Left side of bottom row */}
             <div className="settings-card export-data">
               <div className="card-header">
-                <span className="card-icon">⬇️</span>
+                <MdDownload className="card-icon" />
                 <h4>Export Data</h4>
               </div>
               <div className="settings-description">Download a copy of your system data.</div>
@@ -289,7 +342,7 @@ const AdminSettings = () => {
             {/* Import Data - Right side of bottom row */}
             <div className="settings-card import-data">
               <div className="card-header">
-                <span className="card-icon">⬆️</span>
+                <MdUploadFile className="card-icon" />
                 <h4>Import Data</h4>
               </div>
               <div className="settings-description">Insert a copy of your system data.</div>
@@ -299,6 +352,14 @@ const AdminSettings = () => {
               >
                 Import
               </button>
+
+              <input
+                type="file"
+                accept=".sql,.txt"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
             </div>
 
             <IncidentTypeEditor

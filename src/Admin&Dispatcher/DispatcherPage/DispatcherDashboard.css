@@ -45,7 +45,7 @@ html, body {
   left: 0;
   width: 100%;
   padding: 8px 16px;
-  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+  background: linear-gradient(135deg, #22465f 0%, #25597c 100%);
   color: #fff;
   font-weight: 600;
   border-radius: 12px 12px 0 0;
@@ -167,7 +167,7 @@ html, body {
   font-size: 13px;
   font-weight: 500;
   background: #ffc6c6;
-  color: red;
+  color: #c94c4c;
   border: 1px solid #fd8a8a;
 }
 

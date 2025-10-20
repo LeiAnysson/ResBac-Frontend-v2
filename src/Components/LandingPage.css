@@ -86,7 +86,7 @@ body {
 }
 
 .nav-links button:hover {
-  color: #1746a2;
+  color: #25597c;
 }
 
 .nav-links button::after {
@@ -96,7 +96,7 @@ body {
   left: 0;
   width: 0;
   height: 2px;
-  background: #1746a2;
+  background: #25597c;
   transition: width 0.3s ease;
 }
 
@@ -341,7 +341,7 @@ body {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   font-size: 1.1rem;
   transition: all 0.3s ease;
-  border-left: 4px solid #1746a2;
+  border-left: 4px solid #25597c;
 }
 
 .hotline-section li:hover {
@@ -350,7 +350,7 @@ body {
 }
 
 .hotline-section b {
-  color: #1746a2;
+  color: #25597c;
   font-weight: 600;
 }
 
@@ -406,7 +406,7 @@ body {
   justify-content: center;
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #1746a2 0%, #a91d3a 100%);
+  background: linear-gradient(135deg, #25597c 0%, #a91d3a 100%);
   border-radius: 50%;
   color: #fff;
   font-size: 1.2rem;

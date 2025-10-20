@@ -5,6 +5,7 @@ import "./AdminReportsPage.css";
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../utils/apiFetch';
 import { reverseGeocode } from '../../utils/hereApi';
+import { MdDelete, MdVisibility } from "react-icons/md";
 
 const AdminReportsPage = () => {
   const navigate = useNavigate();
@@ -134,27 +135,23 @@ const AdminReportsPage = () => {
 
                     <td className="location-cell">{report.location || '—'}</td>
 
-                    <td>{new Date(report.reported_at).toLocaleString()}</td>
+                    <td class="status-cell">{new Date(report.reported_at).toLocaleString()}</td>
 
-                    <td>
+                    <td class="status-cell">
                       <span className={`a-status-badge a-status-${report.status.replace(/\s+/g, '-').toLowerCase()}`}>
                         {report.status}
                       </span>
                     </td>
 
                     <td>
-                      <button className="reports-view-btn"
+                      <MdVisibility className="view-btn"
                         onClick={() => navigate(`${getBasePath()}/${report.id}`)}
-                      >
-                        View
-                      </button>
+                      />
                       {JSON.parse(localStorage.getItem("user"))?.role?.name === "Admin" && (
-                        <button
-                          className="reports-delete-btn"
+                        <MdDelete
+                          className="delete-btn"
                           onClick={() => handleDelete(report.id)}
-                        >
-                          Delete
-                        </button>
+                        />
                       )}
                     </td>
                   </tr>

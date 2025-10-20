@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './ResidentAnnouncement.css';
 import Header from '../Components/ComponentsHeaderWebApp/header.jsx'; 
 import BottomNav from '../Components/ComponentsBottomNavWebApp/BottomNav.jsx';
-import BackButton from '../assets/backbutton.png';
+import { MdOutlineArrowCircleLeft } from 'react-icons/md';
 
 const ResidentAnnouncement = () => {
   const navigate = useNavigate();
@@ -31,9 +31,7 @@ const ResidentAnnouncement = () => {
     <div className="announcement-container">
       <Header />
       <div className='title-container'>
-        <button className="back-button" onClick={() => navigate(-1)}>
-          <img className='back-button-icon' src={BackButton} alt="Back"/>
-        </button>
+        <MdOutlineArrowCircleLeft className="back-button" onClick={() => navigate(-1)}/>
         <h1>Announcements</h1>
       </div>
 

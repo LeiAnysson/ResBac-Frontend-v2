@@ -5,6 +5,7 @@ import "./AdminReportsPage.css";
 import React, { useState, useEffect } from 'react';
 import ReportDetailsCard from "./Functionalities/ReportDetailsCard";
 import { apiFetch } from '../../utils/apiFetch';
+import { MdEmergency } from "react-icons/md";
 
 const AdminReportPageView = ({ reportFromCall, editable }) => {
   const { id } = useParams();
@@ -64,7 +65,7 @@ const AdminReportPageView = ({ reportFromCall, editable }) => {
           <h1 className="report-title">Report</h1>
           <div className="emergency-report-wrapper">
             <span className="emergency-report-badge">
-              <span role="img" aria-label="alert">🚨</span> Emergency Incident and Disaster Reports
+              <MdEmergency className="report-icon"/> Emergency Incident and Disaster Reports
             </span>
 
             <ReportDetailsCard 

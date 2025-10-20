@@ -10,7 +10,7 @@
 
 .login-left {
   flex: 1.1;
-  background: #042F7F;
+  background: #25597c;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -73,7 +73,7 @@
 .login-title {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #23408e;
+  color: #25597c;
   margin-bottom: 1.5rem;
   text-align: center;
 }
@@ -115,7 +115,7 @@
 .login-btn {
   width: 100%;
   padding: 0.9em 0;
-  background: #170696;
+  background: #25597c;
   color: #fff;
   font-size: 1.15rem;
   font-weight: 600;
@@ -127,7 +127,7 @@
 }
 
 .login-btn:hover {
-  background: #23408e;
+  background: #215170;
   transform: scale(1.03);
 }
 
@@ -152,6 +152,34 @@
   color: #1a2d5a;
   text-decoration: underline;
 }
+
+.rp-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.rp-modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.rp-modal-buttons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
 
 @media (max-width: 900px) {
   .login-root {

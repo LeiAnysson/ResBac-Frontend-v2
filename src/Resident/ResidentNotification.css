@@ -3,7 +3,6 @@
   min-height: 100vh;
   position: relative;
   padding-bottom: 70px;
-  padding-top: 15px;
   display: flex;
   flex-direction: column; 
 }
@@ -13,7 +12,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #1041BC;
+  background-color: #25597c;
   padding-top: 40px;
   padding-left: 16px;
   padding-right: 16px;
@@ -58,23 +57,7 @@
   margin-top: 10px;
   margin-bottom: 8px;
   margin-left: 12px;
-  padding-top: 90px; /* Added top padding for fixed header */
-}
-
-.back-button {
-  margin-right: 8px;
-  padding: 4px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-button-icon {
-  font-size: 28px;
-  color: #222;
+  padding-top: 90px; 
 }
 
 .title {
@@ -104,9 +87,9 @@
 }
 
 .notification-item {
-  display: flex;           /* align children horizontally */
-  justify-content: space-between; /* text on left, time on right */
-  align-items: center;     /* vertical center */
+  display: flex;        
+  justify-content: space-between; 
+  align-items: center;    
   border-bottom: 1px solid #eee;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -119,11 +102,11 @@
 .notification-text {
   font-size: 15px;
   color: #222;
-  margin: 0 12px 0 0;   /* add some space before the time */
-  flex: 1;              /* allow text to shrink if needed */
+  margin: 0 12px 0 0;   
+  flex: 1;         
   overflow: hidden;
-  text-overflow: ellipsis; /* add "..." if too long */
-  white-space: nowrap;      /* keep it on one line */
+  text-overflow: ellipsis; 
+  white-space: nowrap;     
 }
 
 .notification-time {
@@ -131,7 +114,7 @@
   color: #888;
   text-align: right;
   margin: 0;
-  white-space: nowrap;   /* prevent wrapping */
+  white-space: nowrap;   
 }
 
 .empty-text {
@@ -142,56 +125,6 @@
   margin: 40px 0 0 0;
 }
 
-/* Bottom Navigation */
-.bottom-nav {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background-color: #1041BC;
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
-  height: 60px;
-  border-top: 1px solid #eee;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding-left: 16px;
-  padding-right: 16px;
-  z-index: 10;
-}
-
-.nav-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: background-color 0.3s ease;
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.nav-icon:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.nav-img {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
-}
-
-.nav-icon:hover .nav-img {
-  opacity: 1;
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -200,26 +133,12 @@
   }
   
   .title-row {
-    padding-top: 70px; /* Adjusted for smaller header on mobile */
-  }
-  
-  .nav-img {
-    width: 20px;
-    height: 20px;
+    padding-top: 70px; 
   }
 }
 
 @media (max-width: 480px) {
   .title-row {
     margin-bottom: 6px;
-  }
-  
-  .nav-img {
-    width: 18px;
-    height: 18px;
-  }
-  
-  .bottom-nav {
-    height: 55px;
   }
 } 

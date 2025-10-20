@@ -47,12 +47,17 @@
   animation: pulse 2s ease-in-out infinite;
 }
 
+.pulse-animation,
+.processing-spinner {
+  box-shadow: none !important;
+}
+
 .spinner-circle {
   width: 100%;
   height: 100%;
   border: 3px solid transparent;
-  border-top: 3px solid #4CAF50;
-  border-right: 3px solid #4CAF50;
+  border-top: 3px solid #25597c;
+  border-right: 3px solid #25597c;
   border-radius: 50%;
   animation: spin 2s linear infinite;
   position: relative;
@@ -67,7 +72,7 @@
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-bottom: 8px solid #4CAF50;
+  border-bottom: 8px solid #25597c;
   transform: translateX(-50%);
 }
 
@@ -132,14 +137,14 @@
 }
 
 .error-message {
-  color: #d32f2f;
+  color: #c94c4c;
   margin: 0 0 20px 0;
   font-size: 16px;
   font-weight: 500;
 }
 
 .retry-button {
-  background: #1041BC;
+  background: #25597c;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -151,8 +156,12 @@
 }
 
 .retry-button:hover {
-  background: #0d2f8a;
+  background: #235272;
   transform: translateY(-1px);
+}
+
+.status-icon {
+  color: #25597c;
 }
 
 /* Responsive Design */

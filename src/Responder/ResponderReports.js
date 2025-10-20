@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './ResponderReports.css';
 import ResponderHeader from '../Components/NewComponentsHeaderWebApp/ResponderHeader';
 import ResponderBottomNav from '../Components/NewComponentsBottomNavWebApp/ResponderBottomNav';
-import BackButton from '../assets/backbutton.png';
+import { MdOutlineArrowCircleLeft } from 'react-icons/md';
 import { apiFetch } from '../utils/apiFetch';
 
 const ResponderReports = () => {
@@ -50,9 +50,7 @@ const ResponderReports = () => {
 			<ResponderHeader />
 
 			<div className="title-container">
-				<button className="back-button" onClick={() => navigate(-1)}>
-				<img className="back-button-icon" src={BackButton} alt="Back" />
-				</button>
+				<MdOutlineArrowCircleLeft className="back-button" onClick={() => navigate(-1)}/>
 				<h1>Assigned Reports</h1>
 			</div>
 

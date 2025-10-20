@@ -59,8 +59,8 @@
 }
 
 .card-icon {
-  font-size: 20px;
-  color: #6b7280;
+  font-size: 24px;
+  color: #757575;
   width: 24px;
   height: 24px;
   display: flex;
@@ -165,6 +165,17 @@
   padding: 8px;
   font-size: 13px;
 }
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 70px;
+}
+
+.button-group .btn {
+  flex: 1;
+}
+
 
 @import url("../../Components/ComponentsButtons/Buttons.css");
 

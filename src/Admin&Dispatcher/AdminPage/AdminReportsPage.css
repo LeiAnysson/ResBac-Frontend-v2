@@ -31,7 +31,7 @@
 .emergency-report-badge {
   display: inline-block;
   padding: 8px 16px;
-  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+  background: linear-gradient(135deg, #25597c 0%, #317fa6 100%);
   color: #fff;
   font-weight: 600;
   border-radius: 12px 12px 0 0;
@@ -41,7 +41,7 @@
 }
 
 .backup-btn {
-  background: #2563eb;
+  background: #25597c;
   color: #fff;
   border: none;
   padding: 8px 18px;
@@ -52,7 +52,7 @@
 }
 
 .invalid-btn {
-  background: #e11d48;
+  background: #c94c4c;
   color: #fff;
   border: none;
   padding: 8px 18px;
@@ -127,7 +127,7 @@
 }
 
 .send-btn {
-  background: #2563eb;
+  background: #25597c;
   color: #fff;
   border: none;
   padding: 10px 28px;
@@ -193,9 +193,9 @@
 .emergency-reports-table th,
 .emergency-reports-table td {
   padding: 12px 10px;
-  text-align: left;
   border-bottom: 1px solid #eee;
   font-size: 14px;
+  color: #374151;
 }
 
 .type-badge {
@@ -221,12 +221,14 @@
   font-weight: 600;
 
   white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
   max-width: 140px;
   display: inline-block;
   vertical-align: middle;
   cursor: default;
+}
+
+.emergency-reports-table td.status-cell {
+  text-align: center;
 }
 
 .a-status-badge {
@@ -275,7 +277,7 @@
   font-size: 13px;
   font-weight: 500;
   background: #ffc6c6;
-  color: red;
+  color: #c94c4c;
   border: 1px solid #fd8a8a;
 }
 
@@ -292,37 +294,8 @@
   border: 1px solid #11622f;
 }
 
-.reports-view-btn {
-  background: #e0e7ff;
-  color: #2563eb;
-  border: none;
-  border-radius: 6px;
-  padding: 4px 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
-}
-
-.reports-delete-btn {
-  background: #ffe0e0;
-  color: #eb2525;
-  border: none;
-  border-radius: 6px;
-  padding: 4px 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
-}
-
 td button:last-child {
   margin-right: 0;
-}
-
-.view-btn:hover {
-  background: #2563eb;
-  color: #fff;
 }
 
 .emergency-reports-pagination {
@@ -347,7 +320,7 @@ td button:last-child {
 }
 
 .reporter-label {
-  color: #ee4166;
+  color: #c94c4c;
   font-size: 13px;
 }
 
@@ -373,5 +346,11 @@ td button:last-child {
   margin-left: 8px;
 }
 
+.report-icon {
+  font-size: 15px;
+  color: #c94c4c;
+  transition: transform 0.15s, color 0.15s;
+  vertical-align: middle;
+}
 
 

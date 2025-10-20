@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ResidentHistory.css';
-import reportIcon from '../assets/report.png';
 import '../Components/Shared/SharedComponents.css';
-import BackButton from '../assets/backbutton.png';
 import Header from '../Components/ComponentsHeaderWebApp/header.jsx';
 import BottomNav from '../Components/ComponentsBottomNavWebApp/BottomNav.jsx';
 import { apiFetch } from '../utils/apiFetch';
+import { PiSirenFill } from "react-icons/pi";
+import { MdOutlineArrowCircleLeft } from 'react-icons/md';
 
 const ResidentHistory = () => {
   const navigate = useNavigate();
@@ -36,14 +36,12 @@ const ResidentHistory = () => {
       <Header />
       <div className='title-container' style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', flexDirection: 'row' }}>
-          <button className="back-button" onClick={() => navigate(-1)}>
-            <img className='back-button-icon' src={BackButton} alt="Back" />
-          </button>
+          <MdOutlineArrowCircleLeft className="back-button" onClick={() => navigate(-1)}/>
           <h1 style={{ fontSize: '22px' }}>History</h1>
         </div>
         <button className="report-button" onClick={() => navigate('/resident/report')}>
-          <span className="report-button-text">Report</span>
-          <img src={reportIcon} alt="Report" className="report-button-icon" />
+          <span className="report-button-text">Report <PiSirenFill style={{ position: "relative", left: "5px", top: "2px" }}/>
+          </span>
         </button>
       </div>
 
@@ -70,7 +68,7 @@ const ResidentHistory = () => {
                         <span style={{ color: '#e53935' }}>Incident Type: {item.type}</span>
                       </td>
                       <td className="status-cell" style={{ textAlign: 'right' }}>
-                        <span className={`status ${statusClass(item.status)}`}>
+                        <span className={`a-status-label status-${item.status.toLowerCase().replace(/\s+/g, '-')}`}>
                           {item.status}
                         </span>
                       </td>

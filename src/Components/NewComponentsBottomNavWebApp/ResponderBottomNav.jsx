@@ -1,9 +1,7 @@
 import React, {useState} from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-//import Shared from '../Shared/SharedComponents.css';
-import homeIcon from '../../assets/home.png';
-import reportIcon from '../../assets/report.png';
-import notificationIcon from '../../assets/notification.png';
+import { MdHome, MdNotifications } from 'react-icons/md';
+import { PiSirenFill } from "react-icons/pi";
 
 function BottomNav(){
     const navigate = useNavigate();
@@ -16,15 +14,9 @@ function BottomNav(){
     return(
         <>
             <div className="bottom-nav">
-                    <button className="nav-icon" onClick={() => navigate('/responder/reports')}>
-                      <img src={reportIcon} alt="Report" className="nav-img" />
-                    </button>
-                    <button className={`nav-icon ${isActive('/responder') ? 'active' : ''}`} onClick={() => navigate('/responder')}>
-                      <img src={homeIcon} alt="Home" className="nav-img" />
-                    </button>
-                    <button className={`nav-icon ${isActive('/responder/notification') ? 'active' : ''}`} onClick={() => navigate('/responder/notification')}>
-                      <img src={notificationIcon} alt="Notification" className="nav-img" />
-                    </button>
+                    <PiSirenFill className="nav-icon" onClick={() => navigate('/responder/reports')}/>
+                    <MdHome className={`nav-icon ${isActive('/responder') ? 'active' : ''}`} onClick={() => navigate('/responder')}/>
+                    <MdNotifications className={`nav-icon ${isActive('/responder/notification') ? 'active' : ''}`} onClick={() => navigate('/responder/notification')}/>
             </div>
         </>
     )

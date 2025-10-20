@@ -10,7 +10,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #1041BC;
+  background-color: #25597c;
   padding-top: 40px;
   padding-left: 16px;
   padding-right: 16px;
@@ -111,7 +111,7 @@
 }
 
 .tips-show-button {
-  background-color: #e53935;
+  background-color: #c94c4c;
   border-radius: 8px;
   padding-left: 14px;
   padding-right: 14px;
@@ -129,7 +129,7 @@
 .sos-section {
   background-color: #fff;
   border-radius: 16px;
-  border: 1px solid #e53935;
+  border: 1px solid #c94c4c;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -186,7 +186,7 @@
   width: 140px;
   height: 140px;
   border-radius: 70px;
-  background-color: #e53935;
+  background-color: #c94c4c;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,7 +252,7 @@
 .resident-report-card {
   background-color: #fff;
   border-radius: 12px;
-  border: 1px solid #1041BC;
+  border: 1px solid #25597c;
   display: flex;
   align-items: center;
   padding: 12px;
@@ -264,7 +264,7 @@
 }
 
 .report-type {
-  color: #e53935;
+  color: #c94c4c;
   font-size: 13px;
 }
 
@@ -328,67 +328,6 @@
   margin: 0;
 }
 
-/* Bottom Navigation */
-.bottom-nav {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background-color: #1041BC;
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
-  height: 60px;
-  border-top: 1px solid #eee;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding-left: 16px;
-  padding-right: 16px;
-  z-index: 10;
-}
-
-.nav-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: background-color 0.3s ease;
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.nav-icon:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.nav-img {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
-}
-
-.nav-icon:hover .nav-img {
-  opacity: 1;
-}
-
-.nav-icon-text {
-  font-size: 1.5rem;
-  filter: grayscale(100%);
-  transition: filter 0.3s ease;
-}
-
-.nav-icon:hover .nav-icon-text {
-  filter: grayscale(0%);
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .header {
@@ -415,11 +354,6 @@
   
   .sos-text {
     font-size: 28px;
-  }
-  
-  .nav-img {
-    width: 20px;
-    height: 20px;
   }
 }
 
@@ -449,14 +383,5 @@
   
   .sos-text {
     font-size: 24px;
-  }
-  
-  .nav-img {
-    width: 18px;
-    height: 18px;
-  }
-  
-  .bottom-nav {
-    height: 55px;
   }
 }

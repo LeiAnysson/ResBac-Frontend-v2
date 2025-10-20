@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './SignInPage.css';
 import RegistrationPending from '../RegistrationLoading/RegistrationPending'; 
 import UserAgreement from '../RegistrationLoading/UserAgreement';
@@ -108,7 +108,9 @@ const SignInPage = () => {
       <div className="login-root">
         {/* Left Section */}
         <div className="login-left">
-          <img src="/bocaue-logo.png" alt="Bocaue Rescue Logo" className="login-logo" />
+          <Link to="/">
+            <img src="/LogoB.png" alt="Bocaue Rescue Logo" className="login-logo" />
+          </Link>
           <div className="login-org-name">BOCAUE RESCUE EMS</div>
           <div className="login-org-desc">
             MUNICIPAL EMERGENCY ASSISTANCE AND<br />INCIDENT RESPONSE

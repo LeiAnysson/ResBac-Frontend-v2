@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../../utils/apiFetch";
 import "./TopBar.css";
+import { MdNotifications } from 'react-icons/md';
 
 const TopBar = () => {
   const [open, setOpen] = useState(false);
@@ -68,11 +69,7 @@ const TopBar = () => {
           onClick={() => setOpen(!open)}
           ref={popupRef}
         >
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/5000/5000039.png"
-            alt="Notification"
-            className="topbar-notification-icon"
-          />
+          <MdNotifications className="topbar-notification-icon" />
 
           {open && (
             <div className="notification-popup">

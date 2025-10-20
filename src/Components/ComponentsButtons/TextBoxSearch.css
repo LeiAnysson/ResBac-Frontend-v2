@@ -16,7 +16,7 @@
   
   .search-input:focus {
     outline: none;
-    border-color: #1a56db;
+    border-color: #25597c;
     box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
   }
   
@@ -42,7 +42,7 @@
   }
   
   .search-input-outline:focus {
-    border-color: #1a56db;
+    border-color: #25597c;
   }
   
   .search-input-filled {
@@ -52,7 +52,7 @@
   
   .search-input-filled:focus {
     background-color: #ffffff;
-    border-color: #1a56db;
+    border-color: #25597c;
   }
   
   .search-input-rounded {
@@ -72,7 +72,7 @@
   }
   
   .search-input.error {
-    border-color: #dc2626;
+    border-color: #c94c4c;
     box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
   }
   
@@ -120,7 +120,7 @@
   }
   
   .search-input-group:focus-within .search-icon {
-    color: #1a56db;
+    color: #25597c;
   }
   
   /* Responsive adjustments */

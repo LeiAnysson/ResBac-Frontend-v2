@@ -5,6 +5,7 @@ import TopBar from "../../Components/ComponentsTopBar/TopBar";
 import { apiFetch } from "../../utils/apiFetch";
 import Spinner from '../../utils/Spinner';
 import "./Functionalities/ComponentsTeam&User.css";
+import { FaUser } from 'react-icons/fa';
 
 const AdminUserPageView = () => {
   const { id } = useParams();
@@ -27,7 +28,7 @@ const AdminUserPageView = () => {
             id: user.id,
             firstName: isResident ? user.first_name : user.first_name,
             lastName: isResident ? user.last_name : user.last_name,
-            contact: user.contact || "",
+            contact: user.contact_num || "",
             dateOfBirth: user.birthdate || "",
             address: user.address || "",
             role: isResident ? "Resident" : `Role ${user.role_id}`,
@@ -84,7 +85,7 @@ const AdminUserPageView = () => {
             <main className="dashboard-content-area">
             <div className="create-user-wrapper compact">
                 <div className="cu-header">
-                <div className="cu-header-icon">👤</div>
+                <div className="cu-header-icon"><FaUser className="user-icon" /></div>
                     <h4>User Information</h4>
                 </div>
 

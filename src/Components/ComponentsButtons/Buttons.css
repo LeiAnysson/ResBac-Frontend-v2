@@ -18,19 +18,19 @@
 
 /* Primary Button */
 .btn-primary {
-  background: #1a56db;
+  background: #25597c;
   color: #ffffff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
-  background: #1e40af;
+  background: #225272;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
 }
 
 .btn-primary:active {
-  background: #1e3a8a;
+  background: #225272;
   transform: translateY(0);
 }
 
@@ -76,16 +76,16 @@
 
 /* Danger Button */
 .btn-danger {
-  background: #dc2626;
+  background: #c94c4c;
   color: #ffffff;
 }
 
 .btn-danger:hover {
-  background: #b91c1c;
+  background: rgb(168, 26, 26);
 }
 
 .btn-danger:active {
-  background: #991b1b;
+  background: #b34545;
 }
 
 /* Warning Button */

@@ -220,6 +220,8 @@ export const setupNotifications = () => {
                 { label: "View Incident", path: `/responder/reports/view-report/${incident.id}` }
             ]
         });
+
+        window.dispatchEvent(new CustomEvent("incidentDetailsUpdated", { detail: event.incident }));
     });
 
     window.Echo.channel("responder").listen(".BackupAcknowledged", (event) => {

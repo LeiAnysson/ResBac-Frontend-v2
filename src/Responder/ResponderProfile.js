@@ -2,16 +2,19 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Resident/ResidentProfile.css';
 import '../Components/Shared/SharedComponents.css';
-import BackButton from '../assets/backbutton.png';
+import { MdOutlineArrowCircleLeft } from 'react-icons/md';
 import ResponderHeader from '../Components/NewComponentsHeaderWebApp/ResponderHeader';
 import ResponderBottomNav from '../Components/NewComponentsBottomNavWebApp/ResponderBottomNav';
 import { AuthContext } from '../context/AuthContext';
+
+const DEFAULT_PROFILE = "https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg";
 
 const ResponderProfile = () => {
 	const navigate = useNavigate();
 	const { logout } = useContext(AuthContext);
 
 	const [responder, setResponder] = useState(null);
+	const [profileImage, setProfileImage] = useState('');
 	const [showPasswordForm, setShowPasswordForm] = useState(false);
 	const [currentPassword, setCurrentPassword] = useState('');
 	const [newPassword, setNewPassword] = useState('');
@@ -24,16 +27,21 @@ const ResponderProfile = () => {
 		if (!id) return;
 
 		fetch(`${process.env.REACT_APP_URL}/api/responders/${id}`, {
-		headers: {
-			Authorization: `Bearer ${localStorage.getItem('token')}`,
-		},
+		headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
 		})
 		.then((res) => res.json())
 		.then((data) => {
 			setResponder(data);
+			setProfileImage(data.profile_image_url || '');
 		})
 		.catch((err) => console.error('Failed to fetch responder profile:', err));
 	}, [id]);
+
+	const profileImageUrl = profileImage
+		? profileImage.startsWith('http') || profileImage.startsWith('data:') || profileImage.startsWith('blob:')
+		? profileImage
+		: `${process.env.REACT_APP_URL}${profileImage}`
+		: DEFAULT_PROFILE;
 
 	const handleLogout = async () => {
 		if (!window.confirm('Are you sure you want to log out?')) return;
@@ -42,15 +50,9 @@ const ResponderProfile = () => {
 		try {
 		const res = await fetch(`${process.env.REACT_APP_URL}/api/logout`, {
 			method: 'POST',
-			headers: {
-			Authorization: `Bearer ${token}`,
-			'Content-Type': 'application/json',
-			},
+			headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
 		});
-
-		if (!res.ok) {
-			console.warn('Backend logout failed, clearing locally anyway');
-		}
+		if (!res.ok) console.warn('Backend logout failed, clearing locally anyway');
 		} catch (err) {
 		console.error('Logout request failed:', err);
 		}
@@ -58,43 +60,69 @@ const ResponderProfile = () => {
 		logout();
 	};
 
-	const handlePasswordUpdate = () => {
+	const handlePasswordUpdate = async () => {
 		if (newPassword !== confirmPassword) {
 		alert('Passwords do not match');
 		return;
 		}
-		alert('Password updated!');
-		setShowPasswordForm(false);
-		setCurrentPassword('');
-		setNewPassword('');
-		setConfirmPassword('');
+
+		try {
+		const token = localStorage.getItem('token');
+		const res = await fetch(`${process.env.REACT_APP_URL}/api/residents/change-password`, {
+			method: 'POST',
+			headers: {
+			'Authorization': `Bearer ${token}`,
+			'Content-Type': 'application/json',
+			'Accept': 'application/json',
+			},
+			body: JSON.stringify({
+			current_password: currentPassword,
+			new_password: newPassword,
+			new_password_confirmation: confirmPassword,
+			}),
+		});
+
+		const data = await res.json();
+		if (res.ok) {
+			alert(data.message || 'Password updated successfully!');
+			setShowPasswordForm(false);
+			setCurrentPassword('');
+			setNewPassword('');
+			setConfirmPassword('');
+		} else {
+			alert(data.message || 'Failed to update password');
+		}
+		} catch (err) {
+		console.error('Error updating password:', err);
+		alert('Something went wrong');
+		}
 	};
 
 	return (
 		<div className="profile-container">
 		<ResponderHeader />
 		<div className="title-container">
-			<button className="back-button" onClick={() => navigate(-1)}>
-			<img className="back-button-icon" src={BackButton} />
-			</button>
+			<MdOutlineArrowCircleLeft className="back-button" onClick={() => navigate(-1)} />
 			<h1>Profile</h1>
 		</div>
 
 		<div className="top-container">
 			<div className="profile-avatar">
-				<img
-					src="https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg"
-					alt="Profile"
-				/>
+			<img
+				src={profileImageUrl}
+				alt={`${responder?.first_name || ''} ${responder?.last_name || ''}`}
+				className="profile-img"
+				onError={(e) => { e.currentTarget.src = DEFAULT_PROFILE; }}
+			/>
 			</div>
 			<p className="profile-name">
-			{responder ? `${responder.first_name} ${responder.last_name}` : 'Loading...'}
+				{responder ? `${responder.first_name} ${responder.last_name}` : 'Loading...'}
 			</p>
 			<button
-			className="edit-profile-button"
-			onClick={() => navigate('/responder/edit-profile')}
-			>
-			<span className="edit-profile-text">Edit Profile</span>
+				className="edit-profile-button"
+				onClick={() => navigate('/responder/edit-profile')}
+				>
+				<span className="edit-profile-text">Edit Profile</span>
 			</button>
 		</div>
 

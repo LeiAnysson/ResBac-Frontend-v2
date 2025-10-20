@@ -18,7 +18,7 @@
   width: 100%;
   max-width: 360px;
   padding: 16px 18px;
-  border: 2px solid #1746a2; 
+  border: 2px solid #25597c; 
   background-color: #ffffff;
   border-radius: 14px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
@@ -36,7 +36,7 @@
 .in-app-notification strong {
   display: block;
   font-size: 15px;
-  color: #1746a2;
+  color: #25597c;
   margin-bottom: 4px;
 }
 
@@ -48,7 +48,7 @@
 
 .in-app-notification button {
   margin-top: 8px;
-  background-color: #1746a2;
+  background-color: #25597c;
   border: none;
   color: white;
   padding: 6px 12px;
@@ -58,7 +58,7 @@
 }
 
 .in-app-notification button:hover {
-  background-color: #143b89;
+  background-color: #25597c;
 }
 
 @keyframes slideDown {

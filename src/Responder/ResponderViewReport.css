@@ -27,13 +27,19 @@
 }
 
 .r-title-container {
+  display: flex;
   z-index: 10 !important;
-  background: white;
+  justify-content: flex-start;
+  background: #f7f8fa;
   position: fixed;
   width: 100%;
-  margin-top: 20px;
   margin-left: 0px;
-  padding: 10px;
+  padding: 17px 12px 12px 12px;
+}
+
+.r-title-container > h1 {
+  font-size: 22px;
+  padding: 3px;
 }
 
 .responder-view-report {
@@ -94,7 +100,7 @@
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .2s; border-radius: 24px; }
 .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
-input:checked + .slider { background-color: #2563eb; }
+input:checked + .slider { background-color: #25597c; }
 input:checked + .slider:before { transform: translateX(20px); }
 
 .details-body { margin-bottom: 16px; }
@@ -103,7 +109,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .r-report-location { margin: 0 0 6px 0; color: #2c3e50; font-size: 19px; font-weight: 700; }
 .r-report-landmark { margin: 0 0 6px 0; color: #6b7280; font-size: 15px; }
 .r-report-incident { margin: 0; color: #2c3e50; }
-.incident-type { color: #e11d48; font-weight: 700; }
+.incident-type { color: #c94c4c; font-weight: 700; }
 .r-report-description { color: #2c3e50; font-weight: 700; font-size: 15px;}
 
 .field-label { font-weight: 600; margin: 12px 0 8px; display: block; }
@@ -124,7 +130,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .actions { display: flex; gap: 12px; margin-top: 40px; }
 .btn { flex: 1; padding: 10px 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
 .btn-backup { background: #f59e0b; color: #fff; }
-.btn-primary { background: #1f4ed8; color: #fff; }
+.btn-primary { background: #25597c; color: #fff; }
 
 /* Modal */
 .modal-backdrop {
@@ -167,14 +173,14 @@ input:checked + .slider:before { transform: translateX(20px); }
 .modal-chevron { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #6b7280; pointer-events: none; }
 
 .modal-actions { display: flex; justify-content: center; margin-top: 12px; }
-.modal-request-btn { background: #1f4ed8; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; cursor: pointer; }
+.modal-request-btn { background: #25597c; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 700; cursor: pointer; }
 
 /* Success modal */
 .success-icon {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 3px dashed #22c55e;
+  border: 3px dashed #25597c;
   margin: 6px auto 10px;
 }
 .success-text {

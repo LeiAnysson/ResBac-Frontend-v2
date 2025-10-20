@@ -98,7 +98,7 @@
 
 .user-filter-select:focus {
   outline: none;
-  border-color: #1a56db;
+  border-color: #25597c;
   box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
 }
 
@@ -108,7 +108,7 @@
 
 .create-user-btn {
   white-space: nowrap;
-  background: #2563eb;
+  background: #25597c;
   padding: 0.7rem 1rem;
   color: #fff;
   border: none;
@@ -144,6 +144,11 @@
 
 .user-table td {
   color: #6b7280;
+}
+
+.user-table th:nth-child(n+2):nth-child(-n+6),
+.user-table td:nth-child(n+2):nth-child(-n+6) {
+  text-align: center;
 }
 
 /* Alternating row colors */
@@ -184,8 +189,8 @@
 
 .user-status.rejected {
   background-color: #fdecea;
-  color: #d32f2f;
-  border: 1px solid #d32f2f;
+  color: #c94c4c;
+  border: 1px solid #bb4545;
 }
 
 .user-action-btn {
@@ -267,6 +272,11 @@
     padding: 0.5rem 0.3rem;
     font-size: 13px;
   }
+}
+
+.user-icon {
+  color: #fff;
+  font-size: 13px;
 }
 
 @media (max-width: 600px) {

@@ -4,7 +4,7 @@ import './ResponderViewReport.css';
 import '../Components/Shared/SharedComponents.css';
 import ResponderHeader from '../Components/NewComponentsHeaderWebApp/ResponderHeader';
 import ResponderBottomNav from '../Components/NewComponentsBottomNavWebApp/ResponderBottomNav';
-import BackButton from '../assets/backbutton.png';
+import { MdOutlineArrowCircleLeft } from 'react-icons/md';
 import { apiFetch } from '../utils/apiFetch';
 import { reverseGeocode } from '../utils/hereApi';
 import Ably from 'ably';
@@ -28,7 +28,6 @@ const ResponderViewReport = () => {
   const [resolvedAddress, setResolvedAddress] = useState('Loading...');
   const [debugLines, setDebugLines] = useState([]);
 
-  // refs
   const ablyPublishRef = useRef(null);
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -39,8 +38,8 @@ const ResponderViewReport = () => {
   const lastPublishedRef = useRef(0);
   const watchIdRef = useRef(null);
   const restartWatcherRef = useRef(null);
-  const responderLocationRef = useRef(null); // store latest location for immediate publish after restart
-  const lastSentRef = useRef(null); // last published location object
+  const responderLocationRef = useRef(null); 
+  const lastSentRef = useRef(null); 
 
   const debug = (msg) => {
     console.log(msg);
@@ -50,7 +49,6 @@ const ResponderViewReport = () => {
     });
   };
 
-  // fetch report
   useEffect(() => {
     const fetchReport = async () => {
       try {
@@ -75,7 +73,6 @@ const ResponderViewReport = () => {
     fetchReport();
   }, [id]);
 
-  // init HERE map once per report; safe cleanup to avoid lookAtManipulator/createTexture crashes
   useEffect(() => {
     if (!report?.latitude || !report?.longitude) return;
     if (!mapContainerRef.current) return;
@@ -113,16 +110,13 @@ const ResponderViewReport = () => {
     loadHereMaps()
       .then(() => {
         if (!mapContainerRef.current) return;
-        // create platform + map
         platform = new window.H.service.Platform({
           apikey: process.env.REACT_APP_HERE_API_KEY
         });
         defaultLayers = platform.createDefaultLayers();
 
-        // ensure container still exists
         if (!mapContainerRef.current) return;
 
-        // create map instance
         mapRef.current = new window.H.Map(mapContainerRef.current, defaultLayers.vector.normal.map, {
           center: { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
           zoom: 14,
@@ -136,16 +130,13 @@ const ResponderViewReport = () => {
         };
         window.addEventListener('resize', handleResize);
 
-        // interactions & UI
         try {
           new window.H.mapevents.Behavior(new window.H.mapevents.MapEvents(mapRef.current));
           window.H.ui.UI.createDefault(mapRef.current, defaultLayers);
         } catch (e) {
-          // defensive: sometimes HERE throws if map partially initialised
           console.warn('HERE UI init error (ignored):', e);
         }
 
-        // incident marker
         try {
           incidentMarkerRef.current = new window.H.map.Marker({
             lat: parseFloat(report.latitude),
@@ -156,7 +147,6 @@ const ResponderViewReport = () => {
           console.warn('Incident marker creation failed:', e);
         }
 
-        // responder marker
         try {
           const carIcon = new window.H.map.Icon('https://cdn-icons-png.flaticon.com/512/8023/8023798.png', {
             size: { w: 32, h: 32 }
@@ -170,7 +160,6 @@ const ResponderViewReport = () => {
           console.warn('Responder marker creation failed:', e);
         }
 
-        // stop following when user interacts
         try {
           mapRef.current.addEventListener('pointerdown', () => {
             followRef.current = false;
@@ -184,9 +173,7 @@ const ResponderViewReport = () => {
         console.error('Failed to load HERE Maps scripts:', err);
       });
 
-    // cleanup: remove watcher but do not dispose ably here
     return () => {
-      // clear watcher (the watcher lifecycle is managed by the watcher effect too, but safe-guard here)
       try {
         if (watchIdRef.current != null) {
           navigator.geolocation.clearWatch(watchIdRef.current);
@@ -194,11 +181,9 @@ const ResponderViewReport = () => {
         }
       } catch (e) {}
 
-      // safely remove objects & dispose map to avoid renderer errors
       try {
         if (mapRef.current) {
           try {
-            // remove objects first
             const objs = mapRef.current.getObjects ? mapRef.current.getObjects() : [];
             if (Array.isArray(objs) && objs.length) {
               try {
@@ -221,16 +206,13 @@ const ResponderViewReport = () => {
       routeLineRef.current = null;
       setMapReady(false);
     };
-    // intentionally depend only on report
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [report]);
 
-  // central watcher + Ably + routing + restart/recovery
   useEffect(() => {
     if (!report?.id) return;
     if (!mapReady) return;
 
-    // init Ably lazily
     if (!ablyPublishRef.current) {
       try {
         ablyPublishRef.current = new Ably.Realtime({ key: process.env.REACT_APP_ABLY_PUBLISH_KEY });
@@ -246,7 +228,6 @@ const ResponderViewReport = () => {
 
     let fallbackTimer = null;
 
-    // publish helper (throttled externally by callers)
     const publishLocation = (loc) => {
       try {
         if (!locationChannel) return false;
@@ -267,7 +248,6 @@ const ResponderViewReport = () => {
       }
     };
 
-    // small distance helper (in meters) using simple haversine
     const distanceMeters = (a, b) => {
       if (!a || !b) return Infinity;
       const toRad = (v) => (v * Math.PI) / 180;
@@ -282,12 +262,9 @@ const ResponderViewReport = () => {
       return R * c;
     };
 
-    // routing: safe guard mapRef and window.H presence
     const updateRouteIfReady = async (loc) => {
       if (!loc || !mapRef.current || !window.H) return;
-      // guard against disposed renderer
       try {
-        // call routing API
         const url =
           `https://router.hereapi.com/v8/routes?apikey=${process.env.REACT_APP_HERE_API_KEY}` +
           `&transportMode=car` +
@@ -298,12 +275,11 @@ const ResponderViewReport = () => {
 
         const res = await fetch(url);
         const data = await res.json();
-        if (!mapRef.current) return; // map might have been disposed while awaiting
+        if (!mapRef.current) return;
         if (data.routes?.length) {
           const encodedPolyline = data.routes[0].sections[0].polyline;
           const lineString = window.H.geo.LineString.fromFlexiblePolyline(encodedPolyline);
 
-          // remove previous route safely
           if (routeLineRef.current && mapRef.current) {
             try {
               mapRef.current.removeObject(routeLineRef.current);
@@ -317,7 +293,6 @@ const ResponderViewReport = () => {
             try {
               mapRef.current.getViewModel().setLookAtData({ bounds: routeLineRef.current.getBoundingBox() });
             } catch (e) {
-              // fallback to center on responder
               try {
                 mapRef.current.setCenter({ lat: loc.lat, lng: loc.lng });
               } catch (ee) {}
@@ -332,7 +307,6 @@ const ResponderViewReport = () => {
       }
     };
 
-    // geolocation handlers
     const success = (position) => {
       const newLocation = {
         lat: position.coords.latitude,
@@ -341,24 +315,20 @@ const ResponderViewReport = () => {
         timestamp: position.timestamp
       };
 
-      // update state + ref
       setResponderLocation(newLocation);
       responderLocationRef.current = newLocation;
       debug(`loc ${newLocation.lat.toFixed(6)},${newLocation.lng.toFixed(6)} acc:${Math.round(newLocation.accuracy)}m`);
 
-      // update marker
       try {
         responderMarkerRef.current?.setGeometry({ lat: newLocation.lat, lng: newLocation.lng });
       } catch (e) {}
 
-      // center if following
       if (followRef.current && mapRef.current) {
         try {
           mapRef.current.setCenter({ lat: newLocation.lat, lng: newLocation.lng });
         } catch (e) {}
       }
 
-      // arrival check
       try {
         if (newLocation.accuracy <= 80 && window.H && report?.latitude && report?.longitude) {
           const distance = window.H.geo.Distance.measure(
@@ -386,8 +356,6 @@ const ResponderViewReport = () => {
         console.error('Arrival check error:', e);
       }
 
-      // decide whether to publish: publish at least once after restart,
-      // or if distance moved > 3m or accuracy changed > 10m, or throttle by 1500ms
       const now = Date.now();
       const last = lastSentRef.current;
       let shouldPublish = false;
@@ -398,17 +366,15 @@ const ResponderViewReport = () => {
         const moved = distanceMeters(last, newLocation);
         if (moved > 3) shouldPublish = true;
         if (Math.abs((last.acc || 0) - newLocation.accuracy) > 10) shouldPublish = true;
-        if (now - lastPublishedRef.current >= 3000) shouldPublish = true; // periodic refresh every 3s
+        if (now - lastPublishedRef.current >= 3000) shouldPublish = true;
       }
 
       if (shouldPublish) {
         publishLocation(newLocation);
       }
 
-      // update route (do not await)
       updateRouteIfReady(newLocation);
 
-      // clear fallback timer
       if (fallbackTimer) {
         clearTimeout(fallbackTimer);
         fallbackTimer = null;
@@ -423,7 +389,6 @@ const ResponderViewReport = () => {
       }
     };
 
-    // start/stop helpers
     const stopWatcher = () => {
       try {
         if (watchIdRef.current != null) {
@@ -448,13 +413,11 @@ const ResponderViewReport = () => {
         return;
       }
 
-      // if permission API exists, check first
       const tryStart = () => {
         try {
           watchIdRef.current = navigator.geolocation.watchPosition(success, error, geoOptions);
           debug('Geolocation watcher started (via watchPosition)');
 
-          // fallback: if no success after 6s, trigger one-off getCurrentPosition
           fallbackTimer = setTimeout(() => {
             if (!responderLocationRef.current) {
               try {
@@ -464,10 +427,7 @@ const ResponderViewReport = () => {
                 console.warn(e);
               }
             } else {
-              // if we have a stale location but want to force-publish after restart,
-              // publish it so server sees at least one update
               const stale = responderLocationRef.current;
-              // ensure we only force when lastPublished is too old
               if (!lastSentRef.current || Date.now() - lastPublishedRef.current > 5000) {
                 publishLocation(stale);
                 debug('Forced publish of existing location after restart');
@@ -492,7 +452,6 @@ const ResponderViewReport = () => {
               tryStart();
             })
             .catch(() => {
-              // permission API failed - just start
               tryStart();
             });
         } catch (e) {
@@ -503,16 +462,13 @@ const ResponderViewReport = () => {
       }
     };
 
-    // expose restart
     restartWatcherRef.current = () => {
       debug('Manual restart requested');
       startWatcher();
     };
 
-    // start now
     startWatcher();
 
-    // visibility handler: restart when visible to recover from browser suspends
     const onVisibility = () => {
       if (document.visibilityState === 'visible') {
         debug('Document visible -> restarting watcher');
@@ -524,7 +480,6 @@ const ResponderViewReport = () => {
     };
     document.addEventListener('visibilitychange', onVisibility);
 
-    // cleanup for this effect
     return () => {
       try {
         if (watchIdRef.current != null) {
@@ -541,10 +496,8 @@ const ResponderViewReport = () => {
       } catch (e) {}
       document.removeEventListener('visibilitychange', onVisibility);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [report?.id, mapReady]);
 
-  // close ably on unmount
   useEffect(() => {
     return () => {
       try {
@@ -556,7 +509,6 @@ const ResponderViewReport = () => {
     };
   }, []);
 
-  // incident update listener
   useEffect(() => {
     const handleIncidentUpdated = (e) => {
       const data = e.detail;
@@ -571,11 +523,10 @@ const ResponderViewReport = () => {
         setStatus(data.status);
       }
     };
-    window.addEventListener('incidentUpdated', handleIncidentUpdated);
-    return () => window.removeEventListener('incidentUpdated', handleIncidentUpdated);
+    window.addEventListener('incidentDetailsUpdated', handleIncidentUpdated);
+    return () => window.removeEventListener('incidentDetailsUpdated', handleIncidentUpdated);
   }, [report?.id]);
 
-  // helpers for parseResponse, status update, backup (kept identical behaviour)
   const parseResponse = async (res) => {
     const contentType = res.headers.get('content-type') || '';
     if (contentType.includes('application/json')) {
@@ -665,9 +616,7 @@ const ResponderViewReport = () => {
       <ResponderHeader />
 
       <div className="r-title-container">
-        <button className="back-button" onClick={() => navigate(-1)}>
-          <img className="back-button-icon" src={BackButton} alt="back" />
-        </button>
+        <MdOutlineArrowCircleLeft className="back-button" onClick={() => navigate(-1)}/>
         <h1>Report Details</h1>
       </div>
 

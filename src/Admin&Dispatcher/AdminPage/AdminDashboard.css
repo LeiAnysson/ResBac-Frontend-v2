@@ -179,15 +179,6 @@ html, body {
   box-sizing: border-box;
 }
 
-.incident-heatmap {
-  grid-row: 1 / span 2;
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  height: 400px;
-  width: 100%;
-}
-
 .recent-activity {
   grid-row: 1 / 2;
   background: #fff;
@@ -200,7 +191,8 @@ html, body {
 
 .recent-activity h3,
 .latest-emergency-report h3,
-.incident-heatmap h3 {
+.incident-heatmap h3,
+.incident-report-monthly h3 {
   margin-bottom: 10px;
   color: #23408e;
 }
@@ -208,10 +200,13 @@ html, body {
 .incident-heatmap {
   background: #fff;
   border-radius: 12px;
-  padding: 1.5rem 1.5rem 4.5rem 1.5rem;
+  padding: 1.5rem 1.5rem 5.5rem 1.5rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
   flex: 1;
   min-width: 320px;
+  grid-row: 1 / span 2;
+  height: 448px;
+  width: 100%;
 }
 
 .latest-emergency-report {
@@ -254,9 +249,9 @@ html, body {
   border-radius: 8px;
   background: linear-gradient(
     to right,
-    rgb(0,200,0),
-    rgb(255,200,0),
-    rgb(255,0,0) 
+    rgb(120,200,120),
+    rgb(255,210,120),
+    #c94c4c
   );
 }
 
@@ -326,7 +321,7 @@ html, body {
 }
 
 .dashboard-report-type strong {
-  color: red;
+  color: #c94c4c;
 }
 
 .dashboard-report-location {
@@ -334,6 +329,67 @@ html, body {
   color: gray;
   font-weight: 500;
   padding: 5px 0;
+}
+
+.stat-icon {
+  font-size: 15px;
+  color: #757575;
+  margin-right: 6px;
+  margin-bottom: 2px;
+  transition: transform 0.15s, color 0.15s;
+  vertical-align: middle;
+}
+
+.incident-report-monthly {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  min-width: 320px;
+}
+
+.incident-report-monthly table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.incident-report-monthly th, 
+.incident-report-monthly td {
+  padding: 6px 14px;
+  font-size: 14px;
+  color: #444444;
+}
+
+.incident-report-monthly th:nth-child(1) {
+  text-align: left; 
+  background-color: #f4f5f9;
+}
+
+.incident-report-monthly th:nth-child(2) {
+  text-align: center;
+  background-color: #f4f5f9; 
+}
+
+.incident-report-monthly td:nth-child(1) {
+  text-align: left; 
+}
+
+.incident-report-monthly td:nth-child(2) {
+  text-align: center; 
+  font-weight: 600;
+  color: #23408e;
+}
+
+.incident-report-monthly tbody tr:nth-child(even) {
+  background-color: #f4f5f9;
+}
+
+.incident-report-monthly tbody tr:nth-child(odd) {
+  background-color: #ffffff; 
+}
+
+.incident-report-monthly tbody tr:hover {
+  background-color: #eef2fb; 
 }
 
 

@@ -19,7 +19,7 @@
 }
 
 .change-photo-btn {
-  background: #3563e9;
+  background: #25597c;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -91,7 +91,7 @@
 }
 
 .btn-secondary { background: #e6e6e6; color: #333; }
-.btn-primary { background: #1f4ed8; color: #fff; }
+.btn-primary { background: #25597c; color: #fff; }
 
 @media (max-width: 480px) {
   .row-2col { grid-template-columns: 1fr; }

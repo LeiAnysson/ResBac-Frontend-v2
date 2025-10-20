@@ -4,6 +4,7 @@ import './AdminDashboard.css';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BocaueHeatmap from '../../Components/Heatmap';
+import { MdPending, MdPeople, MdAssignment, MdCheckCircle } from 'react-icons/md';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const AdminDashboard = () => {
   const [activityLogs, setActivityLogs] = useState([]);
   const [latestReport, setLatestReport] = useState(null);
   const [incidents, setIncidents] = useState([]);
+  const [monthlyIncidentReports, setMonthlyIncidentReports] = useState([]);
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_URL}/api/admin/users/total-users`, {
@@ -117,6 +119,20 @@ const AdminDashboard = () => {
       .catch(error => console.error("Error fetching heatmap incidents:", error));
   }, []);
 
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_URL}/api/incidents/monthly-counts`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+    })
+      .then(res => res.json())
+      .then(data => setMonthlyIncidentReports(data))
+      .catch(error => console.error("Error fetching monthly incident reports:", error));
+  }, []);
+
   return (
     <div className="admin-dashboard-container">
       <TopBar />
@@ -130,19 +146,19 @@ const AdminDashboard = () => {
           <section className="dashboard-header">
             <div className="dashboard-stats">
               <div className="stat-card">
-                <span className="stat-label">Total Registered Users</span>
+                <span className="stat-label"><MdPeople className="stat-icon"/> Total Registered Users</span>
                 <span className="stat-value">{userCount}</span>
               </div>
               <div className="stat-card">
-                <span className="stat-label">Ongoing Emergency Reports</span>
+                <span className="stat-label"><MdAssignment className="stat-icon"/> Ongoing Emergency Reports</span>
                 <span className="stat-value stat-danger">{ongoingReports}</span>
               </div>
               <div className="stat-card">
-                <span className="stat-label">Residents Awaiting Approval</span>
+                <span className="stat-label"><MdPending className="stat-icon"/> Residents Awaiting Approval</span>
                 <span className="stat-value stat-warning">{pendingResidents}</span>
               </div>
               <div className="stat-card">
-                <span className="stat-label">Reports Resolved this Week</span>
+                <span className="stat-label"><MdCheckCircle className="stat-icon"/> Reports Resolved this Week</span>
                 <span className="stat-value stat-success">{reportsThisWeek}</span>
               </div>
             </div>
@@ -199,7 +215,35 @@ const AdminDashboard = () => {
                 )}
               </div>
             </div>
+
+            <div className="incident-report-monthly">
+              <h3>Number of Reports per Incident Type (This Month)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Incident Type</th>
+                    <th>Number of Reports</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {monthlyIncidentReports.length === 0 ? (
+                    <tr>
+                      <td colSpan="2">No data available</td>
+                    </tr>
+                  ) : (
+                    monthlyIncidentReports.map((incident, idx) => (
+                      <tr key={idx}>
+                        <td>{incident.type}</td>
+                        <td>{incident.count}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </section>
+
+          
 
         </main>
       </div>

@@ -5,7 +5,7 @@ const LoginButton = ({ onClick, children, style, ...props }) => {
     <button
       onClick={onClick}
       style={{
-        background: '#1A19FF',
+        background: '#25597c',
         color: 'white',
         fontWeight: 'bold',
         border: 'none',

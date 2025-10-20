@@ -4,6 +4,7 @@ import "./AdminResponseTeam.css";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from '../../utils/apiFetch';
+import { MdDelete, MdVisibility } from "react-icons/md";
 
 const TeamPage = () => {
     const [teams, setTeams] = useState([]);
@@ -135,14 +136,14 @@ const TeamPage = () => {
                         {team.status.charAt(0).toUpperCase() + team.status.slice(1)}
                       </td>
                       <td>
-                        <button className="view-btn" onClick={() => {if (user?.role?.name === "Admin") {
+                        <MdVisibility className="view-btn" onClick={() => {if (user?.role?.name === "Admin") {
                             navigate(`/admin/response-teams/${team.id}`);
                           } else if (user?.role?.name === "MDRRMO") {
                             navigate(`/dispatcher/response-teams/${team.id}`);
                           }
-                        }}>View</button>
+                        }}/>
                         {user?.role?.name === 'Admin' && (
-                          <button className="delete-btn" onClick={() => handleDelete(team.id)}>Delete</button>
+                          <MdDelete className="delete-btn" onClick={() => handleDelete(team.id)}/>
                         )}
                       </td>
                     </tr>
