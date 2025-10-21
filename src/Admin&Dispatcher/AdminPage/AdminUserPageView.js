@@ -145,10 +145,10 @@ const AdminUserPageView = () => {
                 <div className="cu-actions">
                     {userData.role === "Resident" && userData.residencyStatus === "pending" && (
                         <>
-                        <button className="btn btn-reject" onClick={handleReject} style={{background:'#dc2626', color:'white'}}>
+                        <button className="btn btn-reject" onClick={handleReject} style={{background:'#c94c4c', color:'white'}}>
                             Reject
                         </button>
-                        <button className="btn btn-approve" onClick={handleApprove} style={{background:'#1e40af', color:'white'}}>
+                        <button className="btn btn-approve" onClick={handleApprove} style={{background:'#25597c', color:'white'}}>
                             Approve
                         </button>
                         </>

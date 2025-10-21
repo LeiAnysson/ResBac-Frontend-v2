@@ -20,13 +20,14 @@
 }
 
 .create-team-btn {
-  background: #2563eb;
+  background: #25597c;
   color: #fff;
   border: none;
   border-radius: 6px;
   padding: 8px 18px;
   font-weight: 500;
   cursor: pointer;
+  width: 150px;
 }
 
 .response-team-table {

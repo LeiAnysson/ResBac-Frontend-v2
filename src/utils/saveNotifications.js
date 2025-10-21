@@ -5,7 +5,9 @@ export const saveNotification = async ({ user_id, team_id, message }) => {
     if (user_id) payload.user_id = user_id;
     if (team_id) payload.team_id = team_id;
 
-    await fetch(`${process.env.REACT_APP_URL}/api/notifications`, {
+    console.log("Saving notification payload:", payload);
+
+    const response = await fetch(`${process.env.REACT_APP_URL}/api/notifications`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -13,6 +15,9 @@ export const saveNotification = async ({ user_id, team_id, message }) => {
       },
       body: JSON.stringify(payload),
     });
+    const data = await response.json();
+    console.log("Notification API response:", data);
+
   } catch (err) {
     console.error("Failed to save notification:", err);
   }

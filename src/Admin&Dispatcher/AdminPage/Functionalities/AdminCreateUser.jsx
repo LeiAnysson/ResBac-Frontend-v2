@@ -283,7 +283,7 @@ const AdminCreateUser = ({ mode }) => {
               </div>
 
               <div className="cu-actions">
-                <button type="button" className="btn btn-outline" onClick={handleCancel} style={{background:'#dc2626', color:'white'}}>Cancel</button>
+                <button type="button" className="btn btn-outline" onClick={handleCancel} style={{background:'#c94c4c', color:'white'}}>Cancel</button>
                 <button type="submit" className="btn btn-primary">
                   {isCreating ? "Create" : "Save"}
                 </button>

@@ -51,11 +51,10 @@ export const setupNotifications = () => {
     });
 
     window.Echo.channel("dispatcher").listen(".IncidentStatusUpdated", (event) => {
-        //if (currentUser.role_id !== 2) return;
+        if (!event.target_roles?.includes(currentUser.role_id)) return;
         console.log("[dispatcher] IncidentStatusUpdated received:", event);
-        const { incident } = event;
-        if (!event.target_roles.includes(currentUser.role_id)) return;
 
+        const { incident } = event;
         showInAppNotification({
             title: "Incident Status Updated",
             message: `Incident #${incident.id} is now "${incident.status}".`,
@@ -150,12 +149,10 @@ export const setupNotifications = () => {
     });
 
     window.Echo.channel("resident").listen(".IncidentStatusUpdated", (event) => {
-        //if (currentUser.role_id !== 4) return;
+        if (!event.target_roles?.includes(currentUser.role_id)) return;
         console.log("[resident] IncidentStatusUpdated received:", event);
 
         const { incident } = event;
-        if (!event.target_roles.includes(currentUser.role_id)) return;
-
         showInAppNotification({
             title: "Incident Status Updated",
             message: `The response team updated your incident status to "${incident.status}".`,
@@ -188,6 +185,7 @@ export const setupNotifications = () => {
         console.log("IncidentAssigned received:", event);
 
         if (event.target_role !== 3) return;
+        if (!currentUser.team_id || event.team_id !== currentUser.team_id) return;
 
         const incidentTypeName = event.incident.incident_type?.name || "Unknown Incident";
         const landmarkOrCoords = event.incident.landmark || `${event.incident.latitude}, ${event.incident.longitude}`;
@@ -237,7 +235,7 @@ export const setupNotifications = () => {
                 { label: "View Incident", path: `/responder/reports/view-report/${event.incident.id}` }
             ]
         });
-        saveNotification({ user_id: currentUser.id, message });
+        saveNotification({ team_id: event.team_id, message });
 
         window.dispatchEvent(new CustomEvent("backupAcknowledged", { detail: event }));
     });
@@ -261,7 +259,49 @@ export const setupNotifications = () => {
 
         window.dispatchEvent(new CustomEvent("backupAutomaticallyAssigned", { detail: event }));
     });
+
+
+    /*---------------------ADMIN-----------------------*/
+
+    
+    window.Echo.channel("admin").listen(".UserRegistered", (event) => {
+        console.log("UserRegistered received:", event);
+
+        if (currentUser.role_id !== 1) return;
+
+        const user = event.user;
+        const message = `New resident registration: ${user.first_name} ${user.last_name}`;
+
+        showInAppNotification({
+            title: "New User Registration",
+            message,
+            actions: [
+                { label: "Review", path: "/admin/users" }
+            ],
+        });
+    });
+
+
+    /*---------------------ANNOUNCEMENTS----------------------*/
+
+    window.Echo.channel("announcements").listen(".AnnouncementPosted", (event) => {
+        console.log("New announcement:", event);
+        if (currentUser.role_id === 1 || currentUser.role_id === 3) return;
+
+        const message = event.announcement?.title || "New announcement posted";
+
+        showInAppNotification({
+            title: "New Announcement",
+            message,
+            actions: [
+                { label: "View", path: getAnnouncementPath(currentUser.role_id) }
+            ],
+        });
+    });
+
 };
+
+
 
 /* ---------------- FUNCTIONS ---------------- */
 
@@ -299,3 +339,14 @@ const showNotification = (title, body) => {
         console.log("Notification error:", err);
     }
 };
+
+function getAnnouncementPath(roleId) {
+    switch (roleId) {
+        case 2: 
+            return "/dispatcher/announcements";
+        case 4: 
+            return "/resident/announcement";
+        default:
+            return "/";
+    }
+}

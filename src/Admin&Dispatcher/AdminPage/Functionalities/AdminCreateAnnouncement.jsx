@@ -4,6 +4,8 @@ import NavBar from "../../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../../Components/ComponentsTopBar/TopBar";
 import { apiFetch } from '../../../utils/apiFetch';
 import "./ComponentsTeam&User.css";
+import { CgAttachment } from "react-icons/cg";
+import { FaBullhorn } from "react-icons/fa";
 
 const AdminCreateAnnouncement = () => {
     const navigate = useNavigate();
@@ -68,8 +70,8 @@ const AdminCreateAnnouncement = () => {
             <main className="dashboard-content-area">
             <div className="create-user-wrapper compact">
                 <div className="cu-header">
-                <div className="cu-header-icon">📢</div>
-                <h2>Create Announcement</h2>
+                    <FaBullhorn className="cu-header-icon"/>
+                    <h2>Create Announcement</h2>
                 </div>
                 <form className="cu-form" onSubmit={handleSubmit}>
                 <div className="ca-grid compact">
@@ -79,7 +81,24 @@ const AdminCreateAnnouncement = () => {
                     <label className="ca-label">Content:</label>
                     <textarea name="content" value={formData.content} onChange={handleInputChange} className="cu-input" rows={6} required />
                     <label className="ca-label">Upload Images:</label>
-                    <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="cu-input" />
+                    <div className="file-upload-container">
+                        <input
+                            type="file"
+                            id="fileInput"
+                            multiple
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                        />
+                        <label htmlFor="fileInput" className="file-upload-label">
+                            <CgAttachment className="announcement-icons"/>
+                            Choose Images
+                        </label>
+                        {images.length > 0 && (
+                            <span className="file-upload-count">
+                            {images.length} file{images.length > 1 ? 's' : ''} selected
+                            </span>
+                        )}
+                    </div>
                     {images.length > 0 && (
                         <div style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}>
                             {images.map((img, i) => (
@@ -100,7 +119,7 @@ const AdminCreateAnnouncement = () => {
                     </div>
                 </div>
                 <div className="cu-actions">
-                    <button type="button" className="btn btn-outline" onClick={() => navigate('/admin/announcements')} style={{background:'#dc2626', color:'white'}}>Cancel</button>
+                    <button type="button" className="btn btn-outline" onClick={() => navigate('/admin/announcements')} style={{background:'#c94c4c', color:'white'}}>Cancel</button>
                     <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Create</button>
                 </div>
                 </form>

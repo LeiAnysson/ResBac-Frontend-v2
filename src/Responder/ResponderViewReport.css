@@ -71,11 +71,11 @@
 .details-card {
   background: #fff;
   border-radius: 24px 24px 0 0;
-  margin-top: 8px;
   padding: 16px;
   position: relative;
   z-index: 2; 
   margin-top: 50vh;
+  padding-bottom: 100px;
   min-height: 55vh;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
 }

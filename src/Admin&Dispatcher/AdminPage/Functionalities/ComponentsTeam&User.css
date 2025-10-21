@@ -16,7 +16,7 @@
 }
 
 .cu-header {
-  background: #1e40af;
+  background: #25597c;
   color: white;
   padding: 15px 20px;
   border-radius: 8px 8px 0 0;
@@ -82,6 +82,36 @@
   font-weight: 600;
   color: #1e40af;
   width: 20%;
+}
+
+.file-upload-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.file-upload-container input[type="file"] {
+  display: none;
+}
+
+.file-upload-label {
+  background-color: #25597c;
+  color: white;
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.file-upload-label:hover {
+  background-color: #1e4b6b;
+}
+
+.file-upload-count {
+  color: #374151;
+  font-size: 0.9rem;
 }
 
 .profile-image {
@@ -286,24 +316,24 @@ select.ct-input {
 }
 
 .btn-primary {
-  background: #1e40af;
+  background: #25597c;
   color: white;
 }
 
 .btn-primary:hover {
-  background: #1e3a8a;
+  background: #22506f;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
 }
 
 .btn-outline {
   background: transparent;
-  color: #dc2626;
-  border: 2px solid #dc2626;
+  color: #c94c4c;
+  border: 2px solid #c94c4c;
 }
 
 .btn-outline:hover {
-  background: #dc2626;
+  background: #b84545;
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
@@ -398,12 +428,12 @@ select.ct-input {
 
 .cu-input.error,
 .ct-input.error {
-  border-color: #dc2626;
+  border-color: #c94c4c;
 }
 
 .cu-input.error:focus,
 .ct-input.error:focus {
-  border-color: #dc2626;
+  border-color: #c94c4c;
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
@@ -474,7 +504,7 @@ select.ct-input {
 .ct-checkbox {
   width: 18px;
   height: 18px;
-  accent-color: #1e40af;
+  accent-color: #25597c;
   cursor: pointer;
 }
 
@@ -501,7 +531,7 @@ select.ct-input {
 .ct-add-member-btn {
   width: 40px;
   height: 40px;
-  background: #1e40af;
+  background: #25597c;
   border: none;
   border-radius: 50%;
   color: white;
@@ -515,7 +545,7 @@ select.ct-input {
 }
 
 .ct-add-member-btn:hover {
-  background: #1e3a8a;
+  background: #245474;
   transform: scale(1.05);
 }
 
@@ -600,7 +630,7 @@ select.ct-input {
 }
 
 .ct-header {
-  background: #1e40af;
+  background: #25597c;
   color: white;
   padding: 10px 15px;
   border-radius: 8px 8px 0 0;
@@ -676,7 +706,7 @@ select.ct-input {
 .ct-checkbox {
   width: 18px;
   height: 18px;
-  accent-color: #1e40af;
+  accent-color: #25597c;
   cursor: pointer;
 }
 
@@ -703,7 +733,7 @@ select.ct-input {
 .ct-add-member-btn {
   width: 40px;
   height: 40px;
-  background: #1e40af;
+  background: #25597c;
   border: none;
   border-radius: 50%;
   color: white;
@@ -717,7 +747,7 @@ select.ct-input {
 }
 
 .ct-add-member-btn:hover {
-  background: #1e3a8a;
+  background: #224f6e;
   transform: scale(1.05);
 }
 
@@ -774,7 +804,7 @@ select.ct-input {
 }
 
 .ct-header-with-edit {
-  background: #1e40af;
+  background: #25597c;
   color: white;
   padding: 15px 20px;
   border-radius: 8px 8px 0 0;
@@ -799,7 +829,14 @@ select.ct-input {
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 16px;
+  color: #fff;
+  padding: 5px;
+}
+
+.announcement-icons {
+  margin-right: 5px;
+  margin-top: 2px;
+  font-size: 15px;
 }
 
 .ct-header-left h2 {
@@ -813,7 +850,7 @@ select.ct-input {
   font-size: 14px;
   min-width: 80px;
   height: 36px;
-  background: #1e40af;
+  background: #25597c;
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;
@@ -822,7 +859,7 @@ select.ct-input {
 }
 
 .edit-btn-top:hover {
-  background: #1e3a8a;
+  background: #235272;
   border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-1px);
 }
@@ -879,7 +916,7 @@ select.ct-input {
 .ct-checkbox {
   width: 18px;
   height: 18px;
-  accent-color: #1e40af;
+  accent-color: #25597c;
   cursor: pointer;
 }
 
@@ -920,7 +957,7 @@ select.ct-input {
 }
 
 .ct-add-member-btn:hover {
-  background: #1e3a8a;
+  background: #235271;
   transform: scale(1.05);
 }
 
@@ -1021,7 +1058,7 @@ select.ct-input {
   font-size: 14px;
   min-width: 80px;
   height: 36px;
-  background: #1e40af;
+  background: #22506e;
   color: white;
   border: none;
   border-radius: 6px;
@@ -1031,7 +1068,7 @@ select.ct-input {
 }
 
 .edit-btn-separated:hover {
-  background: #1e3a8a;
+  background: #245575;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -1088,7 +1125,7 @@ select.ct-input {
 .ct-checkbox {
   width: 18px;
   height: 18px;
-  accent-color: #1e40af;
+  accent-color: #25597c;
   cursor: pointer;
 }
 
@@ -1115,7 +1152,7 @@ select.ct-input {
 .ct-add-member-btn {
   width: 40px;
   height: 40px;
-  background: #1e40af;
+  background: #25597c;
   border: none;
   border-radius: 50%;
   color: white;
@@ -1129,7 +1166,7 @@ select.ct-input {
 }
 
 .ct-add-member-btn:hover {
-  background: #1e3a8a;
+  background: #235474;
   transform: scale(1.05);
 }
 
@@ -1205,7 +1242,7 @@ select.ct-input {
 
 /* User Display Header */
 .ud-header {
-  background: #1e40af;
+  background: #25597c;
   color: white;
   padding: 15px 20px;
   display: flex;
@@ -1318,9 +1355,9 @@ select.ct-input {
 }
 
 .btn-reject {
-  background: #dc2626;
+  background: #c94c4c;
   color: white;
-  border: 2px solid #dc2626;
+  border: 2px solid #c94c4c;
   padding: 12px 30px;
   font-size: 16px;
   font-weight: 500;
@@ -1330,16 +1367,16 @@ select.ct-input {
 }
 
 .btn-reject:hover {
-  background: #b91c1c;
-  border-color: #b91c1c;
+  background: #ba4747;
+  border-color: #ba4747;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
 .btn-approve {
-  background: #1e40af;
+  background: #25597c;
   color: white;
-  border: 2px solid #1e40af;
+  border: 2px solid #25597c;
   padding: 12px 30px;
   font-size: 16px;
   font-weight: 500;
@@ -1349,8 +1386,8 @@ select.ct-input {
 }
 
 .btn-approve:hover {
-  background: #1e3a8a;
-  border-color: #1e3a8a;
+  background: #21506f;
+  border-color: #21506f;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
 }

@@ -11,6 +11,7 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
 
   const firstTeam = report.first_team_assignment?.team?.team_name;
   const latestTeam = report.latest_team_assignment?.team?.team_name;
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     setUpdateMessage(report.description ?? "");
@@ -134,6 +135,34 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
     }
   };
 
+  const assignMedic = async () => {
+    if (!window.confirm("Assign the Medical team to this incident?")) return;
+
+    try {
+      const data = await apiFetch(
+        `${process.env.REACT_APP_URL}/api/incidents/${report.id}/assign-medic`,
+        { method: "POST" }
+      );
+
+      alert("Medical team successfully assigned!");
+
+      setReport(prev => ({
+        ...prev,
+        latest_team_assignment: {
+          ...prev.latest_team_assignment,
+          team: { team_name: "Medical" },
+        },
+      }));
+    } catch (error) {
+      console.error(error);
+      if (error.message?.includes("already assigned")) {
+        alert("Medical team is already assigned.");
+      } else {
+        alert("Failed to assign medical team. Try again.");
+      }
+    }
+  };
+
   const getPriorityColor = (report) => {
     const level = Number(report.incident_type?.priority_id) || 0;
     switch (level) {
@@ -209,6 +238,18 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
           </div>
         </div>
         <div className="incident-actions-header">
+          {currentUser.role_id === 2 && report.incident_type?.name.toLowerCase() !== "medical" && (
+            <button className="assign-medic-btn" onClick={assignMedic} disabled={
+                report?.latest_team_assignment?.team?.team_name === "Medical" ||
+                report.status === "invalid"
+              }
+            >
+              {report?.latest_team_assignment?.team?.team_name === "Medical"
+                ? "Medical Assigned"
+                : "Assign Medical Team"}
+            </button>
+          )}
+
           <button 
             className="invalid-btn" 
             onClick={markInvalid} 

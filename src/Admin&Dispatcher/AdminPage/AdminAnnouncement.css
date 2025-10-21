@@ -6,7 +6,7 @@
 
 .create-announcement-btn {
   float: right;
-  background: #2563eb;
+  background: #25597c;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -14,6 +14,7 @@
   font-weight: 500;
   margin-bottom: 0px;
   cursor: pointer;
+  font-size: 14px;
 }
 
 .announcement-list {

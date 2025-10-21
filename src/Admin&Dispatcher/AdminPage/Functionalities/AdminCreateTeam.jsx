@@ -263,7 +263,7 @@ const AdminCreateTeam = ({ mode }) => {
 
             {isEditing && (
               <div className="ct-actions">
-                <button className="btn btn-outline-delete" onClick={handleCancel} style={{ background:'#dc2626', color:'white' }}>Cancel</button>
+                <button className="btn btn-outline-delete" onClick={handleCancel} style={{ background:'#c94c4c', color:'white' }}>Cancel</button>
                 <button className="btn btn-primary" onClick={isCreating ? handleCreate : handleSave}>{isCreating ? "Create" : "Save"}</button>
               </div>
             )}
