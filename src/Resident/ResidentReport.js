@@ -27,14 +27,22 @@ const ResidentReport = () => {
         } while (page <= totalPages);
 
         const styledTypes = allTypes.map((type) => {
-          let color = '#ff6666';
+          let color = '#c94c4c';
           let fontColor = '#222';
           if (type.priority) {
             switch (type.priority.priority_level) {
-              case 4: color = '#fd3d40ff'; fontColor = '#fff'; break; 
-              case 3: color = '#f96567ff'; break; 
-              case 2: color = '#fa8789ff'; break; 
-              case 1: color = '#fca8a9ff'; break; 
+              case 4:
+                color = '#ac3737ff'; fontColor = '#fff';
+                break;
+              case 3:
+                color = '#c94c4c'; fontColor = '#fff';
+                break;
+              case 2:
+                color = '#dc6b6bff'; fontColor = '#fff';
+                break;
+              case 1:
+                color = '#e59595'; fontColor = '#000'; 
+                break;
             }
           }
           return { ...type, color, fontColor };
@@ -53,18 +61,6 @@ const ResidentReport = () => {
   const mapIncidentLabelToId = (label) => {
     const found = incidentTypes.find((type) => type.name === label);
     return found ? found.id : null;
-  };
-
-  const requestMicPermission = async () => {
-    try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-      console.log("Mic permission granted");
-      return true;
-    } catch (err) {
-      console.error("Mic permission denied:", err);
-      alert("You need to allow microphone access to make a call.");
-      return false;
-    }
   };
 
   const handleIncidentClick = async (incidentType) => {
@@ -134,9 +130,6 @@ const ResidentReport = () => {
           return;
         }
         if (reporterType === "Victim") {
-          /*const micAllowed = await requestMicPermission();
-          if (!micAllowed) return;*/
-          
           navigate("/resident/call", { 
             state: { 
               incidentType: incidentType.name, 

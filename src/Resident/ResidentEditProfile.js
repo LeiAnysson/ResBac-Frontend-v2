@@ -23,7 +23,6 @@ const ResidentEditProfile = () => {
   const [profileImage, setProfileImage] = useState(''); 
   const [selectedFile, setSelectedFile] = useState(null);
 
-
   useEffect(() => {
     fetch(`${process.env.REACT_APP_URL}/api/residents/${id}`, {
       headers: {
@@ -45,6 +44,10 @@ const ResidentEditProfile = () => {
       })
       .catch((err) => console.error('Failed to fetch profile:', err));
   }, [id]);
+
+  useEffect(() => {
+    setAge(computeAge(birthdate));
+  }, [birthdate]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -69,6 +72,7 @@ const ResidentEditProfile = () => {
       const resProfile = await fetch(`${process.env.REACT_APP_URL}/api/residents/${id}`, {
         method: 'PUT',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(updatedData),
@@ -108,6 +112,18 @@ const ResidentEditProfile = () => {
       console.error(err);
       alert('Failed to update profile. Check console for details.');
     }
+  };
+
+  const computeAge = (birthdate) => {
+    if (!birthdate) return '';
+    const birth = new Date(birthdate);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
   };
 
   const profileImageUrl = profileImage
@@ -195,8 +211,10 @@ const ResidentEditProfile = () => {
             type="email"
             className="input"
             value={email}
+            readOnly
+            style={{ backgroundColor: '#f0f0f0' }}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter email"
+            placeholder="Verified email"
           />
 
           <div className="phone-age-row">
@@ -215,7 +233,8 @@ const ResidentEditProfile = () => {
                 type="number"
                 className="input"
                 value={age}
-                onChange={(e) => setAge(e.target.value)}
+                readOnly
+                style={{ backgroundColor: '#f0f0f0' }}
                 placeholder="Age"
               />
             </div>

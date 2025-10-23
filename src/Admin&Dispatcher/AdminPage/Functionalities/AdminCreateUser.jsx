@@ -4,6 +4,7 @@ import NavBar from "../../../Components/ComponentsNavBar/NavBar";
 import TopBar from "../../../Components/ComponentsTopBar/TopBar";
 import { apiFetch } from '../../../utils/apiFetch';
 import "./ComponentsTeam&User.css";
+import { FaUser } from 'react-icons/fa';
 
 const AdminCreateUser = ({ mode }) => {
   const { id: userId } = useParams();
@@ -169,7 +170,7 @@ const AdminCreateUser = ({ mode }) => {
         <main className="dashboard-content-area">
           <div className="create-user-wrapper compact">
             <div className="cu-header">
-              <div className="cu-header-icon">👤</div>
+              <div className="cu-header-icon"><FaUser className="user-icon" /></div>
               <h2>{isCreating ? "Create User" : "Edit User"}</h2>
             </div>
 

@@ -66,7 +66,7 @@
 
 .cu-info-table .label {
   font-weight: 600;
-  color: #1e40af;
+  color: #25597c;
   font-size: 14px;
   width: 50%;
   white-space: nowrap;
@@ -80,7 +80,7 @@
 
 .cu-info-table .image-label {
   font-weight: 600;
-  color: #1e40af;
+  color: #25597c;
   width: 20%;
 }
 
@@ -162,7 +162,7 @@
   width: 100%;
   padding: 0px 5px;
   font-size: 15px;
-  color: #1e40af;
+  color: #25597c;
   font-weight: 600;
 }
 
@@ -183,7 +183,7 @@
 .cu-upload-col label,
 .ct-upload-col label {
   font-weight: 600;
-  color: #1e40af;
+  color: #25597c;
   font-size: 14px;
   margin-bottom: 5px;
 }
@@ -191,7 +191,7 @@
 .cu-col label.compact,
 .cu-upload-col label.compact {
   font-weight: 600;
-  color: #1e40af;
+  color: #25597c;
   font-size: 13px;
   margin-bottom: 3px;
 }
@@ -218,7 +218,7 @@
 .cu-input:focus,
 .ct-input:focus {
   outline: none;
-  border-color: #1e40af;
+  border-color: #25597c;
   box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
 }
 
@@ -943,7 +943,7 @@ select.ct-input {
 .ct-add-member-btn {
   width: 40px;
   height: 40px;
-  background: #1e40af;
+  background: #25597c;
   border: none;
   border-radius: 50%;
   color: white;
@@ -1086,7 +1086,7 @@ select.ct-input {
 
 .ct-info-item > label {
   font-weight: 600;
-  color: #1e40af;
+  color: #25597c;
   font-size: 16px;
   margin-bottom: 5px;
 }

@@ -12,6 +12,7 @@ const ResidentCall = () => {
   const [callStatus, setCallStatus] = useState("calling");
   const [callDuration, setCallDuration] = useState(0);
   const [callAccepted, setCallAccepted] = useState(false);
+  const [showUnansweredModal, setShowUnansweredModal] = useState(false);
 
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const residentId = currentUser?.id;
@@ -109,6 +110,15 @@ const ResidentCall = () => {
       console.log("Joining Agora channel:", channelName, "uid:", uid);
       const assignedUid = await clientRef.current.join(appID, channelName, token || null, uid);
       console.log("Joined Agora with uid:", assignedUid);
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log("Mic permission granted");
+      } catch (err) {
+        console.error("Mic permission denied:", err);
+        alert("You need to allow microphone access to make a call.");
+        return; 
+      }
 
       console.log("Creating microphone audio track...");
       localAudioTrackRef.current = await AgoraRTC.createMicrophoneAudioTrack();
@@ -267,10 +277,6 @@ const ResidentCall = () => {
     }
 
     if (!callAccepted) {
-      alert(
-        "The dispatcher failed to accept the call. Your incident will be marked as unanswered."
-      );
-
       try {
         await apiFetch(
           `${process.env.REACT_APP_URL}/api/incidents/${idToEnd}/update-status`,
@@ -286,7 +292,7 @@ const ResidentCall = () => {
         );
       }
 
-      await endCallCleanup();
+      setShowUnansweredModal(true);
       return;
     }
     await endCallCleanup();
@@ -317,6 +323,37 @@ const ResidentCall = () => {
                 </div>
                 <span className="control-label">End Call</span>
               </button>
+            </div>
+          )}
+
+          {showUnansweredModal && (
+            <div className="unanswered-modal-overlay">
+              <div className="unanswered-modal">
+                <h2>Call Unanswered</h2>
+                <p>The dispatcher failed to accept your call. You can try again or wait for response teams to update your incident.</p>
+                <div className="unanswered-modal-buttons">
+                  <button
+                    className="primary"
+                    onClick={async () => {   
+                      setShowUnansweredModal(false);
+                      await endCallCleanup();   
+                      navigate("/resident/report");
+                    }}
+                  >
+                    Call Again
+                  </button>
+                  <button
+                    className="secondary"
+                    onClick={async () => {   
+                      setShowUnansweredModal(false);
+                      await endCallCleanup();  
+                      navigate("/resident");
+                    }}
+                  >
+                    Wait for Update
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>

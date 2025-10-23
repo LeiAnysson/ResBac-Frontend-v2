@@ -137,8 +137,21 @@ const SignInPage = () => {
                 </select>
               </div>
               <div className="form-field">
-                <label htmlFor="idImage" className="form-label">Upload ID</label>
-                <input type="file" id="idImage" name="idImage" onChange={handleChange} className="login-input" accept="image/*" />
+                <div className="file-upload-container">
+                  <input
+                    type="file"
+                    id="idImage"
+                    name="idImage"
+                    accept="image/*"
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="idImage" className="file-upload-label">
+                    Upload Valid ID
+                  </label>
+                  {formData.idImage && (
+                    <span className="file-upload-filename">{formData.idImage.name}</span>
+                  )}
+                </div>
               </div>
             </div>
 

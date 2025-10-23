@@ -185,7 +185,7 @@ export const setupNotifications = () => {
         console.log("IncidentAssigned received:", event);
 
         if (event.target_role !== 3) return;
-        if (!currentUser.team_id || event.team_id !== currentUser.team_id) return;
+        if (!currentUser.team_id || Number(event.team_id) !== Number(currentUser.team_id)) return;
 
         const incidentTypeName = event.incident.incident_type?.name || "Unknown Incident";
         const landmarkOrCoords = event.incident.landmark || `${event.incident.latitude}, ${event.incident.longitude}`;

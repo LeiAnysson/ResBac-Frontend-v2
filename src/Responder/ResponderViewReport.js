@@ -55,7 +55,7 @@ const ResponderViewReport = () => {
         const data = await apiFetch(`${process.env.REACT_APP_URL}/api/responder/report/${id}`);
         if (data.success) {
           setReport(data.report);
-          setStatus(data.report.status === 'assigned' ? 'En Route' : data.report.status);
+          setStatus(data.report.status === 'Assigned' ? 'En Route' : data.report.status);
 
           if (data.report.latitude && data.report.longitude) {
             const address = await reverseGeocode(data.report.latitude, data.report.longitude);
@@ -539,7 +539,7 @@ const ResponderViewReport = () => {
 
   const handleUpdateStatus = async () => {
     try {
-      const statusToSend = status === 'assigned' ? 'En Route' : status;
+      const statusToSend = status === 'Assigned' ? 'En Route' : status;
       const token = localStorage.getItem('token');
 
       const res = await fetch(`${process.env.REACT_APP_URL}/api/responder/report/${id}/update-status`, {

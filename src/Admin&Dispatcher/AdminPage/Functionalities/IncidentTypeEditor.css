@@ -24,7 +24,7 @@
 }
 
 .ie-header {
-  background: #1e40af;
+  background: #25597c;
   color: white;
   padding: 15px 20px;
   border-radius: 8px 8px 0 0;
@@ -53,7 +53,7 @@
 }
 
 .ie-table th {
-  color: #1e40af;
+  color: #25597c;
   font-weight: 600;
 }
 
@@ -68,7 +68,7 @@
 
 .ie-table input:focus {
   outline: none;
-  border-color: #1e40af;
+  border-color: #25597c;
   box-shadow: 0 0 0 2px rgba(30,64,175,0.1);
 }
 
@@ -88,23 +88,23 @@
 }
 
 .ie-actions .btn-save {
-  background: #1e40af;
+  background: #25597c;
   color: white;
 }
 
 .ie-actions .btn-save:hover {
-  background: #1e3a8a;
+  background: #235170;
   box-shadow: 0 4px 12px rgba(30,64,175,0.3);
   transform: translateY(-1px);
 }
 
 .ie-actions .btn-delete {
-  background: #dc2626;
+  background: #c94c4c;
   color: white;
 }
 
 .ie-actions .btn-delete:hover {
-  background: #b91c1c;
+  background: #bc4646;
   box-shadow: 0 4px 12px rgba(220,38,38,0.3);
   transform: translateY(-1px);
 }

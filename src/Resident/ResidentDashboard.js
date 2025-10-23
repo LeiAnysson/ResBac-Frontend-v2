@@ -17,6 +17,9 @@ const ResidentDashboard = () => {
   const [locationName, setLocationName] = useState('Loading...');
   const [latestAnnouncement, setLatestAnnouncement] = useState(null);
 
+  const [showUnansweredModal, setShowUnansweredModal] = useState(false);
+  const [selectedReport, setSelectedReport] = useState(null);
+
   useEffect(() => {
     const fetchReports = async () => {
       try {
@@ -59,6 +62,15 @@ const ResidentDashboard = () => {
 
   const getStatusClass = (status = '') =>
     `report-status ${status.toLowerCase().replace(/\s+/g, '-')}`;
+
+  const handleReportClick = (report) => {
+    if (report.status === 'Unanswered') {
+      setSelectedReport(report);
+      setShowUnansweredModal(true);
+    } else {
+      navigate('/resident/waiting', { state: { emergencyReport: report } });
+    }
+  };
 
   return (
     <div className="dashboard-container">
@@ -118,7 +130,7 @@ const ResidentDashboard = () => {
                 className="resident-report-card"
                 key={item.id}
                 style={{ cursor: 'pointer', display: "flex", justifyContent: "space-between", alignItems: "center" }}
-                onClick={() => navigate("/resident/waiting", { state: { emergencyReport: item } })}
+                onClick={() => handleReportClick(item)}
               >
                 <div className="report-info">
                   <p className="report-date">{item.date}</p>
@@ -138,6 +150,33 @@ const ResidentDashboard = () => {
         ) : (
           <div className="empty-card">
             <p className="empty-text">No recent reports</p>
+          </div>
+        )}
+
+        {/* Unanswered Modal */}
+        {showUnansweredModal && selectedReport && (
+          <div className="unanswered-modal-overlay">
+            <div className="unanswered-modal">
+              <h2>Call Unanswered</h2>
+              <p>The dispatcher failed to accept your call for this incident. What do you want to do?</p>
+              <div className="unanswered-modal-buttons">
+                <button
+                  className="primary"
+                  onClick={() => {
+                    setShowUnansweredModal(false);
+                    navigate('/resident/report');
+                  }}
+                >
+                  Call Again
+                </button>
+                <button
+                  className="secondary"
+                  onClick={() => setShowUnansweredModal(false)}
+                >
+                  Wait for Update
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

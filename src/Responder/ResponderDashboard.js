@@ -27,8 +27,10 @@ const ResponderDashboard = () => {
           setLatestReport(item);
           console.log("Latest Report: ", item)
 
-          if (item.latitude && item.longitude) {
-            const address = await reverseGeocode(item.latitude, item.longitude);
+          if (item.landmark) {
+            setLocationName(item.landmark);
+          } else if (item.latitude && item.longitude) {
+            const address = await reverseGeocode(Number(item.latitude), Number(item.longitude));
             setLocationName(address || 'Unknown Location');
           } else {
             setLocationName('—');

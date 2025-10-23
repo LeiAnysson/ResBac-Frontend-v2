@@ -81,7 +81,7 @@ export default function BocaueHeatmap({
         layerRef.current = null;
         }
 
-        console.log("Drawing markers for incidents:", incidentsArray);
+        //console.log("Drawing markers for incidents:", incidentsArray);
 
         const maxCount = incidentsArray.reduce((m, i) => Math.max(m, i.count || 0), 0);
         const group = new window.H.map.Group();
@@ -101,7 +101,7 @@ export default function BocaueHeatmap({
         const icon = new window.H.map.Icon(svg);
         const marker = new window.H.map.Marker({ lat: i.lat, lng: i.lng }, { icon });
         marker.setData({ barangay: i.barangay, count: i.count });
-        console.log("Adding marker:", i.barangay, i.lat, i.lng);
+        //console.log("Adding marker:", i.barangay, i.lat, i.lng);
         group.addObject(marker);
         });
 
@@ -201,7 +201,7 @@ export default function BocaueHeatmap({
             }
         }
 
-        console.log("Map initialized");
+        //console.log("Map initialized");
 
         const onResize = () => map.getViewPort().resize();
         window.addEventListener("resize", onResize);
@@ -226,7 +226,7 @@ export default function BocaueHeatmap({
     useEffect(() => {
         const map = mapInstanceRef.current;
         if (!map || !window.H) {
-        console.log("Map not ready yet — will draw markers when ready");
+        //console.log("Map not ready yet — will draw markers when ready");
         return;
         }
 

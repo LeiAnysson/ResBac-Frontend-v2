@@ -247,9 +247,9 @@ const DispatcherNotifications = () => {
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 4: return "#fd3d40ff";
-      case 3: return "#f96567ff";
-      case 2: return "#fa8789ff";
+      case 4: return "#ac3737ff";
+      case 3: return "#c94c4c";
+      case 2: return "#dc6b6bff";
       case 1: return "#fca8a9ff";
       default: return "#ffffff";
     }
@@ -264,6 +264,15 @@ const DispatcherNotifications = () => {
           <div key={call.id} className="incoming-call-popup" style={{ borderColor: borderColor }}>
             <h4>Incoming Call</h4>
             <p>Incident Type: {call.incident_type?.name || "Unknown"}</p>
+            <p>
+              Reported By:{" "}
+              {call.user
+                ? `${call.user.first_name} ${call.user.last_name}`
+                : "Unknown Caller"}{" "}
+              {call.reporter_type && (
+                <span className="reporter-type">({call.reporter_type})</span>
+              )}
+            </p>
             <button type="button" onClick={() => acceptCall(call)}>
               Accept
             </button>
