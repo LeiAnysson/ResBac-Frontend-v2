@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
+import { FaFacebookF } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { FaInstagram } from "react-icons/fa6";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -236,7 +239,7 @@ const LandingPage = () => {
                 rel="noopener noreferrer"
                 aria-label="Facebook"
               >
-                <i className="fab fa-facebook-f"></i>
+                <FaFacebookF /><i className="fab fa-facebook-f"></i>
               </a>
               <a 
                 href="https://twitter.com" 
@@ -244,7 +247,7 @@ const LandingPage = () => {
                 rel="noopener noreferrer"
                 aria-label="Twitter"
               >
-                <i className="fab fa-x-twitter"></i>
+                <FaXTwitter /><i className="fab fa-x-twitter"></i>
               </a>
               <a 
                 href="https://instagram.com" 
@@ -252,7 +255,7 @@ const LandingPage = () => {
                 rel="noopener noreferrer"
                 aria-label="Instagram"
               >
-                <i className="fab fa-instagram"></i>
+                <FaInstagram /><i className="fab fa-instagram"></i>
               </a>
             </div>
           </div>

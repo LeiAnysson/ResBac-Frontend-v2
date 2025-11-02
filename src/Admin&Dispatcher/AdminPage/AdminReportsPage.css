@@ -85,7 +85,8 @@
 }
 
 .incident-location h4,
-.incident-description h4 {
+.incident-description h4,
+.incident-evidence h4 {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 8px;
@@ -353,4 +354,22 @@ td button:last-child {
   vertical-align: middle;
 }
 
+.incident-evidence {
+  margin-top: 20px;
+}
+
+.proof-thumb {
+  width: 200px;  
+  height: 200px;   
+  object-fit: cover;    
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.incident-evidence p {
+  font-size: 14px;
+  color: #555;
+  margin-top: 5px;
+}
 

@@ -4,7 +4,8 @@ import './AdminDashboard.css';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BocaueHeatmap from '../../Components/Heatmap';
-import { MdPending, MdPeople, MdAssignment, MdCheckCircle } from 'react-icons/md';
+import { MdPending, MdPeople, MdAssignment, MdCheckCircle, MdPrint } from 'react-icons/md';
+import { printTable } from '../../utils/printTable';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -133,6 +134,50 @@ const AdminDashboard = () => {
       .catch(error => console.error("Error fetching monthly incident reports:", error));
   }, []);
 
+  const handlePrintDetailedReports = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_URL}/api/admin/reports/all`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      const formattedData = data.map(report => {
+        const statusHistory = (report.status_updates || [])
+          .map(s => `${s.status} (${new Date(s.timestamp).toLocaleString()})`)
+          .join(" → ");
+
+        return {
+          ...report,
+          status_history: report.status_history,
+          team_name: report.team_name,
+        };
+      });
+
+      const columns = [
+        { header: "Incident Type", key: "incident_type" },
+        { header: "Resident", key: "resident_name" },
+        { header: "Landmark", key: "landmark" },
+        { header: "Latitude", key: "latitude" },
+        { header: "Longitude", key: "longitude" },
+        { header: "Status History", key: "status_history" }, 
+        { header: "Team Assigned", key: "team_name" },
+        { header: "Reporter Type", key: "reporter_type" },
+        { header: "Date Reported", key: "created_at" },
+      ];
+
+      printTable(formattedData, columns, "Detailed Emergency Incident Reports");
+
+    } catch (error) {
+      console.error("Error generating detailed report:", error);
+    }
+  };
+
   return (
     <div className="admin-dashboard-container">
       <TopBar />
@@ -217,7 +262,24 @@ const AdminDashboard = () => {
             </div>
 
             <div className="incident-report-monthly">
-              <h3>Number of Reports per Incident Type (This Month)</h3>
+              <div className="incident-header">
+                <h3>Number of Reports per Incident Type (This Month)</h3>
+                <button
+                  className="print-btn"
+                  onClick={() =>
+                    printTable(
+                      monthlyIncidentReports,
+                      [
+                        { header: "Incident Type", key: "type" },
+                        { header: "Number of Reports", key: "count" },
+                      ],
+                      "Monthly Incident Report Summary"
+                    )
+                  }
+                >
+                  <MdPrint className="print-icon"/> Print Report
+                </button>
+              </div>
               <table>
                 <thead>
                   <tr>
@@ -240,11 +302,16 @@ const AdminDashboard = () => {
                   )}
                 </tbody>
               </table>
+                <div className="incident-detailed-section">
+                  <button
+                    className="print-btn"
+                    onClick={() => handlePrintDetailedReports()}
+                  >
+                    <MdPrint className="print-icon"/> Print Detailed Reports
+                  </button>
+                </div>
             </div>
           </section>
-
-          
-
         </main>
       </div>
     </div>

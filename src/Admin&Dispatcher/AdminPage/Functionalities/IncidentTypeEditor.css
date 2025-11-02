@@ -137,3 +137,101 @@
   transition: border-color 0.2s ease;
   background: white;
 }
+
+.icon-dropdown {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.icon-dropdown-selected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  transition: 0.2s;
+}
+
+.icon-dropdown-selected:hover {
+  background: #f2f2f2;
+}
+
+.icon-dropdown-list {
+  position: absolute;
+  top: 52px;
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.icon-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: 0.15s;
+}
+
+.icon-dropdown-item:hover {
+  background: #eaeaea;
+}
+
+.icon-preview {
+  font-size: 1.3rem;
+}
+
+.icon-placeholder {
+  font-size: 1.4rem;
+  color: #aaa;
+}
+
+.ie-footer {
+  display: flex;
+  justify-content: flex-end; 
+  align-items: center;
+  gap: 10px; 
+  padding: 10px 20px;
+  border-top: 1px solid #ddd;
+}
+
+.ie-footer .btn-save-all,
+.ie-footer .btn-delete-all,
+.ie-footer .btn-add {
+  background: #eeeff2;
+  border-radius: 6px;
+  padding: 6px 6px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.ie-footer .btn-save-all:hover,
+.ie-footer .btn-delete-all:hover,
+.ie-footer .btn-add:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.ie-footer .card-icon {
+  font-size: 14px;
+}

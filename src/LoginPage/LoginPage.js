@@ -16,7 +16,6 @@ const LoginPage = () => {
   const [resetMessage, setResetMessage] = useState('');
   const [resetError, setResetError] = useState('');
 
-
     useEffect(() => {
       const token = localStorage.getItem("token");
       const user = JSON.parse(localStorage.getItem("user"));
@@ -24,7 +23,28 @@ const LoginPage = () => {
       if (token && user) {
         if (user.role_id === 1) navigate("/admin");
         else if (user.role_id === 2) navigate("/dispatcher");
-        else if (user.role_id === 3) navigate("/responder");
+        else if (user.role_id === 3) { 
+          fetch(`${process.env.REACT_APP_URL}/api/responder/reports`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json"
+            }
+          })
+          .then(res => res.json())
+          .then(reports => {
+            const activeReports = reports.filter(r =>
+              ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status)
+            );
+            console.log("Active reports:", activeReports);
+            if (activeReports.length > 0) {
+              const latestReport = activeReports[0];
+              navigate(`/responder/reports/view-report/${latestReport.id}`, { state: { report: latestReport } });
+            } else {
+              navigate('/responder');
+            }
+          })
+          .catch(() => navigate('/responder'));
+        }
         else if (user.role_id === 4) navigate("/resident/report");
         else navigate("/");
       }
@@ -53,7 +73,26 @@ const LoginPage = () => {
 
             if (savedUser.role_id === 1) navigate("/admin");
             else if (savedUser.role_id === 2) navigate("/dispatcher");
-            else if (savedUser.role_id === 3) navigate("/responder");
+            else if (savedUser.role_id === 3) {
+              const reportsRes = await fetch(`${process.env.REACT_APP_URL}/api/responder/reports`, {
+                headers: {
+                  Authorization: `Bearer ${savedToken}`,
+                  Accept: "application/json"
+                }
+              });
+              const reports = await reportsRes.json();
+              const activeReports = reports.filter(r =>
+                ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status)
+              );
+              console.log("Active reports:", activeReports);
+
+              if (activeReports.length > 0) {
+                const latestReport = activeReports[0];
+                navigate(`/responder/reports/view-report/${latestReport.id}`, { state: { report: latestReport } });
+              } else {
+                navigate('/responder');
+              }
+            }
             else if (savedUser.role_id === 4) navigate("/resident/report");
             return; 
           } else {
@@ -96,7 +135,30 @@ const LoginPage = () => {
 
           if (data.user.role_id === 1) navigate('/admin');
           else if (data.user.role_id === 2) navigate('/dispatcher');
-          else if (data.user.role_id === 3) navigate('/responder');
+          else if (data.user.role_id === 3) {
+            const reportsRes = await fetch(`${process.env.REACT_APP_URL}/api/responder/reports`, {
+              headers: {
+                Authorization: `Bearer ${data.token}`,
+                Accept: "application/json"
+              }
+            });
+            const reports = await reportsRes.json();
+            console.log("Fetched reports after login:", reports);
+
+            const activeReports = reports.filter(r =>
+              ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status)
+            );
+            console.log("Active reports after login:", activeReports);
+
+            if (activeReports.length > 0) {
+              const latestReport = activeReports[0];
+              console.log("Navigating to latest report:", latestReport);
+              navigate(`/responder/reports/view-report/${latestReport.id}`, { state: { report: latestReport } });
+            } else {
+              console.log("No active reports. Navigating to dashboard.");
+              navigate('/responder');
+            }
+          }
           else if (data.user.role_id === 4) navigate('/resident/report');
           else navigate('/');
         } else {

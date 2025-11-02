@@ -3,11 +3,12 @@ import { apiFetch } from '../../../utils/apiFetch';
 
 let hereMapsLoaded = false;
 
-const ReportDetailsCard = ({ report, editable, setReport }) => {
+const ReportDetailsCard = ({ report, setReport }) => {
   const mapRef = useRef(null);
   
   const [updateMessage, setUpdateMessage] = useState(report.description ?? "");
   const [landmark, setLandmark] = useState(report.landmark ?? "");
+  const [proofs, setProofs] = useState([]);
 
   const firstTeam = report.first_team_assignment?.team?.team_name;
   const latestTeam = report.latest_team_assignment?.team?.team_name;
@@ -78,6 +79,21 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
 
       return () => map.dispose();
     });
+  }, [report]);
+
+  const fetchProofs = async () => {
+    try {
+      const data = await apiFetch(
+        `${process.env.REACT_APP_URL}/api/incidents/${report.id}/proofs`
+      );
+      setProofs(data.proofs);
+    } catch (error) {
+      console.error("Error fetching proofs", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProofs();
   }, [report]);
 
   const sendUpdate = async () => {
@@ -174,6 +190,13 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
     }
   };
 
+  const getProofUrl = (filePath) => {
+    if (!filePath) return "";
+    return filePath.startsWith("http") || filePath.startsWith("data:") || filePath.startsWith("blob:")
+      ? filePath
+      : `${process.env.REACT_APP_URL}${filePath}`;
+  };
+
   if (!report) return null;
 
   return (
@@ -220,21 +243,13 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
             </span>
           </div>
           <div className="incident-location-detail">
-            {editable ? (
-              <input
-                className="landmark-input"
-                value={landmark}
-                onChange={(e) => setLandmark(e.target.value)}
-                placeholder="Enter landmark"
-                readOnly={report.status === 'invalid'}
-              />
-            ) : (
-              report.status === 'invalid' ? (
-                <span className="invalid-text">Invalid</span>
-              ) : (
-                report.landmark || "Unknown location"
-              )
-            )}
+            <input
+              className="landmark-input"
+              value={landmark}
+              onChange={(e) => setLandmark(e.target.value)}
+              placeholder="Enter landmark"
+              readOnly={report.status === 'Invalid' || report.status === 'Resolved'}  //if invalid, dapat display kesa input
+            />
           </div>
         </div>
         <div className="incident-actions-header">
@@ -277,12 +292,30 @@ const ReportDetailsCard = ({ report, editable, setReport }) => {
         <input
           className="description-input"
           value={updateMessage}
-          readOnly={!editable || report.status === 'invalid'}
+          readOnly={report.status === 'Invalid' || report.status === 'Resolved'}
           onChange={(e) => setUpdateMessage(e.target.value)}
         />
       </div>
+
+      <div className="incident-evidence">
+        <h4>Proof of Resolution</h4>
+        {proofs.length > 0 ? (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "10px" }}>
+            {proofs.map((img, index) => (
+              <img
+                key={index}
+                src={getProofUrl(img.file_path)}
+                alt={`Proof ${index + 1}`}
+                className="proof-thumb"
+              />
+            ))}
+          </div>
+        ) : (
+          <p style={{ fontSize: "14px", color: "#555" }}>No photos submitted by responders yet.</p>
+        )}
+      </div>
       
-      {editable && (
+      {!(report.status === 'Invalid' || report.status === 'Resolved') && (
         <div className="incident-actions">
           <button className="send-btn" onClick={sendUpdate}>
             Send To Responder

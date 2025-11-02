@@ -6,6 +6,7 @@ import '../Components/Shared/SharedComponents.css';
 import { MdOutlineArrowCircleLeft } from 'react-icons/md';
 import Header from '../Components/ComponentsHeaderWebApp/header.jsx'
 import { apiFetch } from '../utils/apiFetch';
+import * as FaIcons from "react-icons/fa";
 
 const ResidentReport = () => {
   const navigate = useNavigate();
@@ -187,7 +188,16 @@ const ResidentReport = () => {
               style={{ backgroundColor: item.color }}
               onClick={() => handleIncidentClick(item)}
             >
-              <span className="incident-button-text" style={{ color: item.fontColor }} >{item.name}</span>
+              <div className="incident-button-content">
+                {item.icon && FaIcons[item.icon] ? (
+                  React.createElement(FaIcons[item.icon], { className: "incident-icon" })
+                ) : (
+                  <FaIcons.FaExclamationTriangle className="incident-icon" />
+                )}
+                <span className="incident-button-text" style={{ color: item.fontColor }}>
+                  {item.name}
+                </span>
+              </div>
             </button>
           ))}
         </div>

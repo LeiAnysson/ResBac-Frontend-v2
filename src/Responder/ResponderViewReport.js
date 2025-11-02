@@ -27,6 +27,9 @@ const ResponderViewReport = () => {
   const [mapReady, setMapReady] = useState(false);
   const [resolvedAddress, setResolvedAddress] = useState('Loading...');
   const [debugLines, setDebugLines] = useState([]);
+  const [evidenceImages, setEvidenceImages] = useState([]);
+  const [existingProofs, setExistingProofs] = useState([]);
+  const [distanceToIncident, setDistanceToIncident] = useState(null);
 
   const ablyPublishRef = useRef(null);
   const mapContainerRef = useRef(null);
@@ -71,6 +74,24 @@ const ResponderViewReport = () => {
       }
     };
     fetchReport();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchProofs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${process.env.REACT_APP_URL}/api/responder/report/${id}/proofs`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        setExistingProofs(data.proofs || []);
+      } catch (err) {
+        console.error("Failed to fetch proof images", err);
+      }
+    };
+
+    fetchProofs();
   }, [id]);
 
   useEffect(() => {
@@ -330,27 +351,32 @@ const ResponderViewReport = () => {
       }
 
       try {
-        if (newLocation.accuracy <= 80 && window.H && report?.latitude && report?.longitude) {
-          const distance = window.H.geo.Distance.measure(
-            { lat: parseFloat(newLocation.lat), lng: parseFloat(newLocation.lng) },
-            { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) }
-          );
-          if (distance <= 50 && report.status !== 'On Scene' && !arrived) {
-            (async () => {
-              try {
-                await apiFetch(`${process.env.REACT_APP_URL}/api/responder/report/${report.id}/update-status`, {
-                  method: 'POST',
-                  body: JSON.stringify({ status: 'On Scene' })
-                });
-                debug('Marked On Scene');
-                setArrived(true);
-                setStatus('On Scene');
-                setReport((prev) => ({ ...prev, status: 'On Scene' }));
-              } catch (err) {
-                console.error('Failed to update On Scene:', err);
-              }
-            })();
-          }
+        if (newLocation.accuracy <= 150 && window.H && report?.latitude && report?.longitude) {
+          const localDistance = distanceMeters(
+          { lat: newLocation.lat, lng: newLocation.lng },
+          { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) }
+        );
+
+        setDistanceToIncident(localDistance);
+
+        console.log("Distance (haversine):", localDistance);
+
+        if (localDistance <= 50 && report.status !== 'On Scene' && !arrived) {
+          (async () => {
+            try {
+              await apiFetch(`${process.env.REACT_APP_URL}/api/responder/report/${report.id}/update-status`, {
+                method: 'POST',
+                body: JSON.stringify({ status: 'On Scene' })
+              });
+              debug('Marked On Scene');
+              setArrived(true);
+              setStatus('On Scene');
+              setReport((prev) => ({ ...prev, status: 'On Scene' }));
+            } catch (err) {
+              console.error('Failed to update On Scene:', err);
+            }
+          })();
+        }
         }
       } catch (e) {
         console.error('Arrival check error:', e);
@@ -611,6 +637,68 @@ const ResponderViewReport = () => {
     }
   };
 
+  const formatDistance = (meters) => {
+    if (meters < 1000) {
+      return `${Math.round(meters)} m`;
+    }
+    return `${(meters / 1000).toFixed(1)} km`;
+  };
+
+  const onSceneUpdatedAt = report?.updated_at && report.status === 'On Scene' 
+      ? new Date(report.updated_at).getTime() 
+      : null;
+
+  const canResolve = onSceneUpdatedAt 
+      ? Date.now() - onSceneUpdatedAt >= 30 * 60 * 1000
+      : false;
+
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    setEvidenceImages(prev => [...prev, ...files]);
+  };
+
+  const removeFile = (index) => {
+    setEvidenceImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmitProof = async () => {
+    if (evidenceImages.length === 0) return;
+
+    const formData = new FormData();
+    formData.append("incident_id", report.id);
+
+    evidenceImages.forEach((file, index) => {
+      formData.append(`proofs[]`, file);
+    });
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${process.env.REACT_APP_URL}/api/responder/report/${id}/upload-proof`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Upload failed");
+
+      alert("Proof submitted successfully!");
+      setEvidenceImages([]);
+    } catch (error) {
+      alert("Failed to upload proof. Try again.");
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'En Route': return '#f09a06';
+      case 'On Scene': return '#25597c';
+      case 'Resolved': return '#2ecc40';
+      default: return '#000';
+    }
+  };
+
   return (
     <div className="responder-view-report">
       <ResponderHeader />
@@ -673,6 +761,10 @@ const ResponderViewReport = () => {
               GPS: {responderLocation ? `${responderLocation.lat.toFixed(6)}, ${responderLocation.lng.toFixed(6)}` : '—'}{' '}
               {responderLocation?.accuracy ? ` (±${Math.round(responderLocation.accuracy)} m)` : ''}
             </p>
+            <p className="r-report-distance">
+              Distance to Incident:{' '}
+              {distanceToIncident !== null ? formatDistance(distanceToIncident) : '—'}
+            </p>
             <p className="r-report-timestamp">
               Last seen: {responderLocation?.timestamp ? new Date(responderLocation.timestamp).toLocaleTimeString() : '-'}
             </p>
@@ -681,23 +773,119 @@ const ResponderViewReport = () => {
           <div className="form-group">
             <label className="field-label">Current Report Status:</label>
             <div className="select-wrap">
-              <select className="status-select" value={status} onChange={(e) => setStatus(e.target.value)} disabled={status === 'Resolved'}>
-                <option value="En Route">En Route</option>
-                <option value="On Scene">On Scene</option>
-                <option value="Resolved">Resolved</option>
+              <select 
+                className="status-select" value={status} onChange={(e) => setStatus(e.target.value)} disabled={status === 'Resolved'} style={{ color: getStatusColor(status) }} 
+              >
+                <option value="En Route" style={{ color: '#f09a06' }}>En Route</option>
+                <option value="On Scene" style={{ color: '#25597c' }}>On Scene</option>
+                <option value="Resolved" style={{ color: '#2ecc40' }} disabled={!canResolve}>
+                  Resolved {status !== "Resolved" && !canResolve && "(wait 30 min)"}
+                </option>
               </select>
               <span className="chevron">▾</span>
             </div>
           </div>
 
-          <div className="actions">
-            <button className="btn btn-backup" onClick={() => setShowBackupModal(true)}>
-              Request Backup
-            </button>
-            <button className="btn btn-primary" onClick={handleUpdateStatus}>
-              Update Status
-            </button>
-          </div>
+          {/* Actions */}
+            {report?.status !== "Resolved" ? (
+              <div className="actions">
+                <button className="btn btn-backup" onClick={() => setShowBackupModal(true)}>
+                  Request Backup
+                </button>
+                <button className="btn btn-primary" onClick={handleUpdateStatus}>
+                  Update Status
+                </button>
+              </div>
+            ) : (
+              <div className="proof-upload-wrapper">
+                {existingProofs.length > 0 && (
+                  <div style={{ marginTop: "12px" }}>
+                    <label className="field-label" style={{ fontWeight: "600" }}>
+                      Submitted Proofs:
+                    </label>
+
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "10px" }}>
+                      {existingProofs.map((proof, index) => (
+                        <img
+                          key={index}
+                          src={`${process.env.REACT_APP_URL}${proof.file_path}`}
+                          alt="proof"
+                          style={{
+                            width: 90,
+                            height: 90,
+                            borderRadius: 6,
+                            objectFit: "cover",
+                            border: "2px solid #ddd",
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <label className="field-label" style={{ fontWeight: "600" }}>
+                  Upload Incident Proof:
+                </label>
+
+                <div className="proof-upload-container">
+                  <input
+                    type="file"
+                    id="proofFileInput"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                  />
+                  <label htmlFor="proofFileInput" className="file-upload-label">
+                    Upload Photo(s)
+                  </label>
+
+                  {evidenceImages.length > 0 && (
+                    <span className="file-upload-count">
+                      {evidenceImages.length} file{evidenceImages.length > 1 ? "s" : ""} added
+                    </span>
+                  )}
+                </div>
+
+                {evidenceImages.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "10px" }}>
+                    {evidenceImages.map((file, index) => (
+                      <div key={index} style={{ position: "relative" }}>
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt="preview"
+                          style={{
+                            width: 90,
+                            height: 90,
+                            borderRadius: 6,
+                            objectFit: "cover",
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeFile(index)}
+                          style={{
+                            position: "absolute",top: -6, right: -6, background: "#dc2626", color: "white", border: "none", 
+                            borderRadius: "50%", width: 20, height: 20, cursor: "pointer", fontSize: 12,
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {evidenceImages.length > 0 && (
+                  <button
+                    className="btn btn-primary"
+                    style={{ marginTop: "12px", background: "#25597c", color:"#fff" }}
+                    onClick={handleSubmitProof}
+                  >
+                    Submit Proof
+                  </button>
+                )}
+              </div>
+            )}
         </div>
 
         {showBackupModal && (

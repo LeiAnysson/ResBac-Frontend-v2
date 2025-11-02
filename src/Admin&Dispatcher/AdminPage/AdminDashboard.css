@@ -60,8 +60,7 @@ html, body {
 }
 
 .stat-card {
-  flex: 1;                   
-  max-width: 250px;         
+  flex: 1;                         
   min-width: 0;       
   background: #f4f5f9;
   display: flex;
@@ -249,9 +248,12 @@ html, body {
   border-radius: 8px;
   background: linear-gradient(
     to right,
-    rgb(120,200,120),
-    rgb(255,210,120),
-    #c94c4c
+    rgb(120,200,120) 0%,
+    rgb(120,200,120) 33.33%,
+    rgb(255,210,120) 33.33%,
+    rgb(255,210,120) 66.66%,
+    #c94c4c 66.66%,
+    #c94c4c 100%
   );
 }
 
@@ -392,6 +394,39 @@ html, body {
   background-color: #eef2fb; 
 }
 
+.incident-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.print-icon {
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.print-btn {
+  background-color: #25597c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.print-btn:hover {
+  background-color: #225171;
+}
+
+.incident-detailed-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
 
 @media (max-width: 1100px) {
   .dashboard-overview-section, .dashboard-lower-section {

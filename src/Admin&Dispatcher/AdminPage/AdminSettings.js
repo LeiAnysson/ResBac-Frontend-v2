@@ -9,8 +9,6 @@ import {
   MdHistory, MdUploadFile, MdDownload, MdEvent, MdTableChart
 } from 'react-icons/md';
 
-console.log(printTable);
-
 const AdminSettings = () => {
   const [activityLogs, setActivityLogs] = useState([]);
   const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
@@ -142,13 +140,13 @@ const AdminSettings = () => {
       if (response.ok) {
         localStorage.setItem("backupFrequency", frequency);
         localStorage.setItem("backupTime", time);
-        alert(`✅ Backup schedule saved!\n${frequency} at ${time}`);
+        alert(`Backup schedule saved!\n${frequency} at ${time}`);
       } else {
-        alert(`❌ Failed: ${data.message}`);
+        alert(`Failed: ${data.message}`);
       }
     } catch (error) {
       console.error("Error saving schedule:", error);
-      alert("⚠️ Failed to connect to the server.");
+      alert("Failed to connect to the server.");
     }
   };
 

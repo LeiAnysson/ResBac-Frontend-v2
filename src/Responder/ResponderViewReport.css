@@ -212,5 +212,15 @@ input:checked + .slider:before { transform: translateX(20px); }
   pointer-events: none; 
 }
 
+.proof-upload-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.proof-upload-container input[type="file"] {
+  display: none;
+}
 
 

@@ -18,14 +18,14 @@ const ResponderDashboard = () => {
     const fetchReports = async () => {
       try {
         const reportsObj = await apiFetch(`${process.env.REACT_APP_URL}/api/responder/reports`);
-        console.log("Reports: ", reportsObj)
+        //console.log("Reports: ", reportsObj)
 
         const reports = Array.isArray(reportsObj) ? reportsObj : Object.values(reportsObj);
 
         if (reports && reports.length > 0) {
           const item = reports[0];
           setLatestReport(item);
-          console.log("Latest Report: ", item)
+          //console.log("Latest Report: ", item)
 
           if (item.landmark) {
             setLocationName(item.landmark);

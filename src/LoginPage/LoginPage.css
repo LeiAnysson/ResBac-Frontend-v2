@@ -178,6 +178,18 @@
   margin-top: 1rem;
   display: flex;
   justify-content: space-between;
+  gap: 1rem;
+}
+
+.reset-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.rp-modal-buttons .login-btn {
+  padding: 0.9em 1.5em;
+  flex: 1;
 }
 
 

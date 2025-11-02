@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import './LoginPage.css';
 import Spinner from '../utils/Spinner';
 
@@ -56,25 +56,64 @@ const ResetPasswordPage = () => {
   if (loading) return <Spinner message="Resetting password..." />;
 
   return (
-    <div className="reset-root">
-      <h2>Reset Password</h2>
-      <form onSubmit={handleReset} className="reset-form">
-        <input
-          type="password"
-          placeholder="New Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={passwordConfirm}
-          onChange={e => setPasswordConfirm(e.target.value)}
-        />
-        {error && <div className="error">{error}</div>}
-        {message && <div className="success">{message}</div>}
-        <button type="submit">Reset Password</button>
-      </form>
+    <div className="login-root">
+      <div className="login-left">
+        <Link to="/">
+          <img src="/LogoB.png" alt="Bocaue Rescue Logo" className="login-logo" />
+        </Link>
+        <div className="login-org-name">BOCAUE RESCUE EMS</div>
+        <div className="login-org-desc">
+          MUNICIPAL EMERGENCY ASSISTANCE AND<br />INCIDENT RESPONSE
+        </div>
+      </div>
+
+      <div
+        className="login-right"
+        style={{ background: "url('/municipal-hall.jpg') center center / cover no-repeat" }}
+      >
+        <div className="login-form-container">
+          <h2 className="login-title">Reset Your Password</h2>
+          <p>Enter your new password below.</p>
+
+          <form onSubmit={handleReset}>
+            <div className="reset-input-group">
+              <input
+                type="password"
+                placeholder="New Password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="login-input"
+              />
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={passwordConfirm}
+                onChange={e => setPasswordConfirm(e.target.value)}
+                className="login-input"
+              />
+            </div>
+
+            {error && <div style={{ color: 'red', marginTop: '0.5rem' }}>{error}</div>}
+            {message && <div style={{ color: 'green', marginTop: '0.5rem' }}>{message}</div>}
+
+            <div className="rp-modal-buttons" style={{ marginTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => navigate('/login')}
+                className="login-btn"
+                style={{ background: '#ccc', color: '#000' }}
+              >
+                Cancel
+              </button>
+              <button type="submit" className="login-btn">
+                Reset Password
+              </button>
+            </div>
+
+            
+          </form>
+        </div>
+      </div>
     </div>
   );
 };
