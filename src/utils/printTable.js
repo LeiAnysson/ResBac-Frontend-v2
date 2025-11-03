@@ -68,7 +68,7 @@ export function printTable(data, columns, title) {
             justify-content: space-between;
           }
           .print-btn {
-            background-color: #007bff;
+            background-color: #25597c;
             color: white;
             border: none;
             padding: 6px 12px;
@@ -77,8 +77,14 @@ export function printTable(data, columns, title) {
             cursor: pointer;
           }
           .print-btn:hover {
-            background-color: #0056b3;
+            background-color: #24516fff;
           }
+          .status-history {
+            white-space: pre-line;
+            font-size: 11px;
+            line-height: 1.3;
+          }
+
           @media print {
             .print-btn {
               display: none;
@@ -114,7 +120,11 @@ export function printTable(data, columns, title) {
           <tbody>
             ${data.map(row => `
               <tr>
-                ${columns.map(col => `<td>${row[col.key] || ''}</td>`).join('')}
+                ${columns.map(col => {
+                  const value = row[col.key] || '';
+                  const isStatusHistory = col.key === "status_history";
+                  return `<td class="${isStatusHistory ? 'status-history' : ''}">${value}</td>`;
+                }).join('')}
               </tr>
             `).join('')}
           </tbody>

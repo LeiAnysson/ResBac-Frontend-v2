@@ -243,13 +243,18 @@ const ReportDetailsCard = ({ report, setReport }) => {
             </span>
           </div>
           <div className="incident-location-detail">
-            <input
-              className="landmark-input"
-              value={landmark}
-              onChange={(e) => setLandmark(e.target.value)}
-              placeholder="Enter landmark"
-              readOnly={report.status === 'Invalid' || report.status === 'Resolved'}  //if invalid, dapat display kesa input
-            />
+            {report.status === "Invalid" || report.status === "Resolved" ? (
+              <p className="landmark-text">
+                {landmark || "No landmark provided"}
+              </p>
+            ) : (
+              <input
+                className="landmark-input"
+                value={landmark}
+                onChange={(e) => setLandmark(e.target.value)}
+                placeholder="Enter landmark"
+              />
+            )}
           </div>
         </div>
         <div className="incident-actions-header">

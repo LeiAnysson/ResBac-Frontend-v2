@@ -24,6 +24,7 @@ const ResidentWaiting = () => {
   const [incident, setIncident] = useState(null);
   const [responderTeam, setResponderTeam] = useState(null);
   const [responderLocation, setResponderLocation] = useState(MUNICIPAL);
+  const [eta, setEta] = useState(null);
 
   const mapInstanceRef = useRef(null);
   const responderMarkerRef = useRef(null);
@@ -138,6 +139,16 @@ const ResidentWaiting = () => {
       if (!data.routes || data.routes.length === 0) {
         console.warn("No routes returned from HERE", data);
         return;
+      }
+
+      const section = data.routes[0].sections[0];
+      const travelTimeSeconds = section.summary.travelTime;
+      const etaMinutes = Math.round(travelTimeSeconds / 60);
+      
+      if (etaMinutes <= 1) {
+        setEta("Arriving now");
+      } else {
+        setEta(etaMinutes);
       }
 
       const encoded = data.routes[0].sections[0].polyline;
@@ -330,6 +341,15 @@ const ResidentWaiting = () => {
               <p style={{ color: "gray", padding: "5px", fontSize: "10px"}}>
                 Responder Location: {responderLocation.lat}, {responderLocation.lng}
               </p>
+              {typeof eta === "number" ? (
+                <p style={{ color: "green", fontWeight: "bold", marginTop: "4px" }}>
+                  Estimated arrival: ~{eta - 1}-{eta + 1} minutes
+                </p>
+              ) : (
+                <p style={{ color: "green", fontWeight: "bold", marginTop: "4px" }}>
+                  {eta}
+                </p>
+              )}
             </div>
           </>
         )}

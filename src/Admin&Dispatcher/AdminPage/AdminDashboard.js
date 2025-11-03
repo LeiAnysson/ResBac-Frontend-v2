@@ -148,13 +148,13 @@ const AdminDashboard = () => {
       const data = await response.json();
 
       const formattedData = data.map(report => {
-        const statusHistory = (report.status_updates || [])
-          .map(s => `${s.status} (${new Date(s.timestamp).toLocaleString()})`)
-          .join(" → ");
+        const statusHistory = (report.status_logs || [])
+        .map(s => `${s.status} (${new Date(s.created_at).toLocaleString()})`)
+        .join("\n↓\n");
 
         return {
           ...report,
-          status_history: report.status_history,
+          status_history: statusHistory || report.status_history, 
           team_name: report.team_name,
         };
       });
