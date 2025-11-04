@@ -39,7 +39,7 @@ import ResidentProfile from './Resident/ResidentProfile';
 import ResidentEditProfile from './Resident/ResidentEditProfile';
 import ResidentCall from './Resident/ResidentCall';
 import ResidentWaiting from './Resident/ResidentWaiting';
-import ResidentArrived from './Resident/ResidentArrived';
+import ResidentIncidentDetails from './Resident/ResidentIncidentDetails';
 import ResidentComplete from './Resident/ResidentComplete';
 import ResidentWitReport from './Resident/ResidentWitReport';
 import ResidentEmergencyTips from './Resident/ResidentEmergencyTips';
@@ -103,7 +103,7 @@ function App() {
           <Route path="/resident/edit-profile" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentEditProfile /></ProtectedRoute>} />
           <Route path="/resident/call" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentCall /></ProtectedRoute>} />
           <Route path="/resident/waiting" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentWaiting /></ProtectedRoute>} />
-          <Route path="/resident/arrived" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentArrived /></ProtectedRoute>} />
+          <Route path="/resident/details-form" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentIncidentDetails /></ProtectedRoute>} />
           <Route path="/resident/complete" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentComplete /></ProtectedRoute>} />
           <Route path="/resident/witness-report" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentWitReport /></ProtectedRoute>} />
           <Route path="/resident/tips" element={<ProtectedRoute allowedRoles={["Resident"]}><ResidentEmergencyTips /></ProtectedRoute>} />

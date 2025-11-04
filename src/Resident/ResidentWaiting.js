@@ -142,13 +142,20 @@ const ResidentWaiting = () => {
       }
 
       const section = data.routes[0].sections[0];
-      const travelTimeSeconds = section.summary.travelTime;
-      const etaMinutes = Math.round(travelTimeSeconds / 60);
-      
+
+      const travelTimeSeconds = section.summary?.travelTime;
+
+      if (travelTimeSeconds == null) {
+        console.warn("No travel time from API");
+        return;
+      }
+
+      const etaMinutes = Math.max(0, Math.round(travelTimeSeconds / 60));
+
       if (etaMinutes <= 1) {
         setEta("Arriving now");
       } else {
-        setEta(etaMinutes);
+        setEta(etaMinutes); 
       }
 
       const encoded = data.routes[0].sections[0].polyline;
@@ -342,12 +349,16 @@ const ResidentWaiting = () => {
                 Responder Location: {responderLocation.lat}, {responderLocation.lng}
               </p>
               {typeof eta === "number" ? (
-                <p style={{ color: "green", fontWeight: "bold", marginTop: "4px" }}>
-                  Estimated arrival: ~{eta - 1}-{eta + 1} minutes
+                <p style={{ color: "gray", padding: "5px", fontSize: "10px"}}>
+                  Estimated arrival: ~{Math.max(0, eta - 1)}–{eta + 1} minutes
+                </p>
+              ) : eta ? (
+                <p style={{ color: "gray", padding: "5px", fontSize: "10px"}}>
+                  {eta}
                 </p>
               ) : (
-                <p style={{ color: "green", fontWeight: "bold", marginTop: "4px" }}>
-                  {eta}
+                <p style={{ color: "gray", padding: "5px", fontSize: "10px"}}>
+                  Calculating arrival time...
                 </p>
               )}
             </div>

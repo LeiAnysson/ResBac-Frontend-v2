@@ -72,6 +72,17 @@ const ResidentDashboard = () => {
     }
   };
 
+  const handleProvideDetails = () => {
+    if (!selectedReport) return;
+
+    navigate("/resident/details-form", {  
+      state: {
+        incidentId: selectedReport.id,
+        incidentType: selectedReport.type
+      },
+    });
+  };
+
   return (
     <div className="dashboard-container">
       <Header />
@@ -153,32 +164,36 @@ const ResidentDashboard = () => {
           </div>
         )}
 
-        {/* Unanswered Modal */}
-        {showUnansweredModal && selectedReport && (
-          <div className="unanswered-modal-overlay">
-            <div className="unanswered-modal">
-              <h2>Call Unanswered</h2>
-              <p>The dispatcher failed to accept your call for this incident. What do you want to do?</p>
-              <div className="unanswered-modal-buttons">
-                <button
-                  className="primary"
-                  onClick={() => {
-                    setShowUnansweredModal(false);
-                    navigate('/resident/report');
-                  }}
-                >
-                  Call Again
-                </button>
-                <button
-                  className="secondary"
-                  onClick={() => setShowUnansweredModal(false)}
-                >
-                  Wait for Update
-                </button>
+        {showUnansweredModal && (
+            <div className="unanswered-modal-overlay">
+              <div className="unanswered-modal">
+                <h2>Additional Details Needed</h2>
+                <p>
+                  This report is marked as <strong>Unanswered</strong>.  
+                  Please provide more details so we can assist you.
+                </p>
+
+                <div className="unanswered-modal-buttons">
+                  <button
+                    className="primary"
+                    onClick={() => {   
+                      setShowUnansweredModal(false);
+                      navigate("/resident/report");
+                    }}
+                  >
+                    Call Again
+                  </button>
+
+                  <button
+                    className="secondary"
+                    onClick={handleProvideDetails}
+                  >
+                    Provide Details
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
 
       <BottomNav />

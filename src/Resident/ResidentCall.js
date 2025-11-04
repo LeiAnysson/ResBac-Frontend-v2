@@ -304,6 +304,18 @@ const ResidentCall = () => {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const handleProvideDetails = async () => {
+    setShowUnansweredModal(false);
+    await endCallCleanup();
+
+    navigate("/resident/details-form", {  
+      state: {
+        incidentId: incidentIdRef.current,
+        incidentType: incidentType
+      },
+    });
+  };
+
   return (
     <div className="call-container">
       <div className="content-scroll">
@@ -329,8 +341,12 @@ const ResidentCall = () => {
           {showUnansweredModal && (
             <div className="unanswered-modal-overlay">
               <div className="unanswered-modal">
-                <h2>Call Unanswered</h2>
-                <p>The dispatcher failed to accept your call. You can try again or wait for response teams to update your incident.</p>
+                <h2>Dispatcher Unavailable</h2>
+                <p>
+                  We couldn't connect your call.  
+                  Please provide your emergency details so we can assist you faster.
+                </p>
+
                 <div className="unanswered-modal-buttons">
                   <button
                     className="primary"
@@ -342,15 +358,12 @@ const ResidentCall = () => {
                   >
                     Call Again
                   </button>
+
                   <button
                     className="secondary"
-                    onClick={async () => {   
-                      setShowUnansweredModal(false);
-                      await endCallCleanup();  
-                      navigate("/resident");
-                    }}
+                    onClick={handleProvideDetails}
                   >
-                    Wait for Update
+                    Provide Details
                   </button>
                 </div>
               </div>

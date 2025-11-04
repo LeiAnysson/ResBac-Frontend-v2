@@ -80,13 +80,6 @@
   animation: slideUp 0.5s ease-out;
 }
 
-.status-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: center;
-}
-
 .completion-icon {
   display: flex;
   justify-content: center;
