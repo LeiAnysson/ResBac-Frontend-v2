@@ -119,7 +119,7 @@ const ResidentWaiting = () => {
 
     const url =
       `https://router.hereapi.com/v8/routes?apikey=${process.env.REACT_APP_HERE_API_KEY}` +
-      `&transportMode=car&routingMode=short&origin=${originStr}&destination=${destStr}&return=polyline,summary`;
+      `&transportMode=car&routingMode=short&origin=${originStr}&destination=${destStr}&return=polyline,summary,travelSummary`;
 
     try {
       const res = await fetch(url);
@@ -136,14 +136,16 @@ const ResidentWaiting = () => {
       }
 
       const data = await res.json();
+      console.log("HERE Route response:", data);
       if (!data.routes || data.routes.length === 0) {
         console.warn("No routes returned from HERE", data);
         return;
       }
 
       const section = data.routes[0].sections[0];
+      console.log("Section summary:", section.summary);
 
-      const travelTimeSeconds = section.summary?.travelTime;
+      const travelTimeSeconds = section.summary?.duration;
 
       if (travelTimeSeconds == null) {
         console.warn("No travel time from API");
@@ -342,25 +344,17 @@ const ResidentWaiting = () => {
             <div className="status-content">
               <h2 className="status-title">Responders are on their way!</h2>
               <p className="status-subtitle">
+                {typeof eta === "number"
+                  ? `Estimated arrival: ~${Math.max(0, eta - 1)}–${eta + 1} minutes`
+                  : eta || "Calculating arrival time..."}
+              </p>
+              <p className="status-subtitle">
                 Please stay where you are — help is coming soon. <br />
                 {responderTeam && <span className="team-info"> Team <b>{responderTeam}</b> is on the way!</span>}
               </p>
               <p style={{ color: "gray", padding: "5px", fontSize: "10px"}}>
                 Responder Location: {responderLocation.lat}, {responderLocation.lng}
               </p>
-              {typeof eta === "number" ? (
-                <p style={{ color: "gray", padding: "5px", fontSize: "10px"}}>
-                  Estimated arrival: ~{Math.max(0, eta - 1)}–{eta + 1} minutes
-                </p>
-              ) : eta ? (
-                <p style={{ color: "gray", padding: "5px", fontSize: "10px"}}>
-                  {eta}
-                </p>
-              ) : (
-                <p style={{ color: "gray", padding: "5px", fontSize: "10px"}}>
-                  Calculating arrival time...
-                </p>
-              )}
             </div>
           </>
         )}

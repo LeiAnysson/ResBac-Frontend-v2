@@ -11,10 +11,10 @@ const TeamPage = () => {
     const [pagination, setPagination] = useState({ current_page: 1, last_page: 1 });
     const navigate = useNavigate();
     const [search, setSearch] = useState("");
-    const [rotationStartDate, setRotationStartDate] = useState("");
-    const [loadingRotation, setLoadingRotation] = useState(true);
+    // const [rotationStartDate, setRotationStartDate] = useState("");    //for rotation date changes
+    // const [loadingRotation, setLoadingRotation] = useState(true);
     const user = JSON.parse(localStorage.getItem("user"));
-    const [lastRotationDate, setLastRotationDate] = useState("");
+    // const [lastRotationDate, setLastRotationDate] = useState("");
     
     const fetchTeams = async (page = 1, filters = {}, searchQuery = "") => {
       const params = new URLSearchParams({
@@ -41,42 +41,43 @@ const TeamPage = () => {
       return () => clearTimeout(delayDebounce);
     }, [search]);
 
-    useEffect(() => {
-      const fetchRotationDates = async () => {
-        try {
-          const startData = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/rotation/start-date`);
-          setRotationStartDate(startData?.rotation_start_date || "");
+    // FOR TEAM ROTATION
+    // useEffect(() => {
+    //   const fetchRotationDates = async () => {
+    //     try {
+    //       const startData = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/rotation/start-date`);
+    //       setRotationStartDate(startData?.rotation_start_date || "");
 
-          const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams`);
-          const availableTeam = data.data.find(team => team.status === 'available');
-          setLastRotationDate(availableTeam?.updated_at || "No data");
-        } catch (err) {
-          console.error("Failed to fetch rotation dates:", err);
-          setRotationStartDate("");
-          setLastRotationDate("No data");
-        } finally {
-          setLoadingRotation(false);
-        }
-      };
+    //       const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams`);
+    //       const availableTeam = data.data.find(team => team.status === 'available');
+    //       setLastRotationDate(availableTeam?.updated_at || "No data");
+    //     } catch (err) {
+    //       console.error("Failed to fetch rotation dates:", err);
+    //       setRotationStartDate("");
+    //       setLastRotationDate("No data");
+    //     } finally {
+    //       setLoadingRotation(false);
+    //     }
+    //   };
 
-      fetchRotationDates();
-    }, []);
+    //   fetchRotationDates();
+    // }, []);
 
-    const handleRotationDateChange = async (e) => {
-      const newDate = e.target.value;
-      setRotationStartDate(newDate);
+    // const handleRotationDateChange = async (e) => {
+    //   const newDate = e.target.value;
+    //   setRotationStartDate(newDate);
 
-      try {
-        await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/rotation/start-date`, {
-          method: "PUT",
-          body: JSON.stringify({ rotation_start_date: newDate }),
-        });
-        alert("Rotation start date updated! The rotation has been reset — Team Alpha is now set as available.");
-      } catch (err) {
-        console.error("Failed to update rotation start date:", err);
-        alert("Failed to update rotation start date. Try again.");
-      }
-    };
+    //   try {
+    //     await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams/rotation/start-date`, {
+    //       method: "PUT",
+    //       body: JSON.stringify({ rotation_start_date: newDate }),
+    //     });
+    //     alert("Rotation start date updated! The rotation has been reset — Team Alpha is now set as available.");
+    //   } catch (err) {
+    //     console.error("Failed to update rotation start date:", err);
+    //     alert("Failed to update rotation start date. Try again.");
+    //   }
+    // };
 
     const handlePageChange = (newPage) => {
       if (newPage >= 1 && newPage <= pagination.last_page) {
@@ -115,6 +116,7 @@ const TeamPage = () => {
                 />
                 {user?.role?.name === 'Admin' && (
                   <>
+                    {/* FOR TEAM ROTATION
                     <input
                       type="date"
                       className="cu-input"
@@ -123,7 +125,8 @@ const TeamPage = () => {
                       disabled={loadingRotation}
                       min={new Date().toISOString().split("T")[0]}
                       title="Pick a date to reset rotation (Alpha becomes available)"
-                    />
+                    /> 
+                    */}
                     <button className="create-team-btn" onClick={() => navigate('/admin/response-teams/create')}>Create Team</button>
                   </>
                 )}

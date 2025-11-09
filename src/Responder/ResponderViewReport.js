@@ -30,6 +30,7 @@ const ResponderViewReport = () => {
   const [evidenceImages, setEvidenceImages] = useState([]);
   const [existingProofs, setExistingProofs] = useState([]);
   const [distanceToIncident, setDistanceToIncident] = useState(null);
+  const [remainingTime, setRemainingTime] = useState(null);
 
   const ablyPublishRef = useRef(null);
   const mapContainerRef = useRef(null);
@@ -52,16 +53,23 @@ const ResponderViewReport = () => {
     });
   };
 
+  const formatCountdown = (ms) => {
+    if (ms <= 0) return '00:00';
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+  };
+
   useEffect(() => {
     const fetchReport = async () => {
       try {
         const data = await apiFetch(`${process.env.REACT_APP_URL}/api/responder/report/${id}`);
         if (data.success) {
           setReport(data.report);
-          setStatus(data.report.status === 'Assigned' ? 'En Route' : data.report.status);
+          setStatus(data.report?.status === 'Assigned' ? 'En Route' : data.report.status);
 
-          if (data.report.latitude && data.report.longitude) {
-            const address = await reverseGeocode(data.report.latitude, data.report.longitude);
+          if (data.report?.latitude && data.report?.longitude) {
+            const address = await reverseGeocode(data.report?.latitude, data.report?.longitude);
             setResolvedAddress(address || 'Unknown Location');
           } else {
             setResolvedAddress('—');
@@ -93,6 +101,27 @@ const ResponderViewReport = () => {
 
     fetchProofs();
   }, [id]);
+
+  useEffect(() => {
+    if (!report || !report?.updated_at || report?.status !== 'On Scene') {
+      setRemainingTime(null);
+      return;
+    }
+
+    const onSceneTime = new Date(report?.updated_at).getTime();
+    const duration = 30 * 60 * 1000; 
+
+    const updateRemaining = () => {
+      const now = Date.now();
+      const remaining = onSceneTime + duration - now;
+      setRemainingTime(remaining > 0 ? remaining : 0);
+    };
+
+    updateRemaining(); 
+    const interval = setInterval(updateRemaining, 1000); 
+
+    return () => clearInterval(interval);
+  }, [report?.updated_at, report?.status]);
 
   useEffect(() => {
     if (!report?.latitude || !report?.longitude) return;
@@ -139,7 +168,7 @@ const ResponderViewReport = () => {
         if (!mapContainerRef.current) return;
 
         mapRef.current = new window.H.Map(mapContainerRef.current, defaultLayers.vector.normal.map, {
-          center: { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
+          center: { lat: parseFloat(report?.latitude), lng: parseFloat(report?.longitude) },
           zoom: 14,
           pixelRatio: window.devicePixelRatio || 1
         });
@@ -160,8 +189,8 @@ const ResponderViewReport = () => {
 
         try {
           incidentMarkerRef.current = new window.H.map.Marker({
-            lat: parseFloat(report.latitude),
-            lng: parseFloat(report.longitude)
+            lat: parseFloat(report?.latitude),
+            lng: parseFloat(report?.longitude)
           });
           mapRef.current.addObject(incidentMarkerRef.current);
         } catch (e) {
@@ -173,7 +202,7 @@ const ResponderViewReport = () => {
             size: { w: 32, h: 32 }
           });
           responderMarkerRef.current = new window.H.map.Marker(
-            responderLocationRef.current || { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) },
+            responderLocationRef.current || { lat: parseFloat(report?.latitude), lng: parseFloat(report?.longitude) },
             { icon: carIcon }
           );
           mapRef.current.addObject(responderMarkerRef.current);
@@ -253,7 +282,7 @@ const ResponderViewReport = () => {
       try {
         if (!locationChannel) return false;
         locationChannel.publish('update', {
-          teamId: report.assignedTeam,
+          teamId: report?.assignedTeam,
           lat: loc.lat,
           lng: loc.lng,
           accuracy: loc.accuracy,
@@ -291,7 +320,7 @@ const ResponderViewReport = () => {
           `&transportMode=car` +
           `&routingMode=short` +
           `&origin=${loc.lat},${loc.lng}` +
-          `&destination=${report.latitude},${report.longitude}` +
+          `&destination=${report?.latitude},${report?.longitude}` +
           `&return=polyline,summary`;
 
         const res = await fetch(url);
@@ -354,24 +383,29 @@ const ResponderViewReport = () => {
         if (newLocation.accuracy <= 150 && window.H && report?.latitude && report?.longitude) {
           const localDistance = distanceMeters(
           { lat: newLocation.lat, lng: newLocation.lng },
-          { lat: parseFloat(report.latitude), lng: parseFloat(report.longitude) }
+          { lat: parseFloat(report?.latitude), lng: parseFloat(report?.longitude) }
         );
 
         setDistanceToIncident(localDistance);
 
         console.log("Distance (haversine):", localDistance);
 
-        if (localDistance <= 50 && report.status !== 'On Scene' && !arrived) {
+        if (localDistance <= 50 && !['On Scene', 'Resolved'].includes(report?.status) && !arrived) {
           (async () => {
             try {
-              await apiFetch(`${process.env.REACT_APP_URL}/api/responder/report/${report.id}/update-status`, {
+              const data = await apiFetch(`${process.env.REACT_APP_URL}/api/responder/report/${report?.id}/update-status`, {
                 method: 'POST',
                 body: JSON.stringify({ status: 'On Scene' })
               });
+
               debug('Marked On Scene');
               setArrived(true);
               setStatus('On Scene');
-              setReport((prev) => ({ ...prev, status: 'On Scene' }));
+              setReport((prev) => ({
+                ...prev,
+                status: 'On Scene',
+                updated_at: data.updated_at || prev.updated_at
+              }));
             } catch (err) {
               console.error('Failed to update On Scene:', err);
             }
@@ -564,6 +598,10 @@ const ResponderViewReport = () => {
   };
 
   const handleUpdateStatus = async () => {
+    if (status === 'Resolved' && remainingTime > 0) {
+      alert(`You cannot mark as resolved yet. Remaining time: ${formatCountdown(remainingTime)}`);
+      return;
+    }
     try {
       const statusToSend = status === 'Assigned' ? 'En Route' : status;
       const token = localStorage.getItem('token');
@@ -644,13 +682,7 @@ const ResponderViewReport = () => {
     return `${(meters / 1000).toFixed(1)} km`;
   };
 
-  const onSceneUpdatedAt = report?.updated_at && report.status === 'On Scene' 
-      ? new Date(report.updated_at).getTime() 
-      : null;
-
-  const canResolve = onSceneUpdatedAt 
-      ? Date.now() - onSceneUpdatedAt >= 30 * 60 * 1000
-      : false;
+  const canResolve = remainingTime !== null ? remainingTime <= 0 : false;
 
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -665,7 +697,7 @@ const ResponderViewReport = () => {
     if (evidenceImages.length === 0) return;
 
     const formData = new FormData();
-    formData.append("incident_id", report.id);
+    formData.append("incident_id", report?.id);
 
     evidenceImages.forEach((file, index) => {
       formData.append(`proofs[]`, file);
@@ -746,14 +778,14 @@ const ResponderViewReport = () => {
 
           <div className="details-body">
             <p className="r-report-location">{resolvedAddress}</p>
-            {report?.landmark && <p className="report-landmark">Landmark: {report.landmark}</p>}
+            {report?.landmark && <p className="report-landmark">Landmark: {report?.landmark}</p>}
             <p className="r-report-name">{report?.reporterName || ''}</p>
             <p className="r-report-incident">
               Incident Type : <span className="incident-type">{report?.type || ''}</span>
             </p>
             {report?.description && (
               <p className="r-report-incident">
-                Description: <span className="report-description">{report.description}</span>
+                Description: <span className="report-description">{report?.description}</span>
               </p>
             )}
 
@@ -778,8 +810,8 @@ const ResponderViewReport = () => {
               >
                 <option value="En Route" style={{ color: '#f09a06' }}>En Route</option>
                 <option value="On Scene" style={{ color: '#25597c' }}>On Scene</option>
-                <option value="Resolved" style={{ color: '#2ecc40' }} disabled={!canResolve}>
-                  Resolved {status !== "Resolved" && !canResolve && "(wait 30 min)"}
+                <option value="Resolved" style={{ color: '#2ecc40' }}>
+                  Resolved { !canResolve && remainingTime !== null ? `(${formatCountdown(remainingTime)})` : '' }
                 </option>
               </select>
               <span className="chevron">▾</span>

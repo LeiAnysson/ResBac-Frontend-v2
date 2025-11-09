@@ -9,6 +9,8 @@ const ReportDetailsCard = ({ report, setReport }) => {
   const [updateMessage, setUpdateMessage] = useState(report.description ?? "");
   const [landmark, setLandmark] = useState(report.landmark ?? "");
   const [proofs, setProofs] = useState([]);
+  const [availableTeams, setAvailableTeams] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState('');
 
   const firstTeam = report.first_team_assignment?.team?.team_name;
   const latestTeam = report.latest_team_assignment?.team?.team_name;
@@ -18,6 +20,20 @@ const ReportDetailsCard = ({ report, setReport }) => {
     setUpdateMessage(report.description ?? "");
     setLandmark(report.landmark ?? "");
   }, [report]);
+
+  useEffect(() => {
+    const fetchAvailableTeams = async () => {
+      try {
+        const data = await apiFetch(`${process.env.REACT_APP_URL}/api/admin/teams`);
+        const available = data.data.filter(team => team.status === 'available');
+        setAvailableTeams(available);
+      } catch (err) {
+        console.error("Failed to fetch available teams:", err);
+      }
+    };
+    
+    fetchAvailableTeams();
+  }, []);
 
   useEffect(() => {
     if (!report?.latitude || !report?.longitude) return;
@@ -197,6 +213,37 @@ const ReportDetailsCard = ({ report, setReport }) => {
       : `${process.env.REACT_APP_URL}${filePath}`;
   };
 
+  const assignTeam = async () => {
+    if (!selectedTeam) return;
+
+    try {
+      const data = await apiFetch(
+        `${process.env.REACT_APP_URL}/api/incidents/${report.id}/assign-team`,
+        {
+          method: "POST",
+          body: JSON.stringify({ team_id: selectedTeam }),
+        }
+      );
+
+      alert("Team assigned successfully!");
+
+      const assigned = availableTeams.find(t => t.id === selectedTeam);
+      setReport(prev => ({
+        ...prev,
+        latest_team_assignment: {
+          ...prev.latest_team_assignment,
+          team: assigned,
+        },
+      }));
+
+      setAvailableTeams(prev => prev.filter(t => t.id !== selectedTeam));
+      setSelectedTeam('');
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Failed to assign team.");
+    }
+  };
+
   if (!report) return null;
 
   return (
@@ -236,12 +283,34 @@ const ReportDetailsCard = ({ report, setReport }) => {
           </div>
           <div>
             <span className="reporter-label"><b>Assigned Team: </b></span>
-            <span className="reporter-name"> 
-              Team {firstTeam 
-                ? `${firstTeam}${latestTeam && latestTeam !== firstTeam ? ` (+ ${latestTeam})` : ''}`
-                : (latestTeam || 'N/A')}
-            </span>
+            {report.latest_team_assignment?.team ? (
+              <span className="reporter-name">
+                Team {firstTeam ? `${firstTeam}${latestTeam && latestTeam !== firstTeam ? ` (+ ${latestTeam})` : ''}` : latestTeam}
+              </span>
+            ) : (
+              <>
+                <select
+                  className="user-filter-select"
+                  value={selectedTeam}
+                  onChange={(e) => setSelectedTeam(e.target.value)}
+                >
+                  <option value="">-- Assign Team --</option>
+                  {availableTeams.map(team => (
+                    <option key={team.id} value={team.id}>{team.team_name}</option>
+                  ))}
+                </select>
+                <button
+                  className="assign-medic-btn" 
+                  onClick={assignTeam}
+                  disabled={!selectedTeam || report.status === 'invalid' || report.status === 'Resolved'}
+                  style={{ marginLeft: '10px' }}
+                >
+                  Assign
+                </button>
+              </>
+            )}
           </div>
+
           <div className="incident-location-detail">
             {report.status === "Invalid" || report.status === "Resolved" ? (
               <p className="landmark-text">

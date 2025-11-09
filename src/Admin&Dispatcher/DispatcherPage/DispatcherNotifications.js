@@ -62,9 +62,16 @@ const DispatcherNotifications = () => {
       }, 5000);
     };
 
+    const handleCallAlreadyAccepted = (e) => {
+      const acceptedId = e.detail.call_id;
+      console.log("Another dispatcher accepted this call:", acceptedId);
+      setIncomingCalls((prev) => prev.filter((call) => call.id !== acceptedId));
+    };
+
     window.addEventListener("incidentCallCreated", handleIncomingCall);
     window.addEventListener("callEnded", handleCallEnded);
     window.addEventListener("duplicateReportCreated", handleDuplicate);
+    window.addEventListener("callAlreadyAccepted", handleCallAlreadyAccepted);
 
     const handleUserPublished = async (user, mediaType) => {
       if (mediaType === "audio") {
@@ -124,7 +131,8 @@ const DispatcherNotifications = () => {
     return () => {
       window.removeEventListener("incidentCallCreated", handleIncomingCall);
       window.removeEventListener("callEnded", handleCallEnded);
-      window.removeEventListener("duplicateReportCreated", handleDuplicate); 
+      window.removeEventListener("duplicateReportCreated", handleDuplicate);
+      window.removeEventListener("callAlreadyAccepted", handleCallAlreadyAccepted); 
 
       client.removeAllListeners("user-published");
       client.removeAllListeners("user-unpublished");
@@ -185,6 +193,8 @@ const DispatcherNotifications = () => {
       );
     } catch (err) {
       console.error("Failed to notify backend about call end:", err);
+      //await cleanupCall();
+    } finally {
       await cleanupCall();
     }
     clearTimer();
@@ -214,6 +224,7 @@ const DispatcherNotifications = () => {
 
     setActiveCall(null);
     console.log("Dispatcher cleaned up call");
+    window.dispatchEvent(new CustomEvent("callEndedRefreshReports"));
   };
 
   const leaveEchoChannel = () => {
@@ -244,7 +255,6 @@ const DispatcherNotifications = () => {
     }
   };
 
-
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 4: return "#ac3737ff";
@@ -257,37 +267,58 @@ const DispatcherNotifications = () => {
 
   return (
     <>
-      {incomingCalls.map((call) => {
-        const borderColor = getPriorityColor(call.incident_type?.priority?.priority_level);
-
-        return (
-          <div key={call.id} className="incoming-call-popup" style={{ borderColor: borderColor }}>
-            <h4>Incoming Call</h4>
-            <p>Incident Type: {call.incident_type?.name || "Unknown"}</p>
-            <p>
-              Reported By:{" "}
-              {call.user
-                ? `${call.user.first_name} ${call.user.last_name}`
-                : "Unknown Caller"}{" "}
-              {call.reporter_type && (
-                <span className="reporter-type">({call.reporter_type})</span>
-              )}
-            </p>
-            <button type="button" onClick={() => acceptCall(call)}>
-              Accept
-            </button>
-            <button type="button" onClick={() => rejectCall(call)}>
-              Reject
-            </button>
+      <div className={`incoming-call-container ${activeCall ? "with-active-call" : ""}`} >
+        {activeCall && (
+          <div className="active-call-popup">
+            <CallPopup
+              show={!!activeCall}
+              caller={activeCall?.user}
+              incident={activeCall}
+              callDuration={callDuration}
+              onEnd={endCall}
+            />
           </div>
-        );
-      })}
+        )}
+
+        {incomingCalls.map((call) => {
+          const borderColor = getPriorityColor(
+            call.incident_type?.priority?.priority_level
+          );
+          return (
+            <div
+              key={call.id}
+              className="incoming-call-popup"
+              style={{ borderColor }}
+            >
+              <h4>Incoming Call</h4>
+              <p>Incident Type: {call.incident_type?.name || "Unknown"}</p>
+              <p>
+                Reported By:{" "}
+                {call.user
+                  ? `${call.user.first_name} ${call.user.last_name}`
+                  : "Unknown Caller"}{" "}
+                {call.reporter_type && (
+                  <span className="reporter-type">({call.reporter_type})</span>
+                )}
+              </p>
+              <button type="button" onClick={() => acceptCall(call)}>Accept</button>
+              <button type="button" onClick={() => rejectCall(call)}>Reject</button>
+            </div>
+          );
+        })}
+      </div>
 
       {duplicateReports.map((dup) => {
-        const borderColor = getPriorityColor(dup.incident_type?.priority?.priority_level);
+        const borderColor = getPriorityColor(
+          dup.incident_type?.priority?.priority_level
+        );
 
         return (
-          <div key={`dup-${dup.incident_id}`} className="duplicate-popup" style={{ borderColor }}>
+          <div
+            key={`dup-${dup.incident_id}`}
+            className="duplicate-popup"
+            style={{ borderColor }}
+          >
             <h5>Duplicate Report</h5>
             <p>Incident #{dup.incident_id}</p>
             <p>{dup.incident_type?.name || "Unknown Type"}</p>
@@ -296,20 +327,12 @@ const DispatcherNotifications = () => {
         );
       })}
 
-      <CallPopup
-        show={!!activeCall}
-        caller={activeCall?.user}
-        incident={activeCall}
-        callDuration={callDuration}
-        onEnd={endCall}
-      />
-
-      {activeCall && 
-        <AdminReportPageView 
+      {activeCall && (
+        <AdminReportPageView
           reportFromCall={activeCall}
-          editable={!!activeCall} 
+          editable={!!activeCall}
         />
-      }
+      )}
     </>
   );
 };

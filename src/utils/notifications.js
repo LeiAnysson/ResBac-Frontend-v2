@@ -37,6 +37,11 @@ export const setupNotifications = () => {
         window.dispatchEvent(new CustomEvent("callEnded", { detail: event }));
     });
 
+    window.Echo.channel("dispatcher").listen(".CallAlreadyAccepted", (event) => {
+        console.log("Another dispatcher already accepted this call:", event.call_id);
+        window.dispatchEvent(new CustomEvent("callAlreadyAccepted", { detail: event }));
+    });
+
     window.Echo.channel("dispatcher").listen(".DuplicateReportCreated", (event) => {
         if (event.target_role === 2 && currentUser.role_id === 2) {
             const message = `Incident #${event.duplicate.incident_id} has duplicate reports. Total: ${event.duplicate.duplicate_count}`;
@@ -150,6 +155,7 @@ export const setupNotifications = () => {
 
     window.Echo.channel("resident").listen(".IncidentStatusUpdated", (event) => {
         if (!event.target_roles?.includes(currentUser.role_id)) return;
+        if (event.incident.user_id !== currentUser.id) return;
         console.log("[resident] IncidentStatusUpdated received:", event);
 
         const { incident } = event;
@@ -164,6 +170,7 @@ export const setupNotifications = () => {
 
     window.Echo.channel("resident").listen(".IncidentDetailsUpdated", (event) => {
         if (currentUser.role_id !== 4) return;
+        if (event.incident.user_id !== currentUser.id) return;
         console.log("[resident] IncidentDetailsUpdated received:", event);
 
         const { incident } = event;
@@ -190,6 +197,8 @@ export const setupNotifications = () => {
         const incidentTypeName = event.incident.incident_type?.name || "Unknown Incident";
         const landmarkOrCoords = event.incident.landmark || `${event.incident.latitude}, ${event.incident.longitude}`;
         const message = `${incidentTypeName} reported at ${landmarkOrCoords}`;
+
+        alert("IncidentAssigned received: " + message);
 
         showInAppNotification({
             title: "New Incident Assigned",

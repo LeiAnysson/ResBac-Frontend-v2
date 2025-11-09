@@ -16,6 +16,8 @@ const LoginPage = () => {
   const [resetMessage, setResetMessage] = useState('');
   const [resetError, setResetError] = useState('');
 
+  const today = new Date().toISOString().split('T')[0];
+
     useEffect(() => {
       const token = localStorage.getItem("token");
       const user = JSON.parse(localStorage.getItem("user"));
@@ -32,9 +34,10 @@ const LoginPage = () => {
           })
           .then(res => res.json())
           .then(reports => {
-            const activeReports = reports.filter(r =>
-              ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status)
-            );
+            const activeReports = reports.filter(r => {
+              const reportDate = new Date(r.created_at).toISOString().split('T')[0];
+              return ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status) && reportDate === today;
+            });
             console.log("Active reports:", activeReports);
             if (activeReports.length > 0) {
               const latestReport = activeReports[0];
@@ -81,9 +84,10 @@ const LoginPage = () => {
                 }
               });
               const reports = await reportsRes.json();
-              const activeReports = reports.filter(r =>
-                ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status)
-              );
+              const activeReports = reports.filter(r => {
+                const reportDate = new Date(r.created_at).toISOString().split('T')[0];
+                return ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status) && reportDate === today;
+              });
               console.log("Active reports:", activeReports);
 
               if (activeReports.length > 0) {
@@ -145,9 +149,10 @@ const LoginPage = () => {
             const reports = await reportsRes.json();
             console.log("Fetched reports after login:", reports);
 
-            const activeReports = reports.filter(r =>
-              ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status)
-            );
+            const activeReports = reports.filter(r => {
+              const reportDate = new Date(r.created_at).toISOString().split('T')[0];
+              return ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status) && reportDate === today;
+            });
             console.log("Active reports after login:", activeReports);
 
             if (activeReports.length > 0) {

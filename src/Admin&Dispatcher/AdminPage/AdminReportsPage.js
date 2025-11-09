@@ -52,6 +52,18 @@ const AdminReportsPage = () => {
     return () => clearTimeout(delayDebounce);
   }, [search]);
 
+  useEffect(() => {
+    const handleCallEnded = () => {
+      fetchReports(); 
+    };
+
+    window.addEventListener("callEndedRefreshReports", handleCallEnded);
+
+    return () => {
+      window.removeEventListener("callEndedRefreshReports", handleCallEnded);
+    };
+  }, []);
+
   const getPriorityColor = (report) => {
     const level = Number(report.incident_type?.priority_id) || 0;
     switch (level) {
