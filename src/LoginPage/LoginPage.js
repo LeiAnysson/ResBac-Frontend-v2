@@ -35,9 +35,14 @@ const LoginPage = () => {
           .then(res => res.json())
           .then(reports => {
             const activeReports = reports.filter(r => {
-              const reportDate = new Date(r.created_at).toISOString().split('T')[0];
-              return ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status) && reportDate === today;
+              const reportTime = Date.parse(r.date); 
+              if (isNaN(reportTime)) return false;
+
+              const reportDate = new Date(reportTime).toISOString().split('T')[0];
+              return ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status) &&
+                    reportDate === today;
             });
+            
             console.log("Active reports:", activeReports);
             if (activeReports.length > 0) {
               const latestReport = activeReports[0];
@@ -85,9 +90,14 @@ const LoginPage = () => {
               });
               const reports = await reportsRes.json();
               const activeReports = reports.filter(r => {
-                const reportDate = new Date(r.created_at).toISOString().split('T')[0];
-                return ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status) && reportDate === today;
+                const reportTime = Date.parse(r.date); 
+                if (isNaN(reportTime)) return false;
+
+                const reportDate = new Date(reportTime).toISOString().split('T')[0];
+                return ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status) &&
+                      reportDate === today;
               });
+
               console.log("Active reports:", activeReports);
 
               if (activeReports.length > 0) {
@@ -150,9 +160,14 @@ const LoginPage = () => {
             console.log("Fetched reports after login:", reports);
 
             const activeReports = reports.filter(r => {
-              const reportDate = new Date(r.created_at).toISOString().split('T')[0];
-              return ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status) && reportDate === today;
+              const reportTime = Date.parse(r.date); 
+              if (isNaN(reportTime)) return false;
+
+              const reportDate = new Date(reportTime).toISOString().split('T')[0];
+              return ["Assigned", "Requesting Backup", "En Route", "On Scene"].includes(r.status) &&
+                    reportDate === today;
             });
+
             console.log("Active reports after login:", activeReports);
 
             if (activeReports.length > 0) {

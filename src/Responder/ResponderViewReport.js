@@ -103,12 +103,18 @@ const ResponderViewReport = () => {
   }, [id]);
 
   useEffect(() => {
-    if (!report || !report?.updated_at || report?.status !== 'On Scene') {
+    if (!report || !report.on_scene_time) {
+      //console.log("Report not ready yet:", report);
+      return;
+    }
+
+    if (report.status !== 'On Scene') {
+      console.log("Countdown not active. Status:", report.status);
       setRemainingTime(null);
       return;
     }
 
-    const onSceneTime = new Date(report?.updated_at).getTime();
+    const onSceneTime = new Date(report?.on_scene_time).getTime();
     const duration = 30 * 60 * 1000; 
 
     const updateRemaining = () => {
@@ -116,12 +122,20 @@ const ResponderViewReport = () => {
       const remaining = onSceneTime + duration - now;
       setRemainingTime(remaining > 0 ? remaining : 0);
     };
+    updateRemaining();
 
-    updateRemaining(); 
-    const interval = setInterval(updateRemaining, 1000); 
+    console.log("onSceneTime:", onSceneTime);
+    console.log("duration:", duration);
+
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const remaining = onSceneTime + duration - now;
+      //console.log("Remaining ms:", remaining);
+      setRemainingTime(remaining > 0 ? remaining : 0);
+    }, 1000);
 
     return () => clearInterval(interval);
-  }, [report?.updated_at, report?.status]);
+  }, [report]);
 
   useEffect(() => {
     if (!report?.latitude || !report?.longitude) return;
@@ -806,7 +820,11 @@ const ResponderViewReport = () => {
             <label className="field-label">Current Report Status:</label>
             <div className="select-wrap">
               <select 
-                className="status-select" value={status} onChange={(e) => setStatus(e.target.value)} disabled={status === 'Resolved'} style={{ color: getStatusColor(status) }} 
+                className="status-select" 
+                value={status} 
+                onChange={(e) => setStatus(e.target.value)} 
+                disabled={status === 'Resolved'} 
+                style={{ color: getStatusColor(status) }} 
               >
                 <option value="En Route" style={{ color: '#f09a06' }}>En Route</option>
                 <option value="On Scene" style={{ color: '#25597c' }}>On Scene</option>
