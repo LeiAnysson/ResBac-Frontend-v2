@@ -197,7 +197,7 @@ export const setupNotifications = () => {
 
         console.log("[responder] IncidentAssigned payload:", event, "currentUser.team_id:", currentUser.team_id);
 
-        if (targetRole !== 3) return;
+        if (targetRole !== 3 || [2, 4].includes(currentUser.role_id)) return;
 
         const currentTeamId = currentUser.team_id ?? teamIdFromEvent;
 
@@ -206,8 +206,6 @@ export const setupNotifications = () => {
         const incidentTypeName = incident.incident_type?.name || "Unknown Incident";
         const landmarkOrCoords = incident.landmark || `${incident.latitude}, ${incident.longitude}`;
         const message = `${incidentTypeName} reported at ${landmarkOrCoords}`;
-
-        alert("IncidentAssigned received: " + message);
 
         showInAppNotification({
             title: "New Incident Assigned",

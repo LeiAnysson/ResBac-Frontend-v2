@@ -289,6 +289,11 @@ const ReportDetailsCard = ({ report, setReport }) => {
               </span>
             ) : (
               <>
+                {/* -----------------------------
+                      MANUAL ASSIGNMENT (v2)
+                  ------------------------------ */}
+                {/*
+                  
                 <select
                   className="user-filter-select"
                   value={selectedTeam}
@@ -307,6 +312,7 @@ const ReportDetailsCard = ({ report, setReport }) => {
                 >
                   Assign
                 </button>
+                ------------------------------ */}
               </>
             )}
           </div>
@@ -326,6 +332,7 @@ const ReportDetailsCard = ({ report, setReport }) => {
             )}
           </div>
         </div>
+
         <div className="incident-actions-header">
           {currentUser.role_id === 2 && report.incident_type?.name.toLowerCase() !== "medical" && (
             <button className="assign-medic-btn" onClick={assignMedic} disabled={
