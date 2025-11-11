@@ -169,12 +169,14 @@ export const setupNotifications = () => {
     });
 
     window.Echo.channel("resident").listen(".IncidentDetailsUpdated", (event) => {
-        if (currentUser.role_id !== 4) return;
-        if (event.incident.user_id !== currentUser.id) return;
-        console.log("[resident] IncidentDetailsUpdated received:", event);
+        const incident = event.incident || {};
+        const targetRoles = event.target_roles || [];
 
-        const { incident } = event;
-        if (!event.target_roles.includes(currentUser.role_id)) return;
+        if (currentUser.role_id !== 4) return;
+
+        if (incident.user_id !== currentUser.id) return;
+
+        if (targetRoles.length > 0 && !targetRoles.includes(currentUser.role_id)) return;
 
         showInAppNotification({
             title: "Incident Updated",
@@ -189,13 +191,20 @@ export const setupNotifications = () => {
     /* ---------------- RESPONDER NOTIFICATIONS ---------------- */
 
     window.Echo.channel("responder").listen(".IncidentAssigned", (event) => {
-        console.log("IncidentAssigned received:", event);
+        const incident = event.incident || {};
+        const targetRole = event.target_role;
+        const teamIdFromEvent = event.team_id;
 
-        if (event.target_role !== 3) return;
-        if (!currentUser.team_id || Number(event.team_id) !== Number(currentUser.team_id)) return;
+        console.log("[responder] IncidentAssigned payload:", event, "currentUser.team_id:", currentUser.team_id);
 
-        const incidentTypeName = event.incident.incident_type?.name || "Unknown Incident";
-        const landmarkOrCoords = event.incident.landmark || `${event.incident.latitude}, ${event.incident.longitude}`;
+        if (targetRole !== 3) return;
+
+        const currentTeamId = currentUser.team_id ?? teamIdFromEvent;
+
+        if (!currentTeamId || Number(teamIdFromEvent) !== Number(currentTeamId)) return;
+
+        const incidentTypeName = incident.incident_type?.name || "Unknown Incident";
+        const landmarkOrCoords = incident.landmark || `${incident.latitude}, ${incident.longitude}`;
         const message = `${incidentTypeName} reported at ${landmarkOrCoords}`;
 
         alert("IncidentAssigned received: " + message);
@@ -204,13 +213,13 @@ export const setupNotifications = () => {
             title: "New Incident Assigned",
             message,
             actions: [
-                { label: "View Incident", path: `/responder/reports/view-report/${event.incident.id}` }
+                { label: "View Incident", path: `/responder/reports/view-report/${incident.id}` }
             ],
         });
 
-        saveNotification({ team_id: event.team_id, message });
+        saveNotification({ team_id: teamIdFromEvent, message });
 
-        window.dispatchEvent(new CustomEvent("incidentAssigned", { detail: event.incident }));
+        window.dispatchEvent(new CustomEvent("incidentAssigned", { detail: incident }));
     });
 
     window.Echo.channel("responder").listen(".IncidentDetailsUpdated", (event) => {

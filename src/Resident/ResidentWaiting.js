@@ -91,6 +91,9 @@ const ResidentWaiting = () => {
           const latestReport = res[0];
           setIncident(latestReport);
           setResponderTeam(latestReport.responder_team || null);
+          if (latestReport.status) {
+            setIncidentStatus(latestReport.status);
+          }
         }
       } catch (err) {
         console.error("Failed to fetch incident with team:", err);
