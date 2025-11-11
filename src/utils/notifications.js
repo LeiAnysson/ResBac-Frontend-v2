@@ -207,8 +207,6 @@ export const setupNotifications = () => {
         const landmarkOrCoords = incident.landmark || `${incident.latitude}, ${incident.longitude}`;
         const message = `${incidentTypeName} reported at ${landmarkOrCoords}`;
 
-        alert("IncidentAssigned received: " + message);
-
         showInAppNotification({
             title: "New Incident Assigned",
             message,
