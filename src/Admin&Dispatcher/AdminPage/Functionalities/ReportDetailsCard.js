@@ -292,7 +292,7 @@ const ReportDetailsCard = ({ report, setReport }) => {
                 {/* -----------------------------
                       MANUAL ASSIGNMENT (v2)
                   ------------------------------ */}
-                {/*
+                {/*------------------------------ */}
                   
                 <select
                   className="user-filter-select"
@@ -312,7 +312,7 @@ const ReportDetailsCard = ({ report, setReport }) => {
                 >
                   Assign
                 </button>
-                ------------------------------ */}
+                
               </>
             )}
           </div>

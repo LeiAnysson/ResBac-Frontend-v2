@@ -1,7 +1,7 @@
 import './NavBar.css';
 import {
   MdHome, MdPeople, MdAssessment, MdNotificationsActive,
-  MdCampaign, MdSettings, MdLogout, MdAssignment
+  MdCampaign, MdSettings, MdLogout, MdAssignment, MdHistory
 } from 'react-icons/md';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -95,7 +95,8 @@ const NavBar = () => {
             <Link to={isAdmin ? "/admin/announcements" : "/dispatcher/announcements"} className={`navbar-menu-item${location.pathname.includes("announcement") ? " active" : ""}`}><MdCampaign className="navbar-menu-icon" /><span>Announcement</span></Link>
           </>}
 
-          {/* Admin-only settings */}
+          {/* Admin-only */}
+          {isAdmin && <Link to="/admin/reports-history" className={`navbar-menu-item${location.pathname === "/admin/reports-history" ? " active" : ""}`} style={{ marginTop: 'auto' }}><MdHistory className="navbar-menu-icon" /><span>History</span></Link>}
           {isAdmin && <Link to="/admin/settings" className={`navbar-menu-item${location.pathname === "/admin/settings" ? " active" : ""}`} style={{ marginTop: 'auto' }}><MdSettings className="navbar-menu-icon" /><span>Settings</span></Link>}
 
           {/* Logout */}

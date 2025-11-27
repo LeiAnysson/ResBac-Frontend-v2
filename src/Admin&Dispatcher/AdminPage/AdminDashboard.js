@@ -302,14 +302,6 @@ const AdminDashboard = () => {
                   )}
                 </tbody>
               </table>
-                <div className="incident-detailed-section">
-                  <button
-                    className="print-btn"
-                    onClick={() => handlePrintDetailedReports()}
-                  >
-                    <MdPrint className="print-icon"/> Print Detailed Reports
-                  </button>
-                </div>
             </div>
           </section>
         </main>
